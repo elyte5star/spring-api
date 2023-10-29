@@ -1,0 +1,45 @@
+version: '3.8'
+networks:
+  net:
+
+volumes:
+  persistence:
+services:
+  db:
+    image: mariadb
+    container_name: maria-db
+    restart: on-failure
+    env_file:
+      - api.env
+    ports:
+      - "3306:3306"
+    volumes:
+      # folder to hold the actual db data
+      - ./persistence:/var/lib/mysql
+    networks:
+      - net
+  web:
+    container_name: spring-api
+    image: spring-api
+    build:
+      context: .
+      dockerfile: ./api.dockerfile
+    networks:
+      - net
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  rabbitQ:
+    hostname: rabbitQ
+    image: rabbitmq:3-management
+    restart: no
+    container_name: rabbit
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - net
+    env_file:
+      - api.env
