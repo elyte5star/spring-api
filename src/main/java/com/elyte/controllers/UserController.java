@@ -11,13 +11,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.net.URI;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+
+
 
 @RestController
 public class UserController {
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    //Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private UserRepository userRepository;
@@ -32,7 +35,7 @@ public class UserController {
     public ResponseEntity<?> createUser(@RequestBody User user) {
         userRepository.save(user);
         HttpHeaders responseHeaders = new HttpHeaders();
-        URI newUserUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getClass()).toUri();
+        URI newUserUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
         responseHeaders.setLocation(newUserUri);
         return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
     }

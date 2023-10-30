@@ -1,12 +1,27 @@
 server:
   port: 8001
-
+  name: elyte
+management:
+  server:
+    port: 9090
 logging:
+  pattern:
+    console: %clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){green} %clr([%level]){magenta}  %c{1.} [%t] %m%n
   level:
     org:
       springframework: INFO
-
+springdoc:
+  show-actuator: true
+  use-management-port: true
+  swagger-ui:
+    operationsSorter: method
+    path: /ui.html
+  api-docs:
+    path: /docs
 spring:
+  output:
+    ansi:
+      enabled: always
   # Maximum time static resources should be cached
   web:
     resources:
