@@ -14,7 +14,6 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      # folder to hold the actual db data
       - ./persistence:/var/lib/mysql
     networks:
       - net
@@ -27,7 +26,7 @@ services:
     networks:
       - net
     ports:
-      - "8000:8000"
+      - "8001:8001"
     depends_on:
       - db
 

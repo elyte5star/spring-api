@@ -1,27 +1,42 @@
 server:
   port: 8001
   name: elyte
+
 management:
+  endpoints:
+    jmx:
+      exposure:
+        include: "health,info"
   server:
     port: 9090
+
 logging:
   pattern:
-    console: %clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){green} %clr([%level]){magenta}  %c{1.} [%t] %m%n
+    console: '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){green} %clr([%level]){magenta}  %c{1.} [%t] %m%n'
   level:
     org:
       springframework: INFO
+
 springdoc:
   show-actuator: true
   use-management-port: true
   swagger-ui:
     operationsSorter: method
-    path: /ui.html
+    path: /ui-custom.html
   api-docs:
-    path: /docs
+    path: /api-docs
+
 spring:
   output:
     ansi:
       enabled: always
+    # Message Broker
+  rabbitmq:
+    host: ${RABBIT_HOST}
+    port: ${RABBITMQ_NODE_PORT}
+    username: ${RABBITMQ_DEFAULT_USER}
+    password: ${RABBITMQ_DEFAULT_PASS}
+
   # Maximum time static resources should be cached
   web:
     resources:
@@ -29,28 +44,25 @@ spring:
         cachecontrol:
           max-age: 12h
 
-  rabbitmq:
-    host: ${RABBIT_HOST}
-    port: ${RABBITMQ_NODE_PORT}
-    username: ${RABBITMQ_DEFAULT_USER}
-    password: ${RABBITMQ_DEFAULT_PASS}
-    
   # ===============================
   # = DATA SOURCE
   # ===============================
   datasource:
-    url: jdbc:mariadb://${MYSQL_HOST}:3306/MARIADB_DATABASE
+    url: jdbc:mariadb://${MYSQL_HOST}:3306/${MARIADB_DATABASE}
     username: ${MARIADB_USER}
     password: ${MARIADB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
-    
-  # ===============================
-  # = JPA / HIBERNATE
-  # ===============================
+
+    # ===============================
+    # = JPA / HIBERNATE
+    # ===============================
   jpa:
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        dialect: org.hibernate.dialect.MariaDB53Dialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
+
+
+

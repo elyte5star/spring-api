@@ -1,29 +1,29 @@
 package com.elyte.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.*;
 import java.sql.Timestamp;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Digits;
 import java.util.List;
 
 @Entity
+@Table(name = "users")
 public class User {
+    public User(String username, String password, String email, boolean active, boolean admin, Timestamp createdAt, String telephone) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.active = active;
+        this.admin = admin;
+        this.createdAt = createdAt;
+        this.telephone = telephone;
+    }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "USER_ID")
     private Long id;
 
     @Column(name = "USERNAME")
-    @NotEmpty
     private String username;
 
     public String getUsername() {
@@ -35,7 +35,6 @@ public class User {
     }
 
     @Column(name = "PASSWORD")
-    @NotEmpty
     private String password;
 
     public String getPassword() {
@@ -55,7 +54,6 @@ public class User {
     }
 
     @Column(name = "EMAIL")
-    @NotEmpty
     private String email;
 
     public String getEmail() {
@@ -67,7 +65,6 @@ public class User {
     }
 
     @Column(name = "ACTIVE", columnDefinition = "BOOLEAN DEFAULT false")
-    @NotEmpty
     private boolean active;
 
     public boolean isActive() {
@@ -79,7 +76,6 @@ public class User {
     }
 
     @Column(name = "ADMIN", columnDefinition = "BOOLEAN DEFAULT false")
-    @NotEmpty
     private boolean admin;
 
     public boolean isAdmin() {
