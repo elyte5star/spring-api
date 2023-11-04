@@ -31,15 +31,17 @@ public class UserController {
 
     @GetMapping("/")
     public ResponseEntity<Iterable<User>> getAllUsers() {
+        log.info("I was here lol");
         Iterable<User> allUsers = userRepository.findAll();
+
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> findById(@PathVariable Long userid) throws Exception {
+    @GetMapping("/{userid}")
+    public ResponseEntity<User> findUserById(@PathVariable Long userid) throws Exception {
         Optional<User> user = userRepository.findById(userid);
         if(!user.isPresent()){
-            log.info("User not found!");
+            
             throw new Exception("User not found!");
         }
         
@@ -49,17 +51,19 @@ public class UserController {
 
     @PutMapping("/{userid}")
     public ResponseEntity<?> updateUser(@RequestBody User user,@PathVariable Long userid){
-        User newUser = userRepository.save(user);
+        userRepository.save(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @PostMapping("/signup")
     public ResponseEntity<?> createUser(@RequestBody User user) {
         userRepository.save(user);
         HttpHeaders responseHeaders = new HttpHeaders();
-        URI newUserUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
+        URI newUserUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userid}").buildAndExpand(user.getUserid()).toUri();
         responseHeaders.setLocation(newUserUri);
         return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
     }
+
     @DeleteMapping("/{userid}")
     public ResponseEntity<?> deleteUser(@PathVariable Long userid){
         userRepository.deleteById(userid);

@@ -1,26 +1,17 @@
 package com.elyte.domain;
-
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import java.sql.Timestamp;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
+import com.elyte.utils.Auditable;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.persistence.FetchType;
+import lombok.Data;
+import jakarta.persistence.*;
 
 @Entity
-public class Review {
+@Data
+public class Review extends Auditable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "REVIEW_ID")
     private Long rid;
-
-    @Column(name = "CREATED_AT")
-    private Timestamp createdAt;
 
     @Column(name = "EMAIL")
     @NotEmpty
@@ -37,5 +28,7 @@ public class Review {
     @Column(name = "RATING")
     @NotEmpty
     private Integer rating;
+
+    
 
 }
