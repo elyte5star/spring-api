@@ -2,6 +2,8 @@ package com.elyte.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.util.UUID;
+
 import com.elyte.utils.Auditable;
 
 @Entity
@@ -9,9 +11,9 @@ import com.elyte.utils.Auditable;
 public class Booking extends Auditable{
    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "BOOKING_ID")
-    private Long oid;
+    private UUID oid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OWNER_ID", referencedColumnName = "USER_ID")

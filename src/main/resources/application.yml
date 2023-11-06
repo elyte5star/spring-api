@@ -2,26 +2,38 @@ server:
   port: 8001
   name: elyte
 
+---
 management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: [ "openapi", "swagger-ui" ]
   server:
-    port: 9090
-
+    port: 9001
+---
 logging:
   pattern:
     console: '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){green} %clr([%level]){magenta}  %c{1.} [%t] %m%n'
   level:
     org:
       springframework: INFO
-
+---
 springdoc:
   show-actuator: true
-  use-management-port: true
+  use-management-port: false
   swagger-ui:
+    enabled: true
     operationsSorter: method
-    path: /ui-custom.html
+    path: /docs
+    disable-swagger-default-url: true
+    validatorUrl: null
+    syntaxHighlight:
+      activated: true
   api-docs:
-    path: /api-docs
-
+    enabled: true
+    path: /api-docs.json
+---
 spring:
   output:
     ansi:
@@ -49,13 +61,16 @@ spring:
     password: 54321
     driver-class-name: org.mariadb.jdbc.Driver
 
+# Keep the connection alive if idle for a long time (needed in production)
+    testWhileIdle: true
+    validationQuery: SELECT 1
+
     # ===============================
     # = JPA / HIBERNATE
     # ===============================
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
-      ddl-auto: create
-
-
+      ddl-auto: create-drop
+      
 

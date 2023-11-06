@@ -1,86 +1,71 @@
-package com.elyte.controllers;
 
-import com.elyte.repository.ProductRepository;
+package com.elyte.controllers;
+import com.elyte.domain.Product;
+import com.elyte.exception.ResourceNotFoundException;
+import com.elyte.service.ProductService;
+
+import io.swagger.v3.oas.annotations.Operation;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import java.util.Optional;
-import com.elyte.domain.Product;
-import java.net.URI;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.UUID;
+import jakarta.validation.Valid;
+
 
 
 @RestController
 @RequestMapping("/products")
 public class ProductsController {
-    
-    Logger log = LoggerFactory.getLogger(UserController.class);
 
-    private ProductRepository productRepository;
+    @Autowired
+    private ProductService productService;
 
-
-    @GetMapping("/")
+    @GetMapping("")
+    @Operation(summary = "Get All Products")
     public ResponseEntity<Iterable<Product>> getAllProducts() {
-        log.info("Getting products");
-        Iterable<Product> allProducts = productRepository.findAll();
-        return new ResponseEntity<>(allProducts, HttpStatus.OK);
+        return productService.getAllProducts();
     }
 
-
     @DeleteMapping("/{pid}")
-    public ResponseEntity<?> deleteProduct(@PathVariable Long pid){
-        productRepository.deleteById(pid);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @Operation(summary = "Delete A Product")
+    public ResponseEntity<HttpStatus> deleteProduct(@PathVariable UUID pid) throws ResourceNotFoundException {
+        return productService.deleteProduct(pid);
+
     }
 
     @PutMapping("/{pid}")
-    public ResponseEntity<?> updateProduct(@RequestBody Product product,@PathVariable Long pid){
-        productRepository.save(product);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @Operation(summary = "Update A Product")
+    public ResponseEntity<HttpStatus> updateProduct(@RequestBody Product product, @PathVariable UUID pid) throws ResourceNotFoundException{
+        return productService.updateProduct(product, pid);
     }
 
     @GetMapping("/{pid}")
-    public ResponseEntity<Product> findProductById(@PathVariable Long pid) throws Exception {
-        Optional<Product> product = productRepository.findById(pid);
-        if(!product.isPresent()){
-            
-            throw new Exception("Product not found!");
-        }
-        return new ResponseEntity<>(product.get(), HttpStatus.OK);
-        
+    @Operation(summary = "Get A Product By PID")
+    public ResponseEntity<Product> findProductById(@PathVariable UUID pid) throws ResourceNotFoundException {
+        return productService.ProductById(pid);
+
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createProduct(@RequestBody Product product) {
-        productRepository.save(product);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        URI newUserUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{pid}").buildAndExpand(product.getPid()).toUri();
-        responseHeaders.setLocation(newUserUri);
-        return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
-    }
+    @Operation(summary = "Create A Product")
+    public ResponseEntity<?> createProduct(@RequestBody @Valid Product product) {
+        return productService.createOneProduct(product);
 
+    }
 
     @PostMapping("/create/many")
-    public ResponseEntity<Iterable<Long>>createManyProducts(@RequestBody Iterable<Product> products) {
-        productRepository.saveAll(products);
-        List<Long> productsPids = new ArrayList<>();
-        Iterable<Product> allProducts = productRepository.findAll();
-        for(Product product : allProducts) {
-            productsPids.add(product.getPid());
-        }
-        return new ResponseEntity<>(productsPids, HttpStatus.OK);
+    @Operation(summary = "Create Many Products")
+    public ResponseEntity<Iterable<UUID>> createManyProducts(@RequestBody Iterable<Product> products) {
+        return productService.createMany(products);
     }
-   
+
 }
