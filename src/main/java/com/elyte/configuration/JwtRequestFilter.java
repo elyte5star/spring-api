@@ -14,7 +14,6 @@ import com.elyte.utils.JwtTokenUtil;
 import com.elyte.utils.EncryptionUtil;
 import java.io.IOException;
 import io.jsonwebtoken.ExpiredJwtException;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.ServletException;
@@ -24,7 +23,7 @@ import jakarta.servlet.FilterChain;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationEntryPoint.class);
+    private static final Logger log = LoggerFactory.getLogger(JwtRequestFilter.class);
 
     @Autowired
     private JwtCredentialsService jwtCredentialsService;

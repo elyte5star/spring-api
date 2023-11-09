@@ -24,7 +24,7 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    Logger log = LoggerFactory.getLogger(ProductsController.class);
+    private static final Logger log = LoggerFactory.getLogger(ProductsController.class);
 
     public ResponseEntity<Iterable<Product>> getAllProducts() {
         Iterable<Product> allProducts = productRepository.findAll();

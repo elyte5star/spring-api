@@ -23,7 +23,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    Logger log = LoggerFactory.getLogger(UserController.class);
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     public ResponseEntity<Iterable<User>> getUsers() {
         Iterable<User> allUsers = userRepository.findAll();

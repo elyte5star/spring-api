@@ -2,11 +2,6 @@ package com.elyte.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Value;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.Cipher;
@@ -21,10 +16,13 @@ import java.util.Base64;
 public class EncryptionUtil {
 
     private static final Logger log = LoggerFactory.getLogger(EncryptionUtil.class);
+
     @Value("${cipher.secret}")
-    private static final String SECRET_KEY = "hsl43=m/mdYo87%fesSYm2";
+    private static final String SECRET_KEY = "0c2214c33cc65769166ec5248bb0ec6a15e892ba649e36fefc5732d9c1ba100";
+
     @Value("${cipher.salt}")
     private static final String SALT = "ElyteApp";
+    
     private static final byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     public static String encrypt(String plainText) {
