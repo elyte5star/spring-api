@@ -5,10 +5,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.elyte.utils.ApplicationConsts;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class MethodArgumentNotValidExceptionHandler {
@@ -19,7 +20,8 @@ public class MethodArgumentNotValidExceptionHandler {
     public Map<String,Object> handleInvalidArgument(MethodArgumentNotValidException exception){
         ObjectMapper objectMapper = new ObjectMapper();
         ErrorDetail errorDetail = new ErrorDetail();
-        errorDetail.setTimeStamp(new Date().getTime());
+        LocalDateTime current = LocalDateTime.now();
+        errorDetail.setTime_stamp(current.format(ApplicationConsts.dtf));
         errorDetail.setStatus(HttpStatus.BAD_REQUEST.value());
         errorDetail.setTitle("Validation Failed");
         errorDetail.setDetail(exception.getMessage());

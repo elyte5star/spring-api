@@ -8,6 +8,7 @@ import com.elyte.utils.Auditable;
 
 @Entity
 @Data
+@Table(name="BOOKINGS")
 public class Booking extends Auditable{
    
     @Id

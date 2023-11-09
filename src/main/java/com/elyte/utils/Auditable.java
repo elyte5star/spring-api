@@ -19,7 +19,7 @@ public abstract class Auditable {
 
     @CreatedDate
     @Column(name = "CREATED_AT", columnDefinition = "timestamp default '2020-04-10 20:47:05.967394'", updatable = false)
-    protected Timestamp createdAt;
+    protected Timestamp created_at;
 
     @LastModifiedBy
     @Column(name = "MODIFIED_BY", columnDefinition = "bigint default 1")
@@ -39,11 +39,11 @@ public abstract class Auditable {
     }
 
     public Timestamp getCreatedAt() {
-        return createdAt;
+        return created_at;
     }
 
     public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
+        this.created_at = createdAt;
     }
 
     public Long getLastModifiedBy() {

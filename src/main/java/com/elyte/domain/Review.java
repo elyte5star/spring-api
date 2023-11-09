@@ -14,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor(staticName = "build")
 @NoArgsConstructor
 @Data
+@Table(name="REVIEWS")
 public class Review extends Auditable{
 
     @Id

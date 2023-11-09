@@ -38,6 +38,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
+	implementation("io.jsonwebtoken:jjwt:0.9.0")
 	compileOnly("org.projectlombok:lombok")
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.16.0-rc1")
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")

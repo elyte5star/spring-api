@@ -14,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor(staticName = "build")
 @NoArgsConstructor
 @Data
+@Table(name="PRODUCTS")
 public class Product extends Auditable {
 
     @Id
@@ -21,12 +22,11 @@ public class Product extends Auditable {
     @Column(name = "PRODUCT_ID")
     private UUID pid;
 
-
     @Column(name = "NAME")
     @NotBlank(message = "name is required")
     private String name;
 
-    @Column(name = "IMAGE")
+    @Column(name = "IMAGE_NAME")
     @NotBlank(message = "image name is required")
     private String image;
 

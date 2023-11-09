@@ -13,7 +13,7 @@ public class ErrorDetail {
     private String title;
     private int status;
     private String detail;
-    private long timeStamp;
+    private String time_stamp;
     private String developerMessage;
     private boolean success;
 
