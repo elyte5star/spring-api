@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.FilterChain;
-
+import jakarta.validation.constraints.NotNull;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -32,10 +32,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtTokenUtil jwtTokenUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
+            @NotNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String tokenFromRequest = request.getHeader("Authorization");
+        final String authHeader = request.getHeader("Authorization");
 
         String userName = null;
         String encryptedJwtToken = null;
@@ -43,8 +44,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         log.debug("Inside JwtRequestFilter--OncePerRequestFilter");
         // JWT Token is in the form "Bearer token". Remove Bearer word and get only the
         // Token
-        if (tokenFromRequest != null && tokenFromRequest.startsWith("Bearer ")) {
-            encryptedJwtToken = tokenFromRequest.substring(7);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            encryptedJwtToken = authHeader.substring(7);
             jwtToken = EncryptionUtil.decrypt(encryptedJwtToken);
             try {
                 userName = jwtTokenUtil.getUserNameFromToken(jwtToken);
@@ -66,15 +67,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
 
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken
-                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 // After setting the Authentication in the context, we specify
                 // that the current user is authenticated. So it passes the
                 // Spring Security Configurations successfully.
 
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                SecurityContextHolder.getContext().setAuthentication(authToken);
 
             }
 

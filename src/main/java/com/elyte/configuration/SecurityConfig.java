@@ -3,8 +3,6 @@ package com.elyte.configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,12 +32,26 @@ public class SecurityConfig {
     @Autowired
     private LoggingFilter loggingFilter;
 
+    private static final String[] AUTH_WHITELIST = {
+            // -- Swagger UI v3 (OpenAPI)
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/auth/token",
+            "/products/**",
+            "/docs/**", 
+            "/", 
+            "/users/signup",
+            "/login"
+            // other public endpoints of your API may be appended to this array
+    };
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         log.debug("SecurityConfig initialized.");
-        http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/auth/token", "/products/**", "/", "/users/signup", "/login").permitAll()
+        http.authorizeHttpRequests(requests -> requests
+                .requestMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated())
+                .logout((logout) -> logout.permitAll())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint));
 
@@ -64,14 +76,14 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-   @Bean
-   WebMvcConfigurer corsConfigurer() {
-       return new WebMvcConfigurer() {
-           @Override
-           public void addCorsMappings(CorsRegistry registry) {
-               registry.addMapping("/**")
-                       .allowedMethods("*");
-           }
-       };
-   }
+    // @Bean
+    // WebSecurityCustomizer webSecurityCustomizer() {
+    //     return (web) -> web.ignoring().requestMatchers("/v2/api-docs",
+    //             "/configuration/ui",
+    //             "/swagger-resources/**",
+    //             "/configuration/security",
+    //             "/swagger-ui.html",
+    //             "/webjars/**");
+    // }
+
 }

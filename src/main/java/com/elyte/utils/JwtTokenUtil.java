@@ -1,5 +1,10 @@
 package com.elyte.utils;
 
+//The JwtTokenUtil is responsible for performing JWT operations like creation and validation of the token.
+// It makes use of the io.jsonwebtoken.Jwts for achieving this.
+
+
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,7 +27,7 @@ public class JwtTokenUtil implements Serializable {
     private static final long serialVersionUID = 7383112237L;
     public static final int JWT_TOKEN_VALIDITY = 10*60;         // 10 minutes
 
-    @Value("${jwt.secret}")
+    @Value("${api.jwt.secret}")
     private String secret;
 
 

@@ -17,10 +17,10 @@ public class EncryptionUtil {
 
     private static final Logger log = LoggerFactory.getLogger(EncryptionUtil.class);
 
-    @Value("${cipher.secret}")
-    private static final String SECRET_KEY = "0c2214c33cc65769166ec5248bb0ec6a15e892ba649e36fefc5732d9c1ba100";
+    @Value("${api.cipher.secret}")
+    private static final String SECRET_KEY = "176310da3a03d7b3cbd62b282702c9d82a069b0ed50ae1dbffcdaab43c47b368";
 
-    @Value("${cipher.salt}")
+    @Value("${api.cipher.salt}")
     private static final String SALT = "ElyteApp";
     
     private static final byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

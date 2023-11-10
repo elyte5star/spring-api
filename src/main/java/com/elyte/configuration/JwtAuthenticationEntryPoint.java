@@ -1,5 +1,9 @@
 package com.elyte.configuration;
 
+//JwtAuthenticationEntryPoint extends Spring’s AuthenticationEntryPoint class and overrides its method commence. 
+//It rejects every unauthenticated request and sends error code 401.
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
@@ -27,7 +31,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
         response.setContentType(MediaType.ALL_VALUE);
         // You can also write JSON object below to send proper response as you send from
         // REST resources.
-        response.getWriter().write("You're not authorized to perform this transaction.");
+        response.getWriter().write("You're not authorized to perform this operation.");
     }
 
 }

@@ -1,10 +1,12 @@
 
 package com.elyte.controllers;
+
 import com.elyte.domain.Product;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.service.ProductService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -20,8 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 import jakarta.validation.Valid;
 
-
-
 @RestController
 @RequestMapping("/products")
 public class ProductsController {
@@ -36,15 +36,16 @@ public class ProductsController {
     }
 
     @DeleteMapping("/{pid}")
-    @Operation(summary = "Delete A Product")
+    @Operation(summary = "Delete A Product", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<HttpStatus> deleteProduct(@PathVariable UUID pid) throws ResourceNotFoundException {
         return productService.deleteProduct(pid);
 
     }
 
     @PutMapping("/{pid}")
-    @Operation(summary = "Update A Product")
-    public ResponseEntity<HttpStatus> updateProduct(@RequestBody Product product, @PathVariable UUID pid) throws ResourceNotFoundException{
+    @Operation(summary = "Update A Product", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<HttpStatus> updateProduct(@RequestBody Product product, @PathVariable UUID pid)
+            throws ResourceNotFoundException {
         return productService.updateProduct(product, pid);
     }
 
@@ -56,14 +57,14 @@ public class ProductsController {
     }
 
     @PostMapping("/create")
-    @Operation(summary = "Create A Product")
+    @Operation(summary = "Create A Product", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<?> createProduct(@RequestBody @Valid Product product) {
         return productService.createOneProduct(product);
 
     }
 
     @PostMapping("/create/many")
-    @Operation(summary = "Create Many Products")
+    @Operation(summary = "Create Many Products", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<Iterable<UUID>> createManyProducts(@RequestBody Iterable<Product> products) {
         return productService.createMany(products);
     }
