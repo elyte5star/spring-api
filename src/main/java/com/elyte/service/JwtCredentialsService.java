@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -40,7 +41,8 @@ public class JwtCredentialsService implements UserDetailsService {
         if (user.isAdmin()) {
             authorities = AuthorityUtils.createAuthorityList("ROLE_ADMIN");
         }
-
+       
+       
         LocalDateTime current = LocalDateTime.now();
         user.setUserid(user.getUserid());
         user.setLastLoginDate(current.format(ApplicationConsts.dtf));

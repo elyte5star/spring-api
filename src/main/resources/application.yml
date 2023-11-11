@@ -11,14 +11,18 @@ management:
         include: [ "openapi", "swagger-ui" ]
   server:
     port: 9001
+
 ---
+
 logging:
   pattern:
     console: '%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){green} %clr([%level]){magenta}  %c{1.} [%t] %m%n'
   level:
     org:
       springframework: INFO
+      
 ---
+
 springdoc:
   show-actuator: true
   use-management-port: false
@@ -34,6 +38,7 @@ springdoc:
     enabled: true
    
 ---
+
 spring:
   output:
     ansi:
