@@ -42,8 +42,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String encryptedJwtToken = null;
         String jwtToken = null;
         log.debug("Inside JwtRequestFilter--OncePerRequestFilter");
-        // JWT Token is in the form "Bearer token". Remove Bearer word and get only the
-        // Token
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             encryptedJwtToken = authHeader.substring(7);
             jwtToken = EncryptionUtil.decrypt(encryptedJwtToken);

@@ -11,13 +11,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -37,28 +34,27 @@ public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
             "/",
+            "/users/**",
             "/auth/token",
-            "/users",
-            "/users/signup/",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/products/**",
-            "/docs/**", 
-            
+            "/docs/**",
+
             // other public endpoints of your API may be appended to this array
     };
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         log.debug("SecurityConfig initialized.");
-        http.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(requests -> requests
-                .requestMatchers("/admin/**").hasRole("ADMIN") 
-                .requestMatchers(HttpMethod.POST,"/users/signup").permitAll()
-                .anyRequest().authenticated())
+        http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .anyRequest().authenticated())
+                .logout((logout) -> logout.permitAll())
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint));
-                
+
         // Add a filter to log the request-response of every request
         http.addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class);
         // Add a filter to validate the tokens with every request
@@ -79,6 +75,5 @@ public class SecurityConfig {
         log.debug("PasswordEncoder invoked.");
         return new BCryptPasswordEncoder();
     }
-
 
 }
