@@ -52,6 +52,8 @@ public class AuthController {
         //String password= request.getHeader("x-pass");
         return new ResponseEntity<>(responseData,HttpStatus.OK);
     }
+
+    
     private void authenticateUser(String username, String password) throws Exception {
 
         try {
@@ -59,10 +61,13 @@ public class AuthController {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
         } catch (DisabledException e) {
+
             log.error("---Disabled User---{}", e.getMessage());
+
             throw new Exception("USER_DISABLED", e);
 
         } catch (BadCredentialsException e) {
+            
             throw new BadCredentialsException("INVALID_CREDENTIALS", e);
 
         }

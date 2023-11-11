@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.elyte.domain.Role;
 
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -33,15 +34,14 @@ public class SecurityConfig {
     private LoggingFilter loggingFilter;
 
     private static final String[] AUTH_WHITELIST = {
-            // -- Swagger UI v3 (OpenAPI)
+            "/",
+            "/auth/token",
+            "/user/signup/",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/auth/token",
             "/products/**",
             "/docs/**", 
-            "/", 
-            "/users/signup",
-            "/login"
+            
             // other public endpoints of your API may be appended to this array
     };
 
@@ -76,14 +76,5 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // @Bean
-    // WebSecurityCustomizer webSecurityCustomizer() {
-    //     return (web) -> web.ignoring().requestMatchers("/v2/api-docs",
-    //             "/configuration/ui",
-    //             "/swagger-resources/**",
-    //             "/configuration/security",
-    //             "/swagger-ui.html",
-    //             "/webjars/**");
-    // }
 
 }

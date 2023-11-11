@@ -25,8 +25,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException {
         log.error("Unauthorized error: {}", authException.getMessage());
-        // response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "You're not
-        // authorized to perform this transaction.");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.ALL_VALUE);
         // You can also write JSON object below to send proper response as you send from

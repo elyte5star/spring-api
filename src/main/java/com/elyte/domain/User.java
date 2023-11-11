@@ -33,6 +33,7 @@ public class User extends Auditable{
     @NotBlank(message = "username is required")
     private String username;
 
+    
     @Column(name = "PASSWORD")
     @NotBlank(message = "password is required")
     @JsonIgnore
@@ -42,11 +43,12 @@ public class User extends Auditable{
     @Email(message = "invalid email address")
     private String email;
 
+    //@NotBlank(message = "if user is active is required")
     @Column(name = "ACTIVE", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean active;
 
+    //@NotBlank(message = "privilege definition required")
     @Column(name = "ADMIN", columnDefinition = "BOOLEAN DEFAULT false")
-    @NotBlank(message = "privilege definition required")
     private boolean admin;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -60,6 +62,7 @@ public class User extends Auditable{
     private String telephone;
 
     @Column(name = "DISCOUNT")
+    @Digits(integer = 10,fraction = 2)
     private Double discount;
 
     

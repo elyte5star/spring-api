@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.elyte.controllers.UserController;
+import com.elyte.domain.CreateUserRequest;
 import com.elyte.domain.User;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.UserRepository;
@@ -30,14 +32,23 @@ public class UserService {
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> createUser(User user) {
+    public ResponseEntity<UUID> addUser(CreateUserRequest createUserRequest) {
+
         try {
-            userRepository.save(user);
+            User newUser = new User();
+            newUser.setUsername(createUserRequest.getUsername());
+            newUser.setPassword(new BCryptPasswordEncoder().encode(createUserRequest.getPassword()));
+            newUser.setTelephone(createUserRequest.getTelephone());
+            newUser.setEmail(createUserRequest.getEmail());
+            newUser.setLastLoginDate("0");
+            newUser.setCreatedBy(createUserRequest.getUsername());
+            newUser.setLastModifiedBy("");
+            userRepository.save(newUser);
             HttpHeaders responseHeaders = new HttpHeaders();
             URI newUserUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userid}")
-                    .buildAndExpand(user.getUserid()).toUri();
+                    .buildAndExpand(newUser.getUserid()).toUri();
             responseHeaders.setLocation(newUserUri);
-            return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
+            return new ResponseEntity<>(newUser.getUserid(), responseHeaders, HttpStatus.CREATED);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

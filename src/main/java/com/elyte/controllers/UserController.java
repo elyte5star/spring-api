@@ -1,5 +1,6 @@
 package com.elyte.controllers;
 
+import com.elyte.domain.CreateUserRequest;
 import com.elyte.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,8 +51,8 @@ public class UserController {
 
     @PostMapping("/signup")
     @Operation(summary = "Create A User")
-    public ResponseEntity<?> createUser(@RequestBody @Valid User user) {
-        return userService.createUser(user);
+    public ResponseEntity<UUID> createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
+        return userService.addUser(createUserRequest);
     }
 
     @DeleteMapping("/{userid}")

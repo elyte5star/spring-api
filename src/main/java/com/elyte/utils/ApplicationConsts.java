@@ -3,13 +3,11 @@ import java.time.format.DateTimeFormatter;
 
 
 
-
-
 public class ApplicationConsts {
 
 
     public static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-
+   
     //common error-messages
     public static final String SRC="0";
     public static final String ARC="1";

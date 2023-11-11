@@ -5,4 +5,5 @@ import java.util.UUID;
 
 
 public interface ProductRepository extends CrudRepository<Product, UUID> {
+    
 }
