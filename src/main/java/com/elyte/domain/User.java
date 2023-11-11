@@ -63,7 +63,7 @@ public class User extends Auditable{
 
     @Column(name = "DISCOUNT")
     @Digits(integer = 10,fraction = 2)
-    private Double discount;
+    private String discount;
 
     
 }
