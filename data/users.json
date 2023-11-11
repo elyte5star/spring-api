@@ -5,7 +5,7 @@
         "email": "elyte5star@gmail.com",
         "admin": true,
         "active": true,
-        "discount": 0.10,
+        "discount": "0.10",
         "telephone": "7654321"
     },
     {
@@ -14,7 +14,7 @@
         "email": "test1@aon.com",
         "admin": false,
         "active": false,
-        "discount": 0.05,
+        "discount": "0.05",
         "telephone": "1234567"
     }
 ]

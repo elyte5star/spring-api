@@ -21,6 +21,8 @@ public class LoginRequestData implements Serializable{
     @NotBlank(message = "username is required")
     private String username;
 
+    
+
     @NotBlank(message = "password is required")
     @JsonIgnore
     private String password;
