@@ -18,7 +18,7 @@ public abstract class Auditable {
     protected String createdBy;
 
     @CreatedDate
-    @Column(name = "CREATED_AT", columnDefinition = "timestamp default '2020-04-10 20:47:05.967394'", updatable = false)
+    @Column(name = "CREATED_AT", columnDefinition = "timestamp default '1970-04-10 20:47:05.967394'", updatable = false)
     protected Timestamp created_at;
 
     @LastModifiedBy
@@ -26,7 +26,7 @@ public abstract class Auditable {
     protected String lastModifiedBy;
 
     @LastModifiedDate
-    @Column(name = "LAST_MODIFIED_AT", columnDefinition = "timestamp default '2020-04-10 20:47:05.967394'")
+    @Column(name = "LAST_MODIFIED_AT", columnDefinition = "timestamp default '1970-04-10 20:47:05.967394'")
     protected Timestamp lastModifiedAt;
 
     

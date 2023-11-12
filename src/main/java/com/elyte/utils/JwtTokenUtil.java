@@ -4,7 +4,6 @@ package com.elyte.utils;
 // It makes use of the io.jsonwebtoken.Jwts for achieving this.
 
 
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -24,7 +23,9 @@ import java.util.function.Function;
 public class JwtTokenUtil implements Serializable {
 
     private static final Logger log = LoggerFactory.getLogger(JwtTokenUtil.class);
+
     private static final long serialVersionUID = 7383112237L;
+
     public static final int JWT_TOKEN_VALIDITY = 10*60;         // 10 minutes
 
     @Value("${api.jwt.secret}")
@@ -34,6 +35,7 @@ public class JwtTokenUtil implements Serializable {
     //generate token for required data i.e. user details
     
     public String generateToken(UserDetails userDetails){
+        log.info(userDetails.toString());
         // we can set extra info this claims hashmap and below defined getCustomParamFromToken to get it by passing Map key.
         Map<String, Object> claims = new HashMap<>();
 //        claims.put("sub-application", "inventory");
@@ -46,7 +48,7 @@ public class JwtTokenUtil implements Serializable {
     //3. According to JWS Compact Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
     //   compaction of the JWT to a URL-safe string
     private String doGenerateToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().setClaims(claims).setSubject(subject).setAudience("elyte").setIssuedAt(new Date(System.currentTimeMillis()))
+        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() +  JWT_TOKEN_VALIDITY*1000))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }

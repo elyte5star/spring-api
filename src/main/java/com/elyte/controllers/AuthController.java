@@ -2,9 +2,9 @@ package com.elyte.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.elyte.domain.Status;
 import com.elyte.domain.request.LoginRequestData;
 import com.elyte.domain.response.LoginResponseData;
+import com.elyte.domain.response.Status;
 import com.elyte.service.JwtCredentialsService;
 import com.elyte.utils.ApplicationConsts;
 import com.elyte.utils.EncryptionUtil;
@@ -42,18 +42,21 @@ public class AuthController {
     private JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/token")
-    public ResponseEntity<?> createToken(HttpServletRequest request, @RequestBody LoginRequestData loginRequestData)throws Exception {
-        authenticateUser(loginRequestData.getUsername(),loginRequestData.getPassword());
+    public ResponseEntity<?> createToken(HttpServletRequest request, @RequestBody LoginRequestData loginRequestData)
+            throws Exception {
+
+        authenticateUser(loginRequestData.getUsername(), loginRequestData.getPassword());
         final UserDetails userDetails = jwtCredentialsService.loadUserByUsername(loginRequestData.getUsername());
+        log.info(userDetails.toString());
         final String token = jwtTokenUtil.generateToken(userDetails);
-        LoginResponseData responseData = new LoginResponseData(userDetails.getUsername(),EncryptionUtil.encrypt(token));
-        Status status = Status.build(ApplicationConsts.SRC,ApplicationConsts.SEC,ApplicationConsts.SUCCESS);
+        LoginResponseData responseData = new LoginResponseData(userDetails.getUsername(),
+                EncryptionUtil.encrypt(token));
+        Status status = Status.build(ApplicationConsts.SRC, ApplicationConsts.SEC, ApplicationConsts.SUCCESS);
         responseData.setStatus(status);
-        //String password= request.getHeader("x-pass");
-        return new ResponseEntity<>(responseData,HttpStatus.OK);
+        // String password= request.getHeader("x-pass");
+        return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 
-    
     private void authenticateUser(String username, String password) throws Exception {
 
         try {
@@ -67,7 +70,7 @@ public class AuthController {
             throw new Exception("USER_DISABLED", e);
 
         } catch (BadCredentialsException e) {
-            
+
             throw new BadCredentialsException("INVALID_CREDENTIALS", e);
 
         }

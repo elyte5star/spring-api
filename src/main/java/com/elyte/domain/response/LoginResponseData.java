@@ -1,8 +1,6 @@
 package com.elyte.domain.response;
 import java.io.Serializable;
 
-import com.elyte.domain.Status;
-
 import lombok.Data;
 import lombok.AllArgsConstructor;
 

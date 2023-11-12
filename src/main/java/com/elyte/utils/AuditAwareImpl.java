@@ -8,7 +8,7 @@ import java.util.Optional;
 public class AuditAwareImpl implements AuditorAware<String> {
     @Override
     public Optional<String> getCurrentAuditor() {
-       User principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return Optional.of(principal.getUsername());
+       //User principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return Optional.of("hello");
     }
 }

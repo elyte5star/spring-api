@@ -22,9 +22,7 @@ public class LoginRequestData implements Serializable{
     private String username;
 
     
-
     @NotBlank(message = "password is required")
-    @JsonIgnore
     private String password;
     
 }

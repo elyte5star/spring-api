@@ -36,7 +36,7 @@ public class User extends Auditable{
     
     @Column(name = "PASSWORD")
     @NotBlank(message = "password is required")
-    @JsonIgnore
+    //@JsonIgnore
     private String password;
 
     @Column(name = "EMAIL")

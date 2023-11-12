@@ -52,7 +52,7 @@ public class UserController {
 
     @PostMapping("/signup")
     @Operation(summary = "Create A User")
-    public ResponseEntity<UUID> createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
+    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
         return userService.addUser(createUserRequest);
     }
 

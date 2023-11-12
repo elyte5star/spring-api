@@ -17,6 +17,8 @@ import com.elyte.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.elyte.utils.ApplicationConsts;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class JwtCredentialsService implements UserDetailsService {
@@ -25,7 +27,6 @@ public class JwtCredentialsService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
-
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -38,13 +39,14 @@ public class JwtCredentialsService implements UserDetailsService {
             throw new UsernameNotFoundException(String.format("User with username %s doesnt not exist", username));
         }
 
-        List<GrantedAuthority> authorities = new ArrayList<>();
+        Set<GrantedAuthority> authorities = new HashSet<>(1);
 
         if (user.isAdmin()) {
-            authorities = AuthorityUtils.createAuthorityList("ROLE_ADMIN");
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        } else {
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         }
-       
-       
+
         LocalDateTime current = LocalDateTime.now();
         user.setUserid(user.getUserid());
         user.setLastLoginDate(current.format(ApplicationConsts.dtf));
@@ -56,7 +58,5 @@ public class JwtCredentialsService implements UserDetailsService {
         return userDetails;
 
     }
-
-    
 
 }

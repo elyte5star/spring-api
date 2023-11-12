@@ -39,6 +39,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 	implementation("io.jsonwebtoken:jjwt:0.9.0")
+	implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.1")
+	implementation("org.glassfish.external:glassfish-jaxb:10.0-b28")
 	compileOnly("org.projectlombok:lombok")
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.16.0-rc1")
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
