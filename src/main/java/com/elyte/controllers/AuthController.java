@@ -49,11 +49,11 @@ public class AuthController {
         final UserDetails userDetails = jwtCredentialsService.loadUserByUsername(loginRequestData.getUsername());
         log.info(userDetails.toString());
         final String token = jwtTokenUtil.generateToken(userDetails);
-        LoginResponseData responseData = new LoginResponseData(userDetails.getUsername(),
-                EncryptionUtil.encrypt(token));
+        //LoginResponseData responseData = new LoginResponseData(userDetails.getUsername(),
+        //        EncryptionUtil.encrypt(token));
         Status status = Status.build(ApplicationConsts.SRC, ApplicationConsts.SEC, ApplicationConsts.SUCCESS);
         responseData.setStatus(status);
-        // String password= request.getHeader("x-pass");
+        
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 

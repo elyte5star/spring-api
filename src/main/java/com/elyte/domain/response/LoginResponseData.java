@@ -12,13 +12,8 @@ public class LoginResponseData  implements Serializable{
 
     private Status status;
 
-    private final String jwttoken;
+    private TokenResponse token_data;
 
-    private String username;
 
-    public LoginResponseData(String name, String jwttoken) {
-        this.username = name;
-        this.jwttoken = jwttoken;
-    }
     
 }
