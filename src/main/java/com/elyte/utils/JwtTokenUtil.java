@@ -35,7 +35,7 @@ public class JwtTokenUtil implements Serializable {
     //generate token for required data i.e. user details
     
     public String generateToken(UserDetails userDetails){
-        log.info(userDetails.toString());
+        
         // we can set extra info this claims hashmap and below defined getCustomParamFromToken to get it by passing Map key.
         Map<String, Object> claims = new HashMap<>();
 //        claims.put("sub-application", "inventory");
