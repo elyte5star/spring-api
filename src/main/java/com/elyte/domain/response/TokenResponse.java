@@ -1,6 +1,4 @@
 package com.elyte.domain.response;
-import java.util.UUID;
-
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -13,7 +11,6 @@ public class TokenResponse {
     private String access_token;
     private String token_type;
     private String username;
-    private UUID userid;
-    private boolean admin;
-    
+    private boolean active;
+   
 }

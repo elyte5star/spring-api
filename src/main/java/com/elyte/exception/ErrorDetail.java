@@ -14,11 +14,11 @@ public class ErrorDetail implements Serializable{
 
     private Status status;
     private String title;
-    private String developerMessage;
+    
 
-    public ErrorDetail(String title, String developerMessage) {
+    public ErrorDetail(String title) {
         this.title = title;
-        this.developerMessage = developerMessage;
+        
     }
     
 }

@@ -53,7 +53,7 @@ public class JwtCredentialsService implements UserDetailsService {
         userRepository.save(user);
 
         UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(),
-                user.getPassword(), true, true, true, !user.isActive(), authorities);
+                user.getPassword(), true, true, true,user.isActive(), authorities);
 
         return userDetails;
 

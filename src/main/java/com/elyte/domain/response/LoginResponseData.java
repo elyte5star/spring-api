@@ -2,9 +2,11 @@ package com.elyte.domain.response;
 import java.io.Serializable;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor(staticName = "build")
 public class LoginResponseData  implements Serializable{
 

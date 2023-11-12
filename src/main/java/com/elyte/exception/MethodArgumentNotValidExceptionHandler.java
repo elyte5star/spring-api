@@ -5,6 +5,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.elyte.domain.response.Status;
 import com.elyte.utils.ApplicationConsts;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,14 +21,10 @@ public class MethodArgumentNotValidExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String,Object> handleInvalidArgument(MethodArgumentNotValidException exception){
         ObjectMapper objectMapper = new ObjectMapper();
-        ErrorDetail errorDetail = new ErrorDetail();
+        ErrorDetail errorDetail = new ErrorDetail("Validation Failed");
         LocalDateTime current = LocalDateTime.now();
-        errorDetail.setTime_stamp(current.format(ApplicationConsts.dtf));
-        errorDetail.setStatus(HttpStatus.BAD_REQUEST.value());
-        errorDetail.setTitle("Validation Failed");
-        errorDetail.setDetail(exception.getMessage());
-        errorDetail.setDeveloperMessage(exception.getClass().getName());
-        errorDetail.setSuccess(false);
+        Status status = Status.build(HttpStatus.BAD_REQUEST.value(),exception.getMessage(),false, exception.getClass().getName(),current.format(ApplicationConsts.dtf));
+        errorDetail.setStatus(status);
         Map<String, Object> map = objectMapper.convertValue(errorDetail, new TypeReference<>() {});
         exception.getBindingResult().getFieldErrors().forEach(fieldError ->{
             map.put(fieldError.getField(), fieldError.getDefaultMessage());

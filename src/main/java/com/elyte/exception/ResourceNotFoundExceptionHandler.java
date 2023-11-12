@@ -8,6 +8,7 @@ import java.util.Date;
 
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.elyte.domain.response.Status;
 import com.elyte.utils.ApplicationConsts;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,14 +20,10 @@ public class ResourceNotFoundExceptionHandler{
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorDetail> handleUserNotFoundException(ResourceNotFoundException rnfe,HttpServletRequest request) {
-        ErrorDetail errorDetail = new ErrorDetail();
+        ErrorDetail errorDetail = new ErrorDetail("Resource Not Found");
         LocalDateTime current = LocalDateTime.now();
-        errorDetail.setTime_stamp(current.format(ApplicationConsts.dtf));
-        errorDetail.setStatus(HttpStatus.NOT_FOUND.value());
-        errorDetail.setTitle("Resource Not Found");
-        errorDetail.setDetail(rnfe.getMessage());
-        errorDetail.setDeveloperMessage(rnfe.getClass().getName());
-        errorDetail.setSuccess(false);
+        Status status = Status.build(HttpStatus.NOT_FOUND.value(), rnfe.getMessage(), false, rnfe.getClass().getName(),current.format(ApplicationConsts.dtf));
+        errorDetail.setStatus(status);
         return new ResponseEntity<>(errorDetail, null, HttpStatus.NOT_FOUND);
       
     }

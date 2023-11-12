@@ -8,7 +8,7 @@ public class ApplicationConsts {
 
     public static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
    
-    //common error-messages
+    //common messages
     public static final String SRC="0";
     public static final String ARC="1";
     public static final String ARC_MSG="Authentication required.";
