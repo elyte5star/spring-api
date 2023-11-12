@@ -12,13 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+//import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@EnableWebSecurity
-@EnableMethodSecurity
+
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
@@ -52,13 +52,13 @@ public class SecurityConfig {
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated())
                 .logout((logout) -> logout.permitAll())
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint));
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                //.exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint));
 
         // Add a filter to log the request-response of every request
-        http.addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class);
+        //http.addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class);
         // Add a filter to validate the tokens with every request
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        //http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
 
     }
@@ -70,6 +70,8 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+
+    
     @Bean
     PasswordEncoder passwordEncoder() {
         log.debug("PasswordEncoder invoked.");

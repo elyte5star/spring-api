@@ -1,7 +1,8 @@
 package com.elyte.controllers;
 
-import com.elyte.domain.CreateUserRequest;
 import com.elyte.domain.User;
+import com.elyte.domain.request.CreateUserRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

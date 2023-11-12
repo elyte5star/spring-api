@@ -1,4 +1,4 @@
-package com.elyte.domain;
+package com.elyte.domain.request;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,6 @@ public class CreateUserRequest implements Serializable{
     private String username;
 
     @NotBlank(message = "password is required")
-    @JsonIgnore
     private String password;
 
 

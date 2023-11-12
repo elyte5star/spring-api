@@ -1,4 +1,4 @@
-package com.elyte.domain;
+package com.elyte.domain.request;
 
 import lombok.Data;
 import lombok.AllArgsConstructor;
