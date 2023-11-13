@@ -47,20 +47,22 @@ public class AuthController {
     @PostMapping("/token")
     public ResponseEntity<?> createToken(HttpServletRequest request, @RequestBody LoginRequestData loginRequestData)
             throws Exception {
-
         authenticateUser(loginRequestData.getUsername(), loginRequestData.getPassword());
         final UserDetails userDetails = jwtCredentialsService.loadUserByUsername(loginRequestData.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails);
         LoginResponseData responseData = new LoginResponseData();
         LocalDateTime current = LocalDateTime.now();
-        Status status = Status.build(HttpStatus.OK.value(),ApplicationConsts.SRC, ApplicationConsts.SUCCESS, ApplicationConsts.SEC,current.format(ApplicationConsts.dtf));
-        TokenResponse tokenResponse= TokenResponse.build(EncryptionUtil.encrypt(token),"bearer", userDetails.getUsername(),userDetails.isAccountNonLocked());
-        responseData.setStatus(status);responseData.setToken_data(tokenResponse);
+        Status status = Status.build(HttpStatus.OK.value(), ApplicationConsts.SRC, ApplicationConsts.SUCCESS,
+                ApplicationConsts.SEC, current.format(ApplicationConsts.dtf));
+        TokenResponse tokenResponse = TokenResponse.build(EncryptionUtil.encrypt(token), "bearer",
+                userDetails.getUsername(), userDetails.isAccountNonLocked());
+        responseData.setToken_data(tokenResponse);
+        responseData.setStatus(status);
+
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 
     private void authenticateUser(String username, String password) throws Exception {
-
         try {
 
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));

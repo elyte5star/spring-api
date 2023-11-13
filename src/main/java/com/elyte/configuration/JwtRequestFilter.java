@@ -38,7 +38,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
 
-        String userName = null;
+        String username = null;
         String encryptedJwtToken = null;
         String jwtToken = null;
         log.debug("Inside JwtRequestFilter--OncePerRequestFilter");
@@ -46,7 +46,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             encryptedJwtToken = authHeader.substring(7);
             jwtToken = EncryptionUtil.decrypt(encryptedJwtToken);
             try {
-                userName = jwtTokenUtil.getUserNameFromToken(jwtToken);
+                username = jwtTokenUtil.getUserNameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
                 log.error("Unable to get JWT Token");
             } catch (ExpiredJwtException e) {
@@ -59,9 +59,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         // Once we get the token validate it and extract username(principal/subject)
         // from it.
-        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = this.jwtCredentialsService.loadUserByUsername(userName);
+            UserDetails userDetails = this.jwtCredentialsService.loadUserByUsername(username);
 
             if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
 

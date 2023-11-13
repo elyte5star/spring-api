@@ -3,6 +3,7 @@ package com.elyte.configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,6 +12,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 //import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.slf4j.Logger;
@@ -34,31 +36,31 @@ public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
             "/",
-            "/users/**",
+            "/users/signup",
             "/auth/token",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/products/**",
             "/docs/**",
 
-            // other public endpoints of your API may be appended to this array
+           
     };
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        log.debug("SecurityConfig initialized.");
-        http.csrf(csrf -> csrf.disable())
+        log.info("SecurityConfig initialized.");
+        http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(AUTH_WHITELIST).permitAll()
+                .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated())
-                .logout((logout) -> logout.permitAll())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-                //.exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint));
+
+        http.exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint));
 
         // Add a filter to log the request-response of every request
-        //http.addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class);
         // Add a filter to validate the tokens with every request
-        //http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
 
     }

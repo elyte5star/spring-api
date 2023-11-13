@@ -2,15 +2,10 @@ package com.elyte.exception;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import java.time.LocalDateTime;
-import java.util.Date;
-
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import com.elyte.domain.response.Status;
 import com.elyte.utils.ApplicationConsts;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 

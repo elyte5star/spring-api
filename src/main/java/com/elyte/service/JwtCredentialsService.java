@@ -10,9 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.elyte.domain.User;
-import java.util.List;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import com.elyte.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,5 +56,13 @@ public class JwtCredentialsService implements UserDetailsService {
         return userDetails;
 
     }
+
+
+
+    
+
+
+
+
 
 }
