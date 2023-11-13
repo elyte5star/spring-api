@@ -48,7 +48,7 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        log.info("SecurityConfig initialized.");
+        log.debug("SecurityConfig initialized.");
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
                 .requestMatchers(AUTH_WHITELIST).permitAll()
