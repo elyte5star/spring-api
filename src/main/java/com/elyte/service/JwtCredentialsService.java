@@ -48,10 +48,11 @@ public class JwtCredentialsService implements UserDetailsService {
         LocalDateTime current = LocalDateTime.now();
         user.setUserid(user.getUserid());
         user.setLastLoginDate(current.format(ApplicationConsts.dtf));
+        user.setActive(true);
         userRepository.save(user);
 
         UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(),
-                user.getPassword(), true, true, true,user.isActive(), authorities);
+                user.getPassword(),user.isEnabled(), true, true,true, authorities);
 
         return userDetails;
 

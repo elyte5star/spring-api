@@ -51,6 +51,9 @@ public class User extends Auditable{
     @Column(name = "ADMIN", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean admin;
 
+    @Column(name = "ENABLED", columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean enabled;
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "BOOKING_ID")
     @OrderBy

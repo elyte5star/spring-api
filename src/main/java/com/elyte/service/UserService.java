@@ -41,7 +41,7 @@ public class UserService {
             newUser.setLastLoginDate("0");
             newUser.setCreatedBy(createUserRequest.getUsername());
             newUser.setAdmin(createUserRequest.isAdmin());
-            newUser.setActive(createUserRequest.isActive());
+            newUser.setEnabled(createUserRequest.isEnabled());
             userRepository.save(newUser);
             return new ResponseEntity<>(newUser.getUserid(),HttpStatus.CREATED);
         } catch (Exception e) {

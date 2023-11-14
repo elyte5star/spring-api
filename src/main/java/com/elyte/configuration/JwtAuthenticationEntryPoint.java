@@ -22,8 +22,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationEntryPoint.class);
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException authException) throws IOException {
+    public void commence(final HttpServletRequest request, final HttpServletResponse response,
+            final AuthenticationException authException) throws IOException {
         log.error("Unauthorized error: {}", authException.getMessage());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.ALL_VALUE);

@@ -11,6 +11,6 @@ public class TokenResponse {
     private String access_token;
     private String token_type;
     private String username;
-    private boolean active;
+    private boolean enabled;
    
 }
