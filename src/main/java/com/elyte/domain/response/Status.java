@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class Status {
     private int code;
-    private String error;
-    private boolean success;
     private String message;
+    private boolean success;
+    private String path;
     private String time_stamp;
     
 }

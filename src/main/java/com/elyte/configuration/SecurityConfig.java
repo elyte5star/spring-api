@@ -18,7 +18,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -36,14 +35,13 @@ public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
             "/",
-            "/users/signup",
+            "/users/**",
             "/auth/token",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/products/**",
             "/docs/**",
 
-           
     };
 
     @Bean
@@ -51,11 +49,13 @@ public class SecurityConfig {
         log.debug("SecurityConfig initialized.");
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
-                .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
+
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        //http.exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint));
+        // http.exceptionHandling(ex ->
+        // ex.authenticationEntryPoint(jwtAuthenticationEntryPoint));
 
         // Add a filter to log the request-response of every request
         http.addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class);
@@ -72,8 +72,6 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-
-    
     @Bean
     PasswordEncoder passwordEncoder() {
         log.debug("PasswordEncoder invoked.");
