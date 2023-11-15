@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -34,18 +35,17 @@ public class RestExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleInvalidArgument(MethodArgumentNotValidException exception) {
         ObjectMapper objectMapper = new ObjectMapper();
-        ErrorResponse errorResponse = new ErrorResponse("Validation Failed");
-        Map<String, Object> map = objectMapper.convertValue(errorResponse, new TypeReference<>() {
-        });
-        exception.getBindingResult().getFieldErrors().forEach(fieldError -> {
-            map.put(fieldError.getField(), fieldError.getDefaultMessage());
-        });
+        ErrorResponse errorDetail = new ErrorResponse("Validation Failed");
         LocalDateTime current = LocalDateTime.now();
-        Status status = Status.build(HttpStatus.BAD_REQUEST.value(), "Input validation failed", false,
-                exception.getClass().getName(), current.format(ApplicationConsts.dtf));
-        errorResponse.setStatus(status);
-
-        return new ResponseEntity<>(errorResponse, null, HttpStatus.BAD_REQUEST);
+        Status status = Status.build(HttpStatus.BAD_REQUEST.value(),"Input validation failed",false, exception.getClass().getName(),current.format(ApplicationConsts.dtf));
+        errorDetail.setStatus(status);
+        Map<String, Object> map = objectMapper.convertValue(errorDetail, new TypeReference<>() {});
+        Map<String, Object> mp=new HashMap<String, Object>();
+        exception.getBindingResult().getFieldErrors().forEach(fieldError ->{
+            mp.put(fieldError.getField(), fieldError.getDefaultMessage());
+        });
+        map.put("errors", mp);
+        return new ResponseEntity<>(map, null, HttpStatus.BAD_REQUEST);
     }
 
 }
