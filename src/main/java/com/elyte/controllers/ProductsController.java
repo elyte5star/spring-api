@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/products")
@@ -36,6 +37,7 @@ public class ProductsController {
     }
 
     @DeleteMapping("/{pid}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Delete A Product", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<HttpStatus> deleteProduct(@PathVariable UUID pid) throws ResourceNotFoundException {
         return productService.deleteProduct(pid);
@@ -43,6 +45,7 @@ public class ProductsController {
     }
 
     @PutMapping("/{pid}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Update A Product", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<HttpStatus> updateProduct(@RequestBody Product product, @PathVariable UUID pid)
             throws ResourceNotFoundException {
@@ -57,6 +60,7 @@ public class ProductsController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Create A Product", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<?> createProduct(@RequestBody @Valid Product product) {
         return productService.createOneProduct(product);
@@ -64,6 +68,7 @@ public class ProductsController {
     }
 
     @PostMapping("/create/many")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Create Many Products", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<Iterable<UUID>> createManyProducts(@RequestBody Iterable<Product> products) {
         return productService.createMany(products);

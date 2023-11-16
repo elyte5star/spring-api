@@ -52,7 +52,6 @@ public class AuthController {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestData.getUsername(),
                     loginRequestData.getPassword()));
             final UserDetails userDetails = jwtCredentialsService.loadUserByUsername(loginRequestData.getUsername());
-            log.info(userDetails.toString());
             final String token = jwtTokenUtil.generateToken(userDetails);
             LoginResponseData responseData = new LoginResponseData();
             Status status = Status.build(HttpStatus.OK.value(), ApplicationConsts.SRC, ApplicationConsts.SUCCESS,

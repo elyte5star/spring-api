@@ -1,10 +1,8 @@
 package com.elyte.domain.response;
-
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+
 
 @AllArgsConstructor(staticName = "build")
 @Data

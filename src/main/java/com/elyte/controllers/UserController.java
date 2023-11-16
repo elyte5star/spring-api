@@ -20,7 +20,8 @@ import com.elyte.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-
+import com.elyte.domain.response.GetUserResponse;
+import com.elyte.domain.response.CreateUserResponse;
 
 
 @RestController
@@ -40,7 +41,7 @@ public class UserController {
 
     @GetMapping("/{userid}")
     @Operation(summary = "Get A User By USERID",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<User> findUserById(@PathVariable UUID userid) throws ResourceNotFoundException {
+    public ResponseEntity<GetUserResponse> findUserById(@PathVariable UUID userid) throws ResourceNotFoundException {
         return userService.userById(userid);
     }
 
@@ -52,7 +53,7 @@ public class UserController {
 
     @PostMapping("/signup")
     @Operation(summary = "Create A User")
-    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
+    public ResponseEntity<CreateUserResponse> createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
         return userService.addUser(createUserRequest);
     }
 
