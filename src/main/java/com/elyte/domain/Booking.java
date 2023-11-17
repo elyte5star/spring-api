@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.util.UUID;
 
-import com.elyte.utils.Auditable;
+
 
 @Entity
 @Data

@@ -6,7 +6,8 @@ import java.util.UUID;
 
 
 public interface UserRepository extends CrudRepository<User, UUID> {
-
+    
+    
     public User findByUsername(String username);
 
 }

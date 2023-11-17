@@ -1,5 +1,5 @@
 package com.elyte.domain;
-import com.elyte.utils.Auditable;
+
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

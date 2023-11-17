@@ -1,4 +1,4 @@
-package com.elyte.configuration;
+package com.elyte.utils;
 
 import java.io.IOException;
 import org.slf4j.Logger;

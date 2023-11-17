@@ -1,4 +1,4 @@
-package com.elyte.utils;
+package com.elyte.jwt;
 
 //The JwtTokenUtil is responsible for performing JWT operations like creation and validation of the token.
 // It makes use of the io.jsonwebtoken.Jwts for achieving this.

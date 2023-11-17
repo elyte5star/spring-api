@@ -1,4 +1,4 @@
-package com.elyte.configuration;
+package com.elyte.jwt;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,9 +9,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import com.elyte.service.JwtCredentialsService;
-import com.elyte.utils.JwtTokenUtil;
-import com.elyte.utils.EncryptionUtil;
+
 import java.io.IOException;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;

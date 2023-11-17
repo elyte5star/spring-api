@@ -4,11 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Component;
-import org.springframework.security.core.userdetails.UserDetails;
-
+import com.elyte.domain.CustomUserDetail;
 import com.elyte.domain.User;
 import java.time.LocalDateTime;
 import com.elyte.repository.UserRepository;
@@ -17,8 +14,10 @@ import org.slf4j.LoggerFactory;
 import com.elyte.utils.ApplicationConsts;
 import java.util.HashSet;
 import java.util.Set;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Component
+@Service
 public class JwtCredentialsService implements UserDetailsService {
 
     private static final Logger log = LoggerFactory.getLogger(JwtCredentialsService.class);
@@ -27,7 +26,8 @@ public class JwtCredentialsService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    @Transactional
+    public CustomUserDetail loadUserByUsername(String username) throws UsernameNotFoundException {
 
         log.debug("---loadUserByUsername called.---");
 
@@ -51,19 +51,17 @@ public class JwtCredentialsService implements UserDetailsService {
         user.setActive(true);
         userRepository.save(user);
 
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(),
-                user.getPassword(),user.isEnabled(), true, true,true, authorities);
-
-        return userDetails;
+        CustomUserDetail customUserDetail=new CustomUserDetail();
+        customUserDetail.setAuthorities(authorities);
+        customUserDetail.setUser(user);
+       
+        return customUserDetail;
 
     }
 
 
 
     
-
-
-
 
 
 }
