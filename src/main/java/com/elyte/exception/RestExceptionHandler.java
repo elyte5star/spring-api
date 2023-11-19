@@ -32,7 +32,7 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleUserNotFoundException(ResourceNotFoundException e, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ApplicationConsts.I204_MSG);
+        ErrorResponse errorResponse = new ErrorResponse(ApplicationConsts.E404_MSG);
         Status status = Status.build(HttpStatus.NOT_FOUND.value(), e.getMessage(), ApplicationConsts.FAILURE,
                 e.getClass().getName(),
                 current.format(ApplicationConsts.dtf));

@@ -10,10 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class Status {
+    
     private int code;
     private String message;
     private boolean success;
     private String path;
-    private String time_stamp;
+    private String time;
     
 }

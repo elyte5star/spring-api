@@ -1,4 +1,4 @@
-package com.elyte.jwt;
+package com.elyte.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.elyte.service.JwtCredentialsService;
+import com.elyte.utils.EncryptionUtil;
 
 import java.io.IOException;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -61,7 +62,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         // from it.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = this.jwtCredentialsService.loadUserByUsername(username);
+           CustomUserDetail userDetails = this.jwtCredentialsService.loadUserByUsername(username);
 
             if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
 

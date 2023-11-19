@@ -9,7 +9,7 @@ import java.util.UUID;
 @Entity
 @Data
 @Table(name="BOOKINGS")
-public class Booking extends Auditable{
+public class Booking extends AuditEntity{
    
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

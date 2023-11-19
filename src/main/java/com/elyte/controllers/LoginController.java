@@ -5,9 +5,11 @@ import com.elyte.domain.request.LoginRequestData;
 import com.elyte.domain.response.LoginResponseData;
 import com.elyte.domain.response.Status;
 import com.elyte.domain.response.TokenResponse;
-import com.elyte.jwt.EncryptionUtil;
-import com.elyte.jwt.JwtTokenUtil;
+import com.elyte.security.CustomUserDetail;
+import com.elyte.security.JwtTokenUtil;
 import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.EncryptionUtil;
+
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -21,16 +23,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.security.core.Authentication;
 import org.slf4j.LoggerFactory;
 import jakarta.validation.Valid;
-import com.elyte.domain.CustomUserDetail;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/auth")
-public class JwtAuthenticationController {
+public class LoginController {
 
-        private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationController.class);
+        private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
         @Autowired
         private AuthenticationManager authenticationManager;
@@ -49,6 +50,7 @@ public class JwtAuthenticationController {
                                         new UsernamePasswordAuthenticationToken(loginRequestData.getUsername(),
                                                         loginRequestData.getPassword()));
                         final CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
+
                         final String token = jwtTokenUtil.generateToken(userDetails);
 
                         Status status = Status.build(HttpStatus.OK.value(), ApplicationConsts.SRC,

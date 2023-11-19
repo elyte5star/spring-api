@@ -1,19 +1,25 @@
-package com.elyte.domain;
+package com.elyte.security;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.elyte.domain.User;
+
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.Set;
 
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
 public class CustomUserDetail implements UserDetails{
-
-    private static final long serialVersionUID = 1L;
 
     private User user;
 
     Set<GrantedAuthority> authorities = null;
-
+    
     public User getUser() {
         return user;
     }

@@ -1,4 +1,4 @@
-package com.elyte.jwt;
+package com.elyte.security;
 
 //The JwtTokenUtil is responsible for performing JWT operations like creation and validation of the token.
 // It makes use of the io.jsonwebtoken.Jwts for achieving this.
@@ -10,8 +10,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class JwtTokenUtil implements Serializable {
 
     //generate token for required data i.e. user details
     
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(CustomUserDetail userDetails){
         
         // we can set extra info this claims hashmap and below defined getCustomParamFromToken to get it by passing Map key.
         Map<String, Object> claims = new HashMap<>();
@@ -42,19 +42,15 @@ public class JwtTokenUtil implements Serializable {
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
-    //while creating the token -
-    //1. Define  claims of the token, like Issuer, Expiration, Subject, and the ID
-    //2. Sign the JWT using the HS512 algorithm and secret key.
-    //3. According to JWS Compact Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
-    //   compaction of the JWT to a URL-safe string
+    
     private String doGenerateToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+        return Jwts.builder().setClaims(claims).setSubject(subject).setAudience("elyte").setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() +  JWT_TOKEN_VALIDITY*1000))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
 
-    public Boolean validateToken(String token, UserDetails userDetails){
+    public Boolean validateToken(String token, CustomUserDetail userDetails){
         final String userName = getUserNameFromToken(token);
         return (!isTokenExpired(token) && userName.equals(userDetails.getUsername()));
     }

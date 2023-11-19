@@ -10,8 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.elyte.jwt.JwtAuthenticationEntryPoint;
-import com.elyte.jwt.JwtRequestFilter;
+import com.elyte.security.JwtRequestFilter;
+import com.elyte.security.UnauthorizedEntryPoint;
 import com.elyte.utils.LoggingFilter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class SecurityConfig {
     private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private UnauthorizedEntryPoint jwtAuthenticationEntryPoint;
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
@@ -55,12 +55,9 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(AUTH_WHITELIST).permitAll()
-
                         .anyRequest().authenticated())
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        // http.exceptionHandling(ex ->
-        // ex.authenticationEntryPoint(jwtAuthenticationEntryPoint));
 
         // Add a filter to log the request-response of every request
         http.addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class);

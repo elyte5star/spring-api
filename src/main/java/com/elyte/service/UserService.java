@@ -1,7 +1,6 @@
- package com.elyte.service;
+package com.elyte.service;
 
 import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +17,11 @@ import com.elyte.utils.ApplicationConsts;
 import com.elyte.domain.response.CreateUserResponse;
 import com.elyte.domain.response.Status;
 import com.elyte.domain.response.GetUserResponse;
-
+import com.elyte.domain.response.GetUsersResponse;
+import com.elyte.domain.request.ModifyEntityRequest;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import com.elyte.utils.CheckNullEmptyBlank;
 
 @Service
 public class UserService {
@@ -32,9 +33,13 @@ public class UserService {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-    public ResponseEntity<Iterable<User>> getUsers() {
-        Iterable<User> allUsers = userRepository.findAll();
-        return new ResponseEntity<>(allUsers, HttpStatus.OK);
+    public ResponseEntity<GetUsersResponse> getUsers() {
+        Iterable<User> allUsersInDb = userRepository.findAll();
+        Status status = Status.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+                ApplicationConsts.SUCCESS,
+                ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
+        GetUsersResponse usersResponse = GetUsersResponse.build(status, allUsersInDb);
+        return new ResponseEntity<>(usersResponse, HttpStatus.OK);
     }
 
     public ResponseEntity<CreateUserResponse> addUser(CreateUserRequest createUserRequest) {
@@ -78,25 +83,55 @@ public class UserService {
 
     }
 
-    public ResponseEntity<HttpStatus> updateUserInfo(User user, UUID userid) throws ResourceNotFoundException {
-        Optional<User> userData = userRepository.findById(userid);
-        if (!userData.isPresent()) {
+    public ResponseEntity<Status> updateUserInfo(ModifyEntityRequest user, UUID userid)
+            throws ResourceNotFoundException {
+        User userInDb = userRepository.findByUserid(userid);
+        if (userInDb == null) {
             throw new ResourceNotFoundException("User with id :" + userid + " not found!");
         }
-        userRepository.save(user);
-        return new ResponseEntity<>(HttpStatus.OK);
+        if (!CheckNullEmptyBlank.check(user.getEmail()) & !(user.getEmail().equals(userInDb.getEmail()))) {
+            userInDb.setEmail(user.getEmail());
+
+        } else if (!CheckNullEmptyBlank.check(user.getUsername())
+                & !(user.getUsername().equals(userInDb.getUsername()))) {
+
+            userInDb.setUsername(user.getUsername());
+
+        } else if (!CheckNullEmptyBlank.check(user.getTelephone())
+                & !(user.getTelephone().equals(userInDb.getTelephone()))) {
+
+            userInDb.setTelephone(user.getTelephone());
+
+        } else if (!CheckNullEmptyBlank.check(user.getPassword())) {
+
+            userInDb.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+
+        }
+        userRepository.save(userInDb);
+        Status status = Status.build(HttpStatus.NO_CONTENT.value(), ApplicationConsts.I204_MSG,
+                ApplicationConsts.SUCCESS,
+                ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
+
+        return new ResponseEntity<>(status, HttpStatus.NO_CONTENT);
     }
 
-    public ResponseEntity<HttpStatus> deleteUser(UUID userid) throws ResourceNotFoundException {
-        Optional<User> user = userRepository.findById(userid);
-        if (user.isPresent()) {
+    public ResponseEntity<Status> deleteUser(UUID userid) throws ResourceNotFoundException {
+        Optional<User> userInDb = userRepository.findById(userid);
+        if (userInDb.isPresent()) {
             try {
                 userRepository.deleteById(userid);
-                return new ResponseEntity<>(HttpStatus.OK);
+                Status status = Status.build(HttpStatus.NO_CONTENT.value(), ApplicationConsts.I200_MSG,
+                        ApplicationConsts.SUCCESS,
+                        ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
+                return new ResponseEntity<>(status, HttpStatus.OK);
 
             } catch (Exception e) {
+                userRepository.deleteById(userid);
+                Status status = Status.build(HttpStatus.INTERNAL_SERVER_ERROR.value(), ApplicationConsts.E500_MSG,
+                        ApplicationConsts.SUCCESS,
+                        ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
                 log.error(e.getMessage());
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(status, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
         throw new ResourceNotFoundException("User with id :" + userid + " not found!");

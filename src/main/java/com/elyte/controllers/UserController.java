@@ -2,9 +2,7 @@ package com.elyte.controllers;
 
 import com.elyte.domain.User;
 import com.elyte.domain.request.CreateUserRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +19,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import com.elyte.domain.response.GetUserResponse;
+import com.elyte.domain.response.Status;
 import com.elyte.domain.response.CreateUserResponse;
+import com.elyte.domain.request.ModifyEntityRequest;
+import com.elyte.domain.response.GetUsersResponse;
 
 
 @RestController
@@ -35,7 +36,7 @@ public class UserController {
 
     @GetMapping("")
     @Operation(summary = "Get All Users", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<Iterable<User>> getAllUsers() {
+    public ResponseEntity<GetUsersResponse> getAllUsers() {
         return userService.getUsers();
     }
 
@@ -47,7 +48,7 @@ public class UserController {
 
     @PutMapping("/{userid}")
     @Operation(summary = "Update A User",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<?> updateUser(@RequestBody User user,@PathVariable UUID userid) throws ResourceNotFoundException{
+    public ResponseEntity<Status> updateUser(@RequestBody ModifyEntityRequest user,@PathVariable UUID userid) throws ResourceNotFoundException{
         return userService.updateUserInfo(user, userid);
     }
 
@@ -59,7 +60,7 @@ public class UserController {
 
     @DeleteMapping("/{userid}")
     @Operation(summary = "Delete A User",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<HttpStatus> deleteUser(@PathVariable UUID userid) throws ResourceNotFoundException{
+    public ResponseEntity<Status> deleteUser(@PathVariable UUID userid) throws ResourceNotFoundException{
         return userService.deleteUser(userid);
        
     }

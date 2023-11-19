@@ -1,4 +1,4 @@
-package com.elyte.jwt;
+package com.elyte.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Table(name="USERS")
-public class User extends Auditable{
+public class User extends AuditEntity{
 
    
     @Id
