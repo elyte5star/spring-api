@@ -52,7 +52,6 @@ public class UserService {
             newUser.setTelephone(createUserRequest.getTelephone());
             newUser.setEmail(createUserRequest.getEmail());
             newUser.setLastLoginDate("0");
-            newUser.setCreatedBy(createUserRequest.getUsername());
             newUser.setAdmin(createUserRequest.isAdmin());
             newUser.setEnabled(createUserRequest.isEnabled());
             userRepository.save(newUser);
@@ -85,24 +84,30 @@ public class UserService {
 
     public ResponseEntity<Status> updateUserInfo(ModifyEntityRequest user, UUID userid)
             throws ResourceNotFoundException {
+
         User userInDb = userRepository.findByUserid(userid);
+
         if (userInDb == null) {
             throw new ResourceNotFoundException("User with id :" + userid + " not found!");
         }
+
         if (!CheckNullEmptyBlank.check(user.getEmail()) & !(user.getEmail().equals(userInDb.getEmail()))) {
             userInDb.setEmail(user.getEmail());
 
-        } else if (!CheckNullEmptyBlank.check(user.getUsername())
+        } 
+        if (!CheckNullEmptyBlank.check(user.getUsername())
                 & !(user.getUsername().equals(userInDb.getUsername()))) {
 
             userInDb.setUsername(user.getUsername());
 
-        } else if (!CheckNullEmptyBlank.check(user.getTelephone())
+        } 
+        if (!CheckNullEmptyBlank.check(user.getTelephone())
                 & !(user.getTelephone().equals(userInDb.getTelephone()))) {
 
             userInDb.setTelephone(user.getTelephone());
 
-        } else if (!CheckNullEmptyBlank.check(user.getPassword())) {
+        }
+        if (!CheckNullEmptyBlank.check(user.getPassword())) {
 
             userInDb.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 
@@ -111,7 +116,7 @@ public class UserService {
         Status status = Status.build(HttpStatus.NO_CONTENT.value(), ApplicationConsts.I204_MSG,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
-
+        log.info(status.toString());
         return new ResponseEntity<>(status, HttpStatus.NO_CONTENT);
     }
 

@@ -1,15 +1,18 @@
 package com.elyte.security;
 
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.elyte.domain.User;
+import com.elyte.exception.ResourceNotFoundException;
+import com.elyte.repository.UserRepository;
 import com.elyte.service.JwtCredentialsService;
 import com.elyte.utils.EncryptionUtil;
 
@@ -20,6 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.FilterChain;
 import jakarta.validation.constraints.NotNull;
+import java.util.Optional;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -28,6 +32,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtCredentialsService jwtCredentialsService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -39,17 +46,26 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
 
-        String username = null;
+        String audience = null;
         String encryptedJwtToken = null;
         String jwtToken = null;
+
         log.debug("Inside JwtRequestFilter--OncePerRequestFilter");
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
+
             encryptedJwtToken = authHeader.substring(7);
+
             jwtToken = EncryptionUtil.decrypt(encryptedJwtToken);
+
             try {
-                username = jwtTokenUtil.getUserNameFromToken(jwtToken);
+                // username = jwtTokenUtil.getUserNameFromToken(jwtToken);
+                audience = jwtTokenUtil.getAudienceFromToken(jwtToken);
+
             } catch (IllegalArgumentException e) {
+
                 log.error("Unable to get JWT Token");
+
             } catch (ExpiredJwtException e) {
                 log.error("JWT Token has expired");
             }
@@ -58,19 +74,25 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             log.warn("JWT Token does not begin with Bearer String");
         }
 
-        // Once we get the token validate it and extract username(principal/subject)
-        // from it.
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        // Audience is equivalent to the userid string
+        // A work around incase the user modifies its details
 
-           CustomUserDetail userDetails = this.jwtCredentialsService.loadUserByUsername(username);
+        if (audience != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            Optional<User> user = userRepository.findById(UUID.fromString(audience));
+
+            JwtUserPrincipal userDetails = this.jwtCredentialsService.loadUserByUsername(user.get().getUsername());
+
+            // if token is valid configure Spring Security to manually set
+            // authentication
 
             if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
-                
-                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                
+
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
             }

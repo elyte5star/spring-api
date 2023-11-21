@@ -14,14 +14,13 @@ public class ModifyEntityRequest  implements Serializable{
 
     private static final long serialVersionUID = 1234567L;
 
-    private String username=null;
+    private String username="";
 
-    private String password=null;
+    private String password="";
 
-    private String email=null;
+    private String email="";
 
-    private String telephone=null;
+    private String telephone="";
 
-
-    
+  
 }

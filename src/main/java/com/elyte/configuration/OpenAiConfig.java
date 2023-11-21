@@ -3,6 +3,7 @@ package com.elyte.configuration;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -35,7 +36,9 @@ public class OpenAiConfig {
                                                                                                 .type(SecurityScheme.Type.HTTP)
                                                                                                 .scheme("bearer")
                                                                                                 .bearerFormat("JWT")))
-                                .info(new Info().title(apiTitle).version(apiVersion));
+                                .info(new Info().title(apiTitle).version(apiVersion)
+                                .description("e-Market API developed by OGAGA UTI")
+                                .license(new License().name("Proprietary").url("https://github.com/elyte5star/spring-api")));
         }
 
 }

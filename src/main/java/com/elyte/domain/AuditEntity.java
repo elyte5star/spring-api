@@ -19,7 +19,7 @@ import lombok.Setter;
 public abstract class AuditEntity {
    
     @CreatedBy
-    @Column(name = "CREATED_BY", updatable = false,nullable = false)
+    @Column(name = "CREATED_BY", updatable = false, nullable=false)
     private String createdBy;
 
     @CreatedDate

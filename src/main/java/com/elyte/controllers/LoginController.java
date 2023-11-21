@@ -5,7 +5,7 @@ import com.elyte.domain.request.LoginRequestData;
 import com.elyte.domain.response.LoginResponseData;
 import com.elyte.domain.response.Status;
 import com.elyte.domain.response.TokenResponse;
-import com.elyte.security.CustomUserDetail;
+import com.elyte.security.JwtUserPrincipal;
 import com.elyte.security.JwtTokenUtil;
 import com.elyte.utils.ApplicationConsts;
 import com.elyte.utils.EncryptionUtil;
@@ -49,10 +49,10 @@ public class LoginController {
                         Authentication authentication = authenticationManager.authenticate(
                                         new UsernamePasswordAuthenticationToken(loginRequestData.getUsername(),
                                                         loginRequestData.getPassword()));
-                        final CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
-
+                        final JwtUserPrincipal userDetails = (JwtUserPrincipal) authentication.getPrincipal();
+                       
                         final String token = jwtTokenUtil.generateToken(userDetails);
-
+                
                         Status status = Status.build(HttpStatus.OK.value(), ApplicationConsts.SRC,
                                         ApplicationConsts.SUCCESS,
                                         ApplicationConsts.SEC, current.format(ApplicationConsts.dtf));
