@@ -29,7 +29,7 @@ public class AuditAwareImpl implements AuditorAware<String> {
         try {
             JwtUserPrincipal user = (JwtUserPrincipal) authentication.getPrincipal();
 
-            return Optional.of(user.getUsername());
+            return Optional.of(user.getUser().getUserid().toString());
 
         } catch (ClassCastException e) {
 

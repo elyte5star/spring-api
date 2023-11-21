@@ -117,7 +117,7 @@ public class UserService {
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
         log.info(status.toString());
-        return new ResponseEntity<>(status, HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(status, HttpStatus.OK);
     }
 
     public ResponseEntity<Status> deleteUser(UUID userid) throws ResourceNotFoundException {
