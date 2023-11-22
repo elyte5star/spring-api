@@ -20,7 +20,7 @@ import com.elyte.domain.response.Status;
 import com.elyte.utils.ApplicationConsts;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.springframework.dao.DataIntegrityViolationException;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
@@ -104,7 +104,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<?> handleDisabledException(Exception e) {
         ErrorResponse errorResponse = new ErrorResponse(ApplicationConsts.E409_MSG);
-        Status status = Status.build(HttpStatus.CONFLICT.value(), e.getMessage(),ApplicationConsts.FAILURE,
+        Status status = Status.build(HttpStatus.CONFLICT.value(), e.getMessage(), ApplicationConsts.FAILURE,
                 e.getClass().getName(),
                 current.format(ApplicationConsts.dtf));
         errorResponse.setStatus(status);
@@ -113,5 +113,16 @@ public class RestExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<?> handleDataIntegrityViolationException(Exception e) {
+        ErrorResponse errorResponse = new ErrorResponse(ApplicationConsts.E205_MSG);
+        Status status = Status.build(HttpStatus.BAD_REQUEST.value(), e.getMessage(), ApplicationConsts.FAILURE,
+                e.getClass().getName(),
+                current.format(ApplicationConsts.dtf));
+        errorResponse.setStatus(status);
+        log.error("Exception.getMessage--{}", e.getMessage());
+        log.error("Exception.getClass--{}", e.getClass());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
 }

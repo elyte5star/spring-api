@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.elyte.domain.User;
-import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.UserRepository;
 import com.elyte.service.JwtCredentialsService;
 import com.elyte.utils.EncryptionUtil;
@@ -71,7 +70,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
 
         } else {
-            log.warn("JWT Token does not begin with Bearer String");
+            log.warn("UNPROTECTED ROUTE");
         }
 
         // Audience is equivalent to the userid string

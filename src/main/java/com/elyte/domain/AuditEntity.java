@@ -19,11 +19,11 @@ import lombok.Setter;
 public abstract class AuditEntity {
    
     @CreatedBy
-    @Column(name = "CREATED_BY", updatable = false, nullable=false)
+    @Column(name = "CREATED_BY", updatable = false)
     private String createdBy;
 
     @CreatedDate
-    @Column(name = "CREATED_AT", nullable=false,columnDefinition = "timestamp default '1970-04-10 20:47:05.967394'", updatable = false)
+    @Column(name = "CREATED_AT",columnDefinition = "timestamp default '1970-04-10 20:47:05.967394'", updatable = false)
     private Timestamp created_at;
 
     @LastModifiedBy

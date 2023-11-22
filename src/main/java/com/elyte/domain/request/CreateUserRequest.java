@@ -31,7 +31,7 @@ public class CreateUserRequest implements Serializable {
 
     private boolean active = false;
 
-    private boolean admin = false;
+    private final boolean admin = false;
 
     private boolean enabled = false;
 

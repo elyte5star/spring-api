@@ -53,7 +53,7 @@ public class LoginController {
                        
                         final String token = jwtTokenUtil.generateToken(userDetails);
                 
-                        Status status = Status.build(HttpStatus.OK.value(), ApplicationConsts.SRC,
+                        Status status = Status.build(HttpStatus.OK.value(),ApplicationConsts.I200_MSG,
                                         ApplicationConsts.SUCCESS,
                                         ApplicationConsts.SEC, current.format(ApplicationConsts.dtf));
                         TokenResponse tokenResponse = TokenResponse.build(EncryptionUtil.encrypt(token), "bearer",
@@ -61,7 +61,6 @@ public class LoginController {
                                         userDetails.isEnabled(), userDetails.getUser().isAdmin(),
                                         userDetails.getUser().getUserid());
                         LoginResponseData responseData = LoginResponseData.build(status, tokenResponse);
-                        log.info("Authentication successful!");
                         return new ResponseEntity<>(responseData, HttpStatus.OK);
 
                 } catch (DisabledException e) {

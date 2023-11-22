@@ -27,7 +27,7 @@ public class ApplicationConsts {
 
     
 
-    public static final String E205_MSG = "Entity already present";
+    public static final String E205_MSG = "Duplicate entity key.";
 
     public static final String E401_MSG = "Oops! You have entered invalid username/password.";
 

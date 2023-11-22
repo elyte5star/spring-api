@@ -23,7 +23,7 @@ import com.elyte.domain.response.Status;
 import com.elyte.domain.response.CreateUserResponse;
 import com.elyte.domain.request.ModifyEntityRequest;
 import com.elyte.domain.response.GetUsersResponse;
-
+import com.elyte.domain.response.ModifyUserResponse;
 
 @RestController
 @RequestMapping("/users")
@@ -48,7 +48,7 @@ public class UserController {
 
     @PutMapping("/{userid}")
     @Operation(summary = "Update A User",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<Status> updateUser(@RequestBody ModifyEntityRequest user,@PathVariable UUID userid) throws ResourceNotFoundException{
+    public ResponseEntity<ModifyUserResponse> updateUser(@RequestBody ModifyEntityRequest user,@PathVariable UUID userid) throws ResourceNotFoundException{
         return userService.updateUserInfo(user, userid);
     }
 

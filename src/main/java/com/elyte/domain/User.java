@@ -25,10 +25,10 @@ public class User extends AuditEntity{
     @Column(name = "USER_ID")
     private UUID userid;
 
-    @Column(name = "LAST_LOGIN_DATE")
+    @Column(name = "LAST_LOGIN_DATE" )
     private String lastLoginDate;
 
-    @Column(name = "USERNAME")
+    @Column(name = "USERNAME",unique = true)
     @NotBlank(message = "username is required")
     private String username;
 
@@ -38,15 +38,15 @@ public class User extends AuditEntity{
     @JsonIgnore
     private String password;
 
-    @Column(name = "EMAIL")
+    @Column(name = "EMAIL", unique = true)
     @Email(message = "invalid email address")
     private String email;
 
-    //@NotBlank(message = "if user is active is required")
+    
     @Column(name = "ACTIVE", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean active;
 
-    //@NotBlank(message = "privilege definition required")
+    
     @Column(name = "ADMIN", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean admin;
 
@@ -59,7 +59,7 @@ public class User extends AuditEntity{
     private List<Booking> bookings;
 
     
-    @Column(name = "TELEPHONE")
+    @Column(name = "TELEPHONE",unique = true)
     @Digits(fraction = 0, integer = 10)
     private String telephone;
 

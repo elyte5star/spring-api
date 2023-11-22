@@ -22,6 +22,9 @@ import com.elyte.domain.request.ModifyEntityRequest;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import com.elyte.utils.CheckNullEmptyBlank;
+import org.springframework.dao.DataIntegrityViolationException;
+import com.elyte.domain.response.ModifyUserResponse;
+import com.elyte.utils.CheckIfUserExist;
 
 @Service
 public class UserService {
@@ -29,6 +32,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+   
     LocalDateTime current = LocalDateTime.now();
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -42,47 +46,45 @@ public class UserService {
         return new ResponseEntity<>(usersResponse, HttpStatus.OK);
     }
 
-    public ResponseEntity<CreateUserResponse> addUser(CreateUserRequest createUserRequest) {
-
-        try {
-
-            User newUser = new User();
-            newUser.setUsername(createUserRequest.getUsername());
-            newUser.setPassword(new BCryptPasswordEncoder().encode(createUserRequest.getPassword()));
-            newUser.setTelephone(createUserRequest.getTelephone());
-            newUser.setEmail(createUserRequest.getEmail());
-            newUser.setLastLoginDate("0");
-            newUser.setAdmin(createUserRequest.isAdmin());
-            newUser.setEnabled(createUserRequest.isEnabled());
-            userRepository.save(newUser);
+    public ResponseEntity<CreateUserResponse> addUser(CreateUserRequest createUserRequest)
+            throws DataIntegrityViolationException {
+        User newUser = new User();
+        newUser.setUsername(createUserRequest.getUsername());
+        newUser.setPassword(new BCryptPasswordEncoder().encode(createUserRequest.getPassword()));
+        newUser.setTelephone(createUserRequest.getTelephone());
+        newUser.setEmail(createUserRequest.getEmail());
+        newUser.setLastLoginDate("0");
+        newUser.setAdmin(createUserRequest.isAdmin());
+        newUser.setEnabled(createUserRequest.isEnabled());
+        if (!CheckIfUserExist.isExisting(newUser,userRepository)) {
             Status status = Status.build(HttpStatus.CREATED.value(), ApplicationConsts.I201_MSG,
                     ApplicationConsts.SUCCESS,
                     ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
-
             CreateUserResponse response = CreateUserResponse.build(status, newUser.getUserid());
             return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
+
+        throw new DataIntegrityViolationException("DATA INTEGRITY VIOLATION");
 
     }
 
     public ResponseEntity<GetUserResponse> userById(UUID userid) throws ResourceNotFoundException {
-        Optional<User> user = userRepository.findById(userid);
-        if (!user.isPresent()) {
+        User user = userRepository.findByUserid(userid);
+
+        if (user==null) {
 
             throw new ResourceNotFoundException("User with id :" + userid + " not found!");
         }
         Status status = Status.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
-        GetUserResponse getUserResponse = GetUserResponse.build(status, user.get());
+        GetUserResponse getUserResponse = GetUserResponse.build(status, user);
         return new ResponseEntity<>(getUserResponse, HttpStatus.OK);
 
     }
 
-    public ResponseEntity<Status> updateUserInfo(ModifyEntityRequest user, UUID userid)
+    public ResponseEntity<ModifyUserResponse> updateUserInfo(ModifyEntityRequest user, UUID userid)
             throws ResourceNotFoundException {
 
         User userInDb = userRepository.findByUserid(userid);
@@ -94,13 +96,13 @@ public class UserService {
         if (!CheckNullEmptyBlank.check(user.getEmail()) & !(user.getEmail().equals(userInDb.getEmail()))) {
             userInDb.setEmail(user.getEmail());
 
-        } 
+        }
         if (!CheckNullEmptyBlank.check(user.getUsername())
                 & !(user.getUsername().equals(userInDb.getUsername()))) {
 
             userInDb.setUsername(user.getUsername());
 
-        } 
+        }
         if (!CheckNullEmptyBlank.check(user.getTelephone())
                 & !(user.getTelephone().equals(userInDb.getTelephone()))) {
 
@@ -112,12 +114,15 @@ public class UserService {
             userInDb.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 
         }
-        userRepository.save(userInDb);
+        
+        userInDb = userRepository.save(userInDb);
         Status status = Status.build(HttpStatus.NO_CONTENT.value(), ApplicationConsts.I204_MSG,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
-        log.info(status.toString());
-        return new ResponseEntity<>(status, HttpStatus.OK);
+        ModifyUserResponse modifyUserResponse = new ModifyUserResponse();
+        modifyUserResponse.setStatus(status);
+        modifyUserResponse.setUser(userInDb);
+        return new ResponseEntity<>(modifyUserResponse, HttpStatus.OK);
     }
 
     public ResponseEntity<Status> deleteUser(UUID userid) throws ResourceNotFoundException {
