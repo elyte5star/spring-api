@@ -39,7 +39,7 @@ public class JwtTokenUtil implements Serializable {
         // we can set extra info this claims hashmap and below defined
         // getCustomParamFromToken to get it by passing Map key.
         Map<String, Object> claims = new HashMap<>();
-        claims.put("aud", userDetails.getUser().getUserid().toString());
+        claims.put("aud", userDetails.getUser().getUserid());
         claims.put("email", userDetails.getUser().getEmail());
         claims.put("jti", UUID.randomUUID().toString());
         return doGenerateToken(claims, userDetails.getUsername());
@@ -65,7 +65,7 @@ public class JwtTokenUtil implements Serializable {
 
     public Boolean validateToken(String token, JwtUserPrincipal userDetails) {
         final String audience = getAudienceFromToken(token);
-        return (!isTokenExpired(token) && audience.equals(userDetails.getUser().getUserid().toString()));
+        return (!isTokenExpired(token) && audience.equals(userDetails.getUser().getUserid()));
     }
 
     // retrieve username from jwt token

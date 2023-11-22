@@ -2,7 +2,6 @@ package com.elyte.domain.response;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import java.util.UUID;
 import java.io.Serializable;
 
 @AllArgsConstructor(staticName = "build")
@@ -17,6 +16,6 @@ public class TokenResponse implements Serializable{
     private String email;
     private boolean enabled;
     private boolean admin;
-    private UUID userid;
+    private String userid;
    
 }

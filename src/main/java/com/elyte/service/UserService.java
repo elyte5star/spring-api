@@ -32,7 +32,6 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-   
     LocalDateTime current = LocalDateTime.now();
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -54,7 +53,6 @@ public class UserService {
         newUser.setTelephone(createUserRequest.getTelephone());
         newUser.setEmail(createUserRequest.getEmail());
         newUser.setLastLoginDate("0");
-        newUser.setAdmin(createUserRequest.isAdmin());
         newUser.setEnabled(createUserRequest.isEnabled());
         if (!CheckIfUserExist.isExisting(newUser,userRepository)) {
             Status status = Status.build(HttpStatus.CREATED.value(), ApplicationConsts.I201_MSG,
@@ -69,10 +67,12 @@ public class UserService {
 
     }
 
-    public ResponseEntity<GetUserResponse> userById(UUID userid) throws ResourceNotFoundException {
+
+    public ResponseEntity<GetUserResponse> userById(String userid) throws ResourceNotFoundException {
+
         User user = userRepository.findByUserid(userid);
 
-        if (user==null) {
+        if (user == null) {
 
             throw new ResourceNotFoundException("User with id :" + userid + " not found!");
         }
@@ -84,7 +84,7 @@ public class UserService {
 
     }
 
-    public ResponseEntity<ModifyUserResponse> updateUserInfo(ModifyEntityRequest user, UUID userid)
+    public ResponseEntity<ModifyUserResponse> updateUserInfo(ModifyEntityRequest user, String userid)
             throws ResourceNotFoundException {
 
         User userInDb = userRepository.findByUserid(userid);
@@ -114,7 +114,7 @@ public class UserService {
             userInDb.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 
         }
-        
+
         userInDb = userRepository.save(userInDb);
         Status status = Status.build(HttpStatus.NO_CONTENT.value(), ApplicationConsts.I204_MSG,
                 ApplicationConsts.SUCCESS,
@@ -125,7 +125,7 @@ public class UserService {
         return new ResponseEntity<>(modifyUserResponse, HttpStatus.OK);
     }
 
-    public ResponseEntity<Status> deleteUser(UUID userid) throws ResourceNotFoundException {
+    public ResponseEntity<Status> deleteUser(String userid) throws ResourceNotFoundException {
         Optional<User> userInDb = userRepository.findById(userid);
         if (userInDb.isPresent()) {
             try {

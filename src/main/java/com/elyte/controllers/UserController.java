@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.UUID;
+//import java.util.UUID;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,13 +42,13 @@ public class UserController {
 
     @GetMapping("/{userid}")
     @Operation(summary = "Get A User By USERID",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<GetUserResponse> findUserById(@PathVariable UUID userid) throws ResourceNotFoundException {
+    public ResponseEntity<GetUserResponse> findUserById(@PathVariable String userid) throws ResourceNotFoundException {
         return userService.userById(userid);
     }
 
     @PutMapping("/{userid}")
     @Operation(summary = "Update A User",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<ModifyUserResponse> updateUser(@RequestBody ModifyEntityRequest user,@PathVariable UUID userid) throws ResourceNotFoundException{
+    public ResponseEntity<ModifyUserResponse> updateUser(@RequestBody ModifyEntityRequest user,@PathVariable String userid) throws ResourceNotFoundException{
         return userService.updateUserInfo(user, userid);
     }
 
@@ -60,7 +60,7 @@ public class UserController {
 
     @DeleteMapping("/{userid}")
     @Operation(summary = "Delete A User",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<Status> deleteUser(@PathVariable UUID userid) throws ResourceNotFoundException{
+    public ResponseEntity<Status> deleteUser(@PathVariable String userid) throws ResourceNotFoundException{
         return userService.deleteUser(userid);
        
     }

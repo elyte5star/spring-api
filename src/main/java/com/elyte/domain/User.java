@@ -8,9 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @AllArgsConstructor(staticName = "build")
@@ -23,7 +21,7 @@ public class User extends AuditEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "USER_ID")
-    private UUID userid;
+    private String userid;
 
     @Column(name = "LAST_LOGIN_DATE" )
     private String lastLoginDate;

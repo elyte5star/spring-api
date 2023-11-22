@@ -29,10 +29,10 @@ public class CreateUserRequest implements Serializable {
     @Digits(fraction = 0, integer = 10)
     private String telephone;
 
-    private boolean active = false;
+    // private boolean active = false;
 
-    private final boolean admin = false;
+    // private final boolean admin = false;
 
-    private boolean enabled = false;
+    private boolean enabled = true;
 
 }

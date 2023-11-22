@@ -27,7 +27,9 @@ public class ApplicationConsts {
 
     
 
-    public static final String E205_MSG = "Duplicate entity key.";
+    public static final String E205_MSG = "Data integrity violation";
+
+    public static final String E400_MSG = "Malformed request syntax";
 
     public static final String E401_MSG = "Oops! You have entered invalid username/password.";
 

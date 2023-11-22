@@ -38,7 +38,7 @@ public class JwtCredentialsService implements UserDetailsService {
 
         if (user == null) {
 
-            throw new UsernameNotFoundException(String.format("User with username %s doesnt not exist", username));
+            throw new UsernameNotFoundException(String.format("User with userid %s doesnt not exist", username));
         }
 
         Set<GrantedAuthority> authorities = new HashSet<>(1);

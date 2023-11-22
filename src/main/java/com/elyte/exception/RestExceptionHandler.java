@@ -22,6 +22,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.boot.json.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 @RestControllerAdvice
 public class RestExceptionHandler {
@@ -116,9 +119,35 @@ public class RestExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> handleDataIntegrityViolationException(Exception e) {
         ErrorResponse errorResponse = new ErrorResponse(ApplicationConsts.E205_MSG);
-        Status status = Status.build(HttpStatus.BAD_REQUEST.value(), e.getMessage(), ApplicationConsts.FAILURE,
+        Status status = Status.build(HttpStatus.CONFLICT.value(), e.getMessage(), ApplicationConsts.FAILURE,
                 e.getClass().getName(),
                 current.format(ApplicationConsts.dtf));
+        errorResponse.setStatus(status);
+        log.error("Exception.getMessage--{}", e.getMessage());
+        log.error("Exception.getClass--{}", e.getClass());
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleHttpMessageNotReadableException(final HttpMessageNotReadableException e)
+            throws Throwable {
+        final Throwable cause = e.getCause();
+        Status status = new Status();
+        if (cause == null) {
+            status.setMessage(null);
+        } else if (cause instanceof JsonParseException) {
+            status.setMessage(cause.toString());
+        } else if (cause instanceof JsonMappingException) {
+            status.setMessage(cause.toString());
+        } else {
+            status.setMessage(ApplicationConsts.E400_MSG);
+
+        }
+        ErrorResponse errorResponse = new ErrorResponse(ApplicationConsts.E400_MSG);
+        status.setCode(HttpStatus.BAD_REQUEST.value());
+        status.setPath(e.getClass().getName());
+        status.setTime(current.format(ApplicationConsts.dtf));
+        status.setSuccess(ApplicationConsts.FAILURE);
         errorResponse.setStatus(status);
         log.error("Exception.getMessage--{}", e.getMessage());
         log.error("Exception.getClass--{}", e.getClass());

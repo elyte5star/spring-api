@@ -1,6 +1,4 @@
 package com.elyte.security;
-
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import com.elyte.domain.User;
 import com.elyte.repository.UserRepository;
 import com.elyte.service.JwtCredentialsService;
 import com.elyte.utils.EncryptionUtil;
-
 import java.io.IOException;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.FilterChain;
 import jakarta.validation.constraints.NotNull;
-import java.util.Optional;
+
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -32,11 +29,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtCredentialsService jwtCredentialsService;
 
-    @Autowired
-    private UserRepository userRepository;
-
+   
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
@@ -78,9 +76,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if (audience != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            Optional<User> user = userRepository.findById(UUID.fromString(audience));
+             User user = userRepository.findByUserid(audience);
 
-            JwtUserPrincipal userDetails = this.jwtCredentialsService.loadUserByUsername(user.get().getUsername());
+
+            JwtUserPrincipal userDetails = this.jwtCredentialsService.loadUserByUsername(user.getUsername());
 
             // if token is valid configure Spring Security to manually set
             // authentication

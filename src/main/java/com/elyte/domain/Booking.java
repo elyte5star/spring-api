@@ -2,7 +2,6 @@ package com.elyte.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.util.UUID;
 
 
 
@@ -14,7 +13,7 @@ public class Booking extends AuditEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "BOOKING_ID")
-    private UUID oid;
+    private String oid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OWNER_ID", referencedColumnName = "USER_ID")

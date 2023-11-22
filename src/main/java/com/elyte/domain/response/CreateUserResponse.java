@@ -1,7 +1,5 @@
 package com.elyte.domain.response;
 import java.io.Serializable;
-import java.util.UUID;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -14,7 +12,7 @@ public class CreateUserResponse implements Serializable{
 
     private Status status;
     
-    private UUID userid;
+    private String userid;
 
     
 }
