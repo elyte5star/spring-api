@@ -25,6 +25,7 @@ import com.elyte.utils.CheckNullEmptyBlank;
 import org.springframework.dao.DataIntegrityViolationException;
 import com.elyte.domain.response.ModifyUserResponse;
 import com.elyte.utils.CheckIfUserExist;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -54,7 +55,7 @@ public class UserService {
         newUser.setEmail(createUserRequest.getEmail());
         newUser.setLastLoginDate("0");
         newUser.setEnabled(createUserRequest.isEnabled());
-        if (!CheckIfUserExist.isExisting(newUser,userRepository)) {
+        if (!CheckIfUserExist.isExisting(newUser, userRepository)) {
             Status status = Status.build(HttpStatus.CREATED.value(), ApplicationConsts.I201_MSG,
                     ApplicationConsts.SUCCESS,
                     ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
@@ -63,10 +64,9 @@ public class UserService {
 
         }
 
-        throw new DataIntegrityViolationException("DATA INTEGRITY VIOLATION");
+        throw new DataIntegrityViolationException("A USER WITH THE DETAILS EXIST ALREADY");
 
     }
-
 
     public ResponseEntity<GetUserResponse> userById(String userid) throws ResourceNotFoundException {
 
@@ -90,6 +90,7 @@ public class UserService {
         User userInDb = userRepository.findByUserid(userid);
 
         if (userInDb == null) {
+
             throw new ResourceNotFoundException("User with id :" + userid + " not found!");
         }
 
@@ -114,15 +115,19 @@ public class UserService {
             userInDb.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 
         }
-
-        userInDb = userRepository.save(userInDb);
-        Status status = Status.build(HttpStatus.NO_CONTENT.value(), ApplicationConsts.I204_MSG,
-                ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
-        ModifyUserResponse modifyUserResponse = new ModifyUserResponse();
-        modifyUserResponse.setStatus(status);
-        modifyUserResponse.setUser(userInDb);
-        return new ResponseEntity<>(modifyUserResponse, HttpStatus.OK);
+        List<User> usersList = userRepository.checkIfUserDetailsIstaken(userid, userInDb.getUsername(),
+                userInDb.getEmail(), userInDb.getTelephone());
+        if (usersList.isEmpty()) {
+            userInDb = userRepository.save(userInDb);
+            Status status = Status.build(HttpStatus.NO_CONTENT.value(), ApplicationConsts.I204_MSG,
+                    ApplicationConsts.SUCCESS,
+                    ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
+            ModifyUserResponse modifyUserResponse = new ModifyUserResponse();
+            modifyUserResponse.setStatus(status);
+            modifyUserResponse.setUser(userInDb);
+            return new ResponseEntity<>(modifyUserResponse, HttpStatus.OK);
+        }
+        throw new DataIntegrityViolationException("A USER WITH THE DETAILS TAKEN");
     }
 
     public ResponseEntity<Status> deleteUser(String userid) throws ResourceNotFoundException {
@@ -138,9 +143,9 @@ public class UserService {
             } catch (Exception e) {
                 userRepository.deleteById(userid);
                 Status status = Status.build(HttpStatus.INTERNAL_SERVER_ERROR.value(), ApplicationConsts.E500_MSG,
-                        ApplicationConsts.SUCCESS,
-                        ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
-                log.error(e.getMessage());
+                        ApplicationConsts.FAILURE,
+                        e.getClass().getName(), current.format(ApplicationConsts.dtf));
+
                 return new ResponseEntity<>(status, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }

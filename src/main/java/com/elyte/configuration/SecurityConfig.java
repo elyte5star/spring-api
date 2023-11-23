@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         // Add a filter to log the request-response of every request
-        //http.addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class);
         // Add a filter to validate the tokens with every request
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

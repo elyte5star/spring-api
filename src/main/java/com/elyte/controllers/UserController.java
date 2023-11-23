@@ -42,7 +42,7 @@ public class UserController {
 
     @GetMapping("/{userid}")
     @Operation(summary = "Get A User By USERID",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<GetUserResponse> findUserById(@PathVariable String userid) throws ResourceNotFoundException {
+    public ResponseEntity<GetUserResponse> findUserById(@PathVariable @Valid String userid) throws ResourceNotFoundException {
         return userService.userById(userid);
     }
 
@@ -60,7 +60,7 @@ public class UserController {
 
     @DeleteMapping("/{userid}")
     @Operation(summary = "Delete A User",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<Status> deleteUser(@PathVariable String userid) throws ResourceNotFoundException{
+    public ResponseEntity<Status> deleteUser(@PathVariable @Valid String userid) throws ResourceNotFoundException{
         return userService.deleteUser(userid);
        
     }
