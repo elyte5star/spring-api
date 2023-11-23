@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import java.util.UUID;
+
 
 @Entity
 @AllArgsConstructor(staticName = "build")
@@ -19,7 +19,7 @@ public class Product extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "PRODUCT_ID")
-    private UUID pid;
+    private String pid;
 
     @Column(name = "NAME")
     @NotBlank(message = "name is required")

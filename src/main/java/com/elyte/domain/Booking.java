@@ -1,12 +1,18 @@
 package com.elyte.domain;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 
+@Setter
+@Getter
 @Entity
-@Data
+@AllArgsConstructor(staticName = "build")
+@NoArgsConstructor
 @Table(name="BOOKINGS")
 public class Booking extends AuditEntity{
    

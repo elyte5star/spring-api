@@ -11,7 +11,6 @@ import com.elyte.security.JwtUserPrincipal;
 
 public class AuditAwareImpl implements AuditorAware<String> {
 
-    private static final Logger log = LoggerFactory.getLogger(AuditAwareImpl.class);
 
     @Override
     public Optional<String> getCurrentAuditor() {

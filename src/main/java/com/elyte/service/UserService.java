@@ -1,14 +1,12 @@
 package com.elyte.service;
 
-import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.elyte.controllers.UserController;
 import com.elyte.domain.User;
 import com.elyte.domain.request.CreateUserRequest;
 import com.elyte.exception.ResourceNotFoundException;
@@ -34,8 +32,6 @@ public class UserService {
     private UserRepository userRepository;
 
     LocalDateTime current = LocalDateTime.now();
-
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     public ResponseEntity<GetUsersResponse> getUsers() {
         Iterable<User> allUsersInDb = userRepository.findAll();

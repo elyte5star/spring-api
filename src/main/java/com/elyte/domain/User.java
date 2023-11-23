@@ -1,5 +1,4 @@
 package com.elyte.domain;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;

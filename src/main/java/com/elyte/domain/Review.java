@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
-import java.util.UUID;
+
 
 @Entity
 @AllArgsConstructor(staticName = "build")
@@ -20,7 +20,7 @@ public class Review extends AuditEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "REVIEW_ID")
-    private UUID rid;
+    private String rid;
 
     @Column(name = "EMAIL")
     @Email(message = "invalid email address")
