@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.persistence.*;
 
-import com.elyte.domain.enums.JobStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -14,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Setter
 @Getter
 @Entity
-@Table(name="TASK")
+@Table(name="TASKS")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Task extends AuditEntity{
 
@@ -40,8 +39,8 @@ public class Task extends AuditEntity{
     private String finished;
 
 
-    @Column(name = "JOB_STATUS")
-    private Enum<JobStatus> jobStatus;
+    @Column(name = "JOB_STATUS", columnDefinition = "json")
+    private JobStatus jobStatus;
 
     
 }

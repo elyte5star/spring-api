@@ -1,8 +1,9 @@
 package com.elyte.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +13,8 @@ import java.util.List;
 @Entity
 @AllArgsConstructor(staticName = "build")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name="PRODUCTS")
 public class Product extends AuditEntity {
 
@@ -21,7 +23,7 @@ public class Product extends AuditEntity {
     @Column(name = "PRODUCT_ID")
     private String pid;
 
-    @Column(name = "NAME")
+    @Column(name = "NAME",unique=true)
     @NotBlank(message = "name is required")
     private String name;
 

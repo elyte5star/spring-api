@@ -1,7 +1,6 @@
 package com.elyte.domain;
 import java.util.List;
 
-import com.elyte.domain.enums.JobStatus;
 import com.elyte.domain.enums.JobType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -51,8 +50,8 @@ public class Job extends AuditEntity{
     private Enum<JobType> jobType;
 
 
-    @Column(name = "JOB_STATUS")
-    private Enum<JobStatus> jobStatus;
+    @Column(name = "JOB_STATUS", columnDefinition = "json")
+    private JobStatus jobStatus;
 
 
 

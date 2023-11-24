@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
+import java.util.List;
+import com.elyte.domain.response.GetProductsResponse;
 
 @RestController
 @RequestMapping("/products")
@@ -31,7 +33,7 @@ public class ProductsController {
 
     @GetMapping("")
     @Operation(summary = "Get All Products")
-    public ResponseEntity<Iterable<Product>> getAllProducts() {
+    public ResponseEntity<GetProductsResponse> getAllProducts() {
         return productService.getAllProducts();
     }
 
@@ -52,7 +54,7 @@ public class ProductsController {
     }
 
     @GetMapping("/{pid}")
-    @Operation(summary = "Get A Product By PID")
+    @Operation(summary = "Get A Product By pid")
     public ResponseEntity<Product> findProductById(@PathVariable String pid) throws ResourceNotFoundException {
         return productService.ProductById(pid);
 
@@ -69,7 +71,7 @@ public class ProductsController {
     @PostMapping("/create/many")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Create Many Products", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<Iterable<String>> createManyProducts(@RequestBody Iterable<Product> products) {
+    public ResponseEntity<Iterable<String>> createManyProducts(@RequestBody List<Product> products) {
         return productService.createMany(products);
     }
 

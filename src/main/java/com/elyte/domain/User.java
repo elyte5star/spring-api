@@ -4,15 +4,18 @@ import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 @Entity
 @AllArgsConstructor(staticName = "build")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name="USERS")
 public class User extends AuditEntity{
 

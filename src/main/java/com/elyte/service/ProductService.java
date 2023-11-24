@@ -3,6 +3,7 @@ package com.elyte.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,10 +11,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.elyte.controllers.ProductsController;
 import com.elyte.domain.Product;
+import com.elyte.domain.response.GetProductsResponse;
+import com.elyte.domain.response.Status;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.ProductRepository;
+import com.elyte.utils.ApplicationConsts;
+
 import java.util.Optional;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -23,28 +29,40 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    LocalDateTime current = LocalDateTime.now();
+
     private static final Logger log = LoggerFactory.getLogger(ProductsController.class);
 
-    public ResponseEntity<Iterable<Product>> getAllProducts() {
+    public ResponseEntity<GetProductsResponse> getAllProducts() {
         Iterable<Product> allProducts = productRepository.findAll();
-        return new ResponseEntity<>(allProducts, HttpStatus.OK);
+        Status status = Status.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+                ApplicationConsts.SUCCESS,
+                ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
+        GetProductsResponse getProductsResponse = GetProductsResponse.build(status, allProducts);
+        return new ResponseEntity<>(getProductsResponse, HttpStatus.OK);
     }
-
 
     public ResponseEntity<?> createOneProduct(Product product) {
-        try {
-            productRepository.save(product);
-            HttpHeaders responseHeaders = new HttpHeaders();
-            URI newUserUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{pid}").buildAndExpand(product.getPid()).toUri();
-            responseHeaders.setLocation(newUserUri);
-            return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        boolean prodExist = productRepository.existsByName(product.getName());
+        
+        if (!prodExist) {
+
+            try {
+                productRepository.save(product);
+                HttpHeaders responseHeaders = new HttpHeaders();
+                URI newUserUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{pid}")
+                        .buildAndExpand(product.getPid()).toUri();
+                responseHeaders.setLocation(newUserUri);
+                return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
+
+        throw new DataIntegrityViolationException("A PRODUCT WITH THE NAME : "+ product.getName() + " EXIST ALREADY");
     }
 
-    
     public ResponseEntity<Product> ProductById(String pid) throws ResourceNotFoundException {
         Optional<Product> product = productRepository.findById(pid);
 
@@ -75,20 +93,20 @@ public class ProductService {
 
     public ResponseEntity<Iterable<String>> createMany(List<Product> products) {
 
-        if(!products.isEmpty()){
-        
-            Iterable<Product> productsSaved= productRepository.saveAll(products);
+        if (!products.isEmpty()) {
+
+            Iterable<Product> productsSaved = productRepository.saveAll(products);
             List<String> productsPids = new ArrayList<>();
             for (Product product : productsSaved) {
                 productsPids.add(product.getPid());
             }
             return new ResponseEntity<>(productsPids, HttpStatus.OK);
         }
-       
+
         throw new NullPointerException("EMPTY LIST OF INPUTS");
     }
 
-    public ResponseEntity<HttpStatus> updateProduct(Product product,String pid) throws ResourceNotFoundException{
+    public ResponseEntity<HttpStatus> updateProduct(Product product, String pid) throws ResourceNotFoundException {
         Optional<Product> productData = productRepository.findById(pid);
         if (!productData.isPresent()) {
             throw new ResourceNotFoundException("Product with id :" + pid + " not found!");
