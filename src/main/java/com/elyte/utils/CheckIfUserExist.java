@@ -1,21 +1,22 @@
 package com.elyte.utils;
-
 import com.elyte.domain.User;
 import com.elyte.repository.UserRepository;
+import com.elyte.domain.request.CreateUserRequest;
+import java.util.List;
 
 public class CheckIfUserExist {
 
-    public static Boolean isExisting(User entity, UserRepository userRep) {
+    public static Boolean isExisting(CreateUserRequest entity, UserRepository userRep) {
 
-        User userExistUser = userRep.findByUsernameOrEmailOrTelephone(entity.getUsername(), entity.getEmail(),
+        List<User> userExistUser = userRep.findByUsernameOrEmailOrTelephone(entity.getUsername(), entity.getEmail(),
                 entity.getTelephone());
 
-        if (userExistUser != null) {
+        if (!userExistUser.isEmpty()) {
 
             return true;
-        } else {
 
-            userRep.save(entity);
+        } else {
+           
             return false;
 
         }

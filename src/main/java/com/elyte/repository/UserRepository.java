@@ -10,7 +10,7 @@ public interface UserRepository extends CrudRepository<User, String> {
     
     User findByUsername(String username);
 
-    User findByUsernameOrEmailOrTelephone(String username,String email,String telephone);
+    List<User> findByUsernameOrEmailOrTelephone(String username,String email,String telephone);
 
     User findByUserid(String userid);
 
