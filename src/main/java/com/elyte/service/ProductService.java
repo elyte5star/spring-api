@@ -11,11 +11,14 @@ import com.elyte.domain.Product;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.ProductRepository;
+import com.elyte.repository.ReviewRepository;
 import com.elyte.utils.ApplicationConsts;
 import java.util.Optional;
 import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
+import com.elyte.domain.Review;
+import com.elyte.domain.request.CreateProductRequest;
 
 @Service
 public class ProductService {
@@ -23,7 +26,8 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-   
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     public ResponseEntity<CustomResponseStatus> getAllProducts() {
         Iterable<Product> allProducts = productRepository.findAll();
@@ -33,18 +37,26 @@ public class ProductService {
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
-    public ResponseEntity<CustomResponseStatus> createOneProduct(Product product) {
+    public ResponseEntity<CustomResponseStatus> createOneProduct(CreateProductRequest product)
+            throws DataIntegrityViolationException {
         boolean prodExist = productRepository.existsByName(product.getName());
         if (!prodExist) {
-            productRepository.save(product);
+            Product newProduct = new Product();
+            newProduct.setCategory(product.getCategory());
+            newProduct.setDetails(product.getDetails());
+            newProduct.setImage(product.getImage());
+            newProduct.setName(product.getName());
+            newProduct.setPrice(product.getPrice());
+            newProduct.setStock_quantity(product.getStock_quantity());
+            productRepository.save(newProduct);
             HttpHeaders responseHeaders = new HttpHeaders();
             URI newUserUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{pid}")
-                    .buildAndExpand(product.getPid()).toUri();
+                    .buildAndExpand(newProduct.getPid()).toUri();
             responseHeaders.setLocation(newUserUri);
             CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.CREATED.value(),
                     ApplicationConsts.I200_MSG,
                     ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC,ApplicationConsts.timeNow(), product.getPid());
+                    ApplicationConsts.SRC, ApplicationConsts.timeNow(),newProduct.getPid());
             return new ResponseEntity<>(resp, responseHeaders, HttpStatus.CREATED);
         }
 
@@ -60,7 +72,7 @@ public class ProductService {
         }
         CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC,ApplicationConsts.timeNow(), product.get());
+                ApplicationConsts.SRC, ApplicationConsts.timeNow(), product.get());
         return new ResponseEntity<>(resp, HttpStatus.OK);
 
     }
@@ -75,16 +87,17 @@ public class ProductService {
             CustomResponseStatus status = CustomResponseStatus.build(HttpStatus.NO_CONTENT.value(),
                     ApplicationConsts.I200_MSG,
                     ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC,ApplicationConsts.timeNow(), null);
+                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), null);
             return new ResponseEntity<>(status, HttpStatus.OK);
 
         }
         throw new ResourceNotFoundException("Product with id :" + pid + " not found!");
     }
 
-    public ResponseEntity<CustomResponseStatus> createMany(List<Product> products) {
+    public ResponseEntity<CustomResponseStatus> createMany(List<CreateProductRequest> createProducts) throws NullPointerException {
 
-        if (!products.isEmpty()) {
+        if (!createProducts.isEmpty()) {
+
 
             Iterable<Product> productsSaved = productRepository.saveAll(products);
             List<String> productsPids = new ArrayList<>();
@@ -109,8 +122,26 @@ public class ProductService {
         product = productRepository.save(product);
         CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC,ApplicationConsts.timeNow(), product);
+                ApplicationConsts.SRC, ApplicationConsts.timeNow(), product);
         return new ResponseEntity<>(resp, HttpStatus.OK);
+    }
+
+    public ResponseEntity<CustomResponseStatus> createReview(Review review) {
+        boolean poductExist = productRepository.existsById(review.getProduct_id());
+        if (poductExist) {
+            Review newReview = new Review();
+            newReview.setComment(review.getComment());
+            newReview.setEmail(review.getEmail());
+            newReview.setRating(review.getRating());
+            reviewRepository.save(newReview);
+            CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.CREATED.value(),
+                    ApplicationConsts.I200_MSG,
+                    ApplicationConsts.SUCCESS,
+                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), newReview.getRid());
+            return new ResponseEntity<>(resp, HttpStatus.CREATED);
+        }
+        throw new ResourceNotFoundException("Product with id :" + review.getProduct_id() + " not found!");
+
     }
 
 }

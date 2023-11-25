@@ -1,6 +1,9 @@
 
 package com.elyte.controllers;
+
 import com.elyte.domain.Product;
+import com.elyte.domain.Review;
+import com.elyte.domain.request.CreateProductRequest;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +22,7 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 import com.elyte.domain.response.CustomResponseStatus;
+
 
 
 
@@ -61,7 +65,7 @@ public class ProductsController {
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Create A Product", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> createProduct(@RequestBody @Valid Product product) {
+    public ResponseEntity<CustomResponseStatus> createProduct(@RequestBody @Valid CreateProductRequest product) {
         return productService.createOneProduct(product);
 
     }
@@ -71,6 +75,13 @@ public class ProductsController {
     @Operation(summary = "Create Many Products", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CustomResponseStatus> createManyProducts(@RequestBody List<Product> products) {
         return productService.createMany(products);
+    }
+
+    @PostMapping("/create-review")
+    @Operation(summary = "Create A Product Review")
+    public ResponseEntity<CustomResponseStatus> createProductReview(@RequestBody @Valid Review review ) {
+        return productService.createReview(review);
+
     }
 
 }

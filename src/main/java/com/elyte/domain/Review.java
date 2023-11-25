@@ -21,16 +21,17 @@ public class Review extends AuditEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "REVIEW_ID")
+    @Column(name = "REVIEW_ID", unique = true)
     private String rid;
 
     @Column(name = "EMAIL")
     @Email(message = "invalid email address")
     private String email;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ITEM_ID", referencedColumnName = "PRODUCT_ID", unique = true, nullable = false, updatable = false)
-    private Product product;
+   
+    @Column(name ="PRODUCT_ID", updatable = false)
+    @NotNull(message = "product id is required")
+    private String product_id;
 
     @Column(name = "COMMENT", length = 5000)
     @NotBlank(message = "comment name is required")
