@@ -2,17 +2,14 @@ package com.elyte.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 import com.elyte.domain.request.LoginRequestData;
-import com.elyte.domain.response.LoginResponseData;
+
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.response.TokenResponse;
 import com.elyte.security.JwtUserPrincipal;
 import com.elyte.security.JwtTokenUtil;
 import com.elyte.utils.ApplicationConsts;
 import com.elyte.utils.EncryptionUtil;
-
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

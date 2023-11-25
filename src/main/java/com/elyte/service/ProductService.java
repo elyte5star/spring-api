@@ -56,7 +56,7 @@ public class ProductService {
             CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.CREATED.value(),
                     ApplicationConsts.I200_MSG,
                     ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(),newProduct.getPid());
+                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), newProduct.getPid());
             return new ResponseEntity<>(resp, responseHeaders, HttpStatus.CREATED);
         }
 
@@ -94,16 +94,31 @@ public class ProductService {
         throw new ResourceNotFoundException("Product with id :" + pid + " not found!");
     }
 
-    public ResponseEntity<CustomResponseStatus> createMany(List<CreateProductRequest> createProducts) throws NullPointerException {
+    public ResponseEntity<CustomResponseStatus> createMany(List<CreateProductRequest> createProducts)
+            throws NullPointerException {
 
         if (!createProducts.isEmpty()) {
 
-
-            Iterable<Product> productsSaved = productRepository.saveAll(products);
             List<String> productsPids = new ArrayList<>();
-            for (Product product : productsSaved) {
-                productsPids.add(product.getPid());
+            
+            for (CreateProductRequest productRequest : createProducts) {
+
+                 boolean prodExist = productRepository.existsByName(productRequest.getName());
+
+                if(prodExist) continue;
+
+                Product newProduct = new Product();
+                newProduct.setCategory(productRequest.getCategory());
+                newProduct.setDetails(productRequest.getDetails());
+                newProduct.setImage(productRequest.getImage());
+                newProduct.setName(productRequest.getName());
+                newProduct.setPrice(productRequest.getPrice());
+                newProduct.setStock_quantity(productRequest.getStock_quantity());
+                productsPids.add(newProduct.getPid());
+                productRepository.save(newProduct);
+
             }
+
             CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                     ApplicationConsts.SUCCESS,
                     ApplicationConsts.SRC, ApplicationConsts.timeNow(), productsPids);
