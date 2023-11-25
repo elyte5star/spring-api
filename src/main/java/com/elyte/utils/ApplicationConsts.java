@@ -1,5 +1,6 @@
 package com.elyte.utils;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class ApplicationConsts {
@@ -42,5 +43,11 @@ public class ApplicationConsts {
     public static final String E409_MSG = "User account disabled";
 
     public static final String E500_MSG = "Internal Server Error.";
+
+    public static String timeNow(){
+        LocalDateTime current = LocalDateTime.now();
+        return  current.format(dtf);
+
+    }
 
 }

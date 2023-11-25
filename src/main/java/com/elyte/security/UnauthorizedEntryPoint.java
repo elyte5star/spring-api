@@ -15,7 +15,7 @@ import java.io.Serializable;
 import java.io.IOException;
 import java.io.OutputStream;
 import com.elyte.domain.response.ErrorResponse;
-import com.elyte.domain.response.Status;
+import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.utils.ApplicationConsts;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,7 +32,7 @@ public class UnauthorizedEntryPoint implements AuthenticationEntryPoint, Seriali
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-		Status status = Status.build(HttpServletResponse.SC_UNAUTHORIZED,authException.getMessage(), ApplicationConsts.FAILURE,authException.getClass().getName(),current.format(ApplicationConsts.dtf));
+		CustomResponseStatus status = CustomResponseStatus.build(HttpServletResponse.SC_UNAUTHORIZED,authException.getMessage(), ApplicationConsts.FAILURE,authException.getClass().getName(),current.format(ApplicationConsts.dtf),null);
 		ErrorResponse errorResponse = ErrorResponse.build(status,ApplicationConsts.ARC_MSG);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

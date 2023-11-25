@@ -16,12 +16,8 @@ import com.elyte.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import com.elyte.domain.response.GetUserResponse;
-import com.elyte.domain.response.Status;
-import com.elyte.domain.response.CreateUserResponse;
+import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
-import com.elyte.domain.response.GetUsersResponse;
-import com.elyte.domain.response.ModifyUserResponse;
 
 @RestController
 @RequestMapping("/users")
@@ -33,32 +29,32 @@ public class UserController {
 
 
     @GetMapping("")
-    @Operation(summary = "Get All Users", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<GetUsersResponse> getAllUsers() {
+    @Operation(summary = "Get all users", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> getAllUsers() {
         return userService.getUsers();
     }
 
     @GetMapping("/{userid}")
-    @Operation(summary = "Get A User By USERID",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<GetUserResponse> findUserById(@PathVariable @Valid String userid) throws ResourceNotFoundException {
+    @Operation(summary = "Get a user by userid",security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> findUserById(@PathVariable @Valid String userid) throws ResourceNotFoundException {
         return userService.userById(userid);
     }
 
     @PutMapping("/{userid}")
-    @Operation(summary = "Update A User",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<ModifyUserResponse> updateUser(@RequestBody ModifyEntityRequest user,@PathVariable String userid) throws ResourceNotFoundException{
+    @Operation(summary = "Update a user",security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> updateUser(@RequestBody ModifyEntityRequest user,@PathVariable String userid) throws ResourceNotFoundException{
         return userService.updateUserInfo(user, userid);
     }
 
     @PostMapping("/signup")
-    @Operation(summary = "Create A User")
-    public ResponseEntity<CreateUserResponse> createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
+    @Operation(summary = "Create a user")
+    public ResponseEntity<CustomResponseStatus> createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
         return userService.addUser(createUserRequest);
     }
 
     @DeleteMapping("/{userid}")
-    @Operation(summary = "Delete A User",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<Status> deleteUser(@PathVariable @Valid String userid) throws ResourceNotFoundException{
+    @Operation(summary = "Delete a user",security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> deleteUser(@PathVariable @Valid String userid) throws ResourceNotFoundException{
         return userService.deleteUser(userid);
        
     }

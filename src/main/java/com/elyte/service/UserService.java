@@ -1,7 +1,5 @@
 package com.elyte.service;
 
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +10,11 @@ import com.elyte.domain.request.CreateUserRequest;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.UserRepository;
 import com.elyte.utils.ApplicationConsts;
-import com.elyte.domain.response.CreateUserResponse;
-import com.elyte.domain.response.Status;
-import com.elyte.domain.response.GetUserResponse;
-import com.elyte.domain.response.GetUsersResponse;
+import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
-import java.time.LocalDateTime;
 import java.util.Optional;
 import com.elyte.utils.CheckNullEmptyBlank;
 import org.springframework.dao.DataIntegrityViolationException;
-import com.elyte.domain.response.ModifyUserResponse;
 import com.elyte.utils.CheckIfUserExist;
 import java.util.List;
 
@@ -31,18 +24,17 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    LocalDateTime current = LocalDateTime.now();
-
-    public ResponseEntity<GetUsersResponse> getUsers() {
+    public ResponseEntity<CustomResponseStatus> getUsers() {
+        
         Iterable<User> allUsersInDb = userRepository.findAll();
-        Status status = Status.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
-        GetUsersResponse usersResponse = GetUsersResponse.build(status, allUsersInDb);
-        return new ResponseEntity<>(usersResponse, HttpStatus.OK);
+                ApplicationConsts.SRC, ApplicationConsts.timeNow(), allUsersInDb);
+
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
-    public ResponseEntity<CreateUserResponse> addUser(CreateUserRequest createUserRequest)
+    public ResponseEntity<CustomResponseStatus> addUser(CreateUserRequest createUserRequest)
             throws DataIntegrityViolationException {
         User newUser = new User();
         newUser.setUsername(createUserRequest.getUsername());
@@ -51,38 +43,33 @@ public class UserService {
         newUser.setEmail(createUserRequest.getEmail());
         newUser.setLastLoginDate("0");
         newUser.setEnabled(createUserRequest.isEnabled());
-        if (!CheckIfUserExist.isExisting(newUser, userRepository)) {
-            Status status = Status.build(HttpStatus.CREATED.value(), ApplicationConsts.I201_MSG,
-                    ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
-            CreateUserResponse response = CreateUserResponse.build(status, newUser.getUserid());
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
 
+        if (!CheckIfUserExist.isExisting(newUser, userRepository)) {
+            CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.CREATED.value(),
+                    ApplicationConsts.I201_MSG,
+                    ApplicationConsts.SUCCESS,
+                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), newUser.getUserid());
+            return new ResponseEntity<>(resp, HttpStatus.CREATED);
         }
 
         throw new DataIntegrityViolationException("A USER WITH THE DETAILS EXIST ALREADY");
 
     }
 
-    public ResponseEntity<GetUserResponse> userById(String userid) throws ResourceNotFoundException {
-
+    public ResponseEntity<CustomResponseStatus> userById(String userid) throws ResourceNotFoundException {
+       
         User user = userRepository.findByUserid(userid);
-
         if (user == null) {
-
             throw new ResourceNotFoundException("User with id :" + userid + " not found!");
         }
-        Status status = Status.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
-        GetUserResponse getUserResponse = GetUserResponse.build(status, user);
-        return new ResponseEntity<>(getUserResponse, HttpStatus.OK);
-
+                ApplicationConsts.SRC,ApplicationConsts.timeNow(), user);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
-    public ResponseEntity<ModifyUserResponse> updateUserInfo(ModifyEntityRequest user, String userid)
+    public ResponseEntity<CustomResponseStatus> updateUserInfo(ModifyEntityRequest user, String userid)
             throws ResourceNotFoundException {
-
         User userInDb = userRepository.findByUserid(userid);
 
         if (userInDb == null) {
@@ -115,33 +102,32 @@ public class UserService {
                 userInDb.getEmail(), userInDb.getTelephone());
         if (usersList.isEmpty()) {
             userInDb = userRepository.save(userInDb);
-            Status status = Status.build(HttpStatus.NO_CONTENT.value(), ApplicationConsts.I204_MSG,
+            CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.NO_CONTENT.value(),
+                    ApplicationConsts.I204_MSG,
                     ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
-            ModifyUserResponse modifyUserResponse = new ModifyUserResponse();
-            modifyUserResponse.setStatus(status);
-            modifyUserResponse.setUser(userInDb);
-            return new ResponseEntity<>(modifyUserResponse, HttpStatus.OK);
+                    ApplicationConsts.SRC,ApplicationConsts.timeNow(), userInDb);
+            return new ResponseEntity<>(resp, HttpStatus.OK);
         }
-        throw new DataIntegrityViolationException("A USER WITH THE DETAILS TAKEN");
+        throw new DataIntegrityViolationException("A USER WITH THE DETAILS EXIST");
     }
 
-    public ResponseEntity<Status> deleteUser(String userid) throws ResourceNotFoundException {
+    public ResponseEntity<CustomResponseStatus> deleteUser(String userid) throws ResourceNotFoundException {
         Optional<User> userInDb = userRepository.findById(userid);
+        
         if (userInDb.isPresent()) {
             try {
                 userRepository.deleteById(userid);
-                Status status = Status.build(HttpStatus.NO_CONTENT.value(), ApplicationConsts.I200_MSG,
+                CustomResponseStatus status = CustomResponseStatus.build(HttpStatus.NO_CONTENT.value(),
+                        ApplicationConsts.I200_MSG,
                         ApplicationConsts.SUCCESS,
-                        ApplicationConsts.SRC, current.format(ApplicationConsts.dtf));
+                        ApplicationConsts.SRC, ApplicationConsts.timeNow(), null);
                 return new ResponseEntity<>(status, HttpStatus.OK);
 
             } catch (Exception e) {
-                userRepository.deleteById(userid);
-                Status status = Status.build(HttpStatus.INTERNAL_SERVER_ERROR.value(), ApplicationConsts.E500_MSG,
+                CustomResponseStatus status = CustomResponseStatus.build(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        ApplicationConsts.E500_MSG,
                         ApplicationConsts.FAILURE,
-                        e.getClass().getName(), current.format(ApplicationConsts.dtf));
-
+                        e.getClass().getName(),ApplicationConsts.timeNow(), null);
                 return new ResponseEntity<>(status, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }

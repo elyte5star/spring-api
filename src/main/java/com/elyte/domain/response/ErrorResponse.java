@@ -10,7 +10,7 @@ public class ErrorResponse implements Serializable{
 
     private static final long serialVersionUID = -6191879091924046844L;
 
-    private Status status;
+    private CustomResponseStatus status;
     private String title;
     
 
