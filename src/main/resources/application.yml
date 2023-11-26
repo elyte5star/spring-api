@@ -43,7 +43,12 @@ spring:
   output:
     ansi:
       enabled: always
-    # Message Broker
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+
+
+  # Message Broker
   rabbitmq:
     host: ${RABBIT_HOST:rabbitQ}
     port: 5672
@@ -82,8 +87,8 @@ spring:
 ---
 
 api:
-  module-name: 'Elyte Spring Boot Application.'
-  version: '1.1.0'
+  module-name: 'Interactive Documentation for e-Market'
+  version: '1.0.1'
   jwt:
     secret: ${JWT_SECRET:7a3c54660456ff1137b652e498624dfa09a0ec12b4fc49d38b85465da15027a1}
   cipher:

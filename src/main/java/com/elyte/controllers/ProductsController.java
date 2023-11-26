@@ -2,7 +2,6 @@
 package com.elyte.controllers;
 
 import com.elyte.domain.Product;
-import com.elyte.domain.Review;
 import com.elyte.domain.request.CreateProductRequest;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.service.ProductService;
@@ -22,7 +21,6 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 import com.elyte.domain.response.CustomResponseStatus;
-import com.elyte.domain.request.CreateReviewRequest;
 
 
 
@@ -35,7 +33,7 @@ public class ProductsController {
     private ProductService productService;
 
     @GetMapping("")
-    @Operation(summary = "Get All Products")
+    @Operation(summary = "Get all products")
     public ResponseEntity<CustomResponseStatus> getAllProducts() {
         return productService.getAllProducts();
     }
@@ -78,11 +76,6 @@ public class ProductsController {
         return productService.createMany(productsRequests);
     }
 
-    @PostMapping("/create-review")
-    @Operation(summary = "Create a product Review")
-    public ResponseEntity<CustomResponseStatus> createProductReview(@RequestBody @Valid CreateReviewRequest review ) {
-        return productService.createReview(review);
-
-    }
+   
 
 }

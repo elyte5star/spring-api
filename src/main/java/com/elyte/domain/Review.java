@@ -1,7 +1,7 @@
 package com.elyte.domain;
-
-
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,14 +19,13 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
 
 
-
 @Entity
 @AllArgsConstructor(staticName = "build")
 @NoArgsConstructor
 @Getter
 @Setter
 @Table(name="REVIEWS")
-public class Review extends AuditEntity{
+public class Review extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -37,11 +36,10 @@ public class Review extends AuditEntity{
     @Email(message = "invalid email address")
     private String email;
 
-   
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ITEM_ID", referencedColumnName = "PRODUCT_ID")
-    private Product product;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ITEM_ID")
+    private Product product;
 
     @Column(name = "COMMENT", length = 5000)
     @NotBlank(message = "comment name is required")
@@ -49,6 +47,8 @@ public class Review extends AuditEntity{
 
     @Column(name = "RATING")
     @NotNull(message = "rating is required")
+    @Min(1)
+    @Max(5)
     private Integer rating;
 
     

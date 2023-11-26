@@ -1,14 +1,21 @@
 package com.elyte.domain;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 
 
 @Entity
@@ -17,7 +24,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name="PRODUCTS")
-public class Product extends AuditEntity {
+public class Product extends AuditEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -48,8 +55,7 @@ public class Product extends AuditEntity {
     @NotNull(message = "quantity is required")
     private Integer stock_quantity;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "PRODUCT_ID")
+    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER,mappedBy = "product")
     @OrderBy("CREATED_AT")
     private List<Review> reviews;
 

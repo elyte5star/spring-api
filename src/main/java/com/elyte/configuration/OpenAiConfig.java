@@ -1,9 +1,9 @@
 package com.elyte.configuration;
-
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,10 +22,15 @@ public class OpenAiConfig {
                 this.apiVersion = apiVersion;
         }
 
+        
+
         @Bean
         OpenAPI customOpenAPI() {
                 final String securitySchemeName = "bearerAuth";
-                final String apiTitle = String.format("%s API", StringUtils.capitalize(moduleName));
+                final String email = "checkuti@gmail.com";
+                final String name = "Utimore Services AS";
+                final String url = "https://github.com/elyte5star";
+                final String apiTitle = String.format("%s API.", StringUtils.capitalize(moduleName));
                 return new OpenAPI()
                                 // .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                                 .components(
@@ -37,8 +42,11 @@ public class OpenAiConfig {
                                                                                                 .scheme("bearer")
                                                                                                 .bearerFormat("JWT")))
                                 .info(new Info().title(apiTitle).version(apiVersion)
-                                .description("e-Market API developed by OGAGA UTI")
+                                .summary("Interactive Documentation for e-Market")
+                                .contact(new Contact().name(name).email(email).url(url))
+                                .description("This is a sample spring boot server for a web store.")
                                 .license(new License().name("Proprietary").url("https://github.com/elyte5star/spring-api")));
+                                
         }
 
 }

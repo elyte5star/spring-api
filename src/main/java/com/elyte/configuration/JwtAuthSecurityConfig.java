@@ -11,7 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.elyte.security.JwtRequestFilter;
-import com.elyte.security.UnauthorizedEntryPoint;
+import com.elyte.security.JwtAuthenticationEntryPoint;
 import com.elyte.utils.LoggingFilter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +25,12 @@ import org.slf4j.LoggerFactory;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class SecurityConfig {
+public class JwtAuthSecurityConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthSecurityConfig.class);
 
     @Autowired
-    private UnauthorizedEntryPoint jwtAuthenticationEntryPoint;
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
@@ -41,6 +41,7 @@ public class SecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/",
             "/users/signup",
+            "/reviews/create-review",
             "/auth/token",
             "/v3/api-docs/**",
             "/swagger-ui/**",

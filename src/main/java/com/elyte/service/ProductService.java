@@ -11,15 +11,13 @@ import com.elyte.domain.Product;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.ProductRepository;
-import com.elyte.repository.ReviewRepository;
 import com.elyte.utils.ApplicationConsts;
 import java.util.Optional;
 import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
-import com.elyte.domain.Review;
 import com.elyte.domain.request.CreateProductRequest;
-import com.elyte.domain.request.CreateReviewRequest;
+
 
 
 
@@ -28,9 +26,6 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
-
-    @Autowired
-    private ReviewRepository reviewRepository;
 
     public ResponseEntity<CustomResponseStatus> getAllProducts() {
         Iterable<Product> allProducts = productRepository.findAll();
@@ -144,25 +139,6 @@ public class ProductService {
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
-    public ResponseEntity<CustomResponseStatus> createReview(CreateReviewRequest review) {
-        //boolean poductExist = productRepository.existsById(review.getPid());
-        Optional<Product> product = productRepository.findById(review.getPid());
-
-        if ( product.isPresent()) {
-            Review newReview = new Review();
-            newReview.setComment(review.getComment());
-            newReview.setEmail(review.getEmail());
-            newReview.setRating(review.getRating());
-            newReview.setProduct(product.get());
-            reviewRepository.save(newReview);
-            CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.CREATED.value(),
-                    ApplicationConsts.I200_MSG,
-                    ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), newReview.getRid());
-            return new ResponseEntity<>(resp, HttpStatus.CREATED);
-        }
-        throw new ResourceNotFoundException("Product with id :" + review.getPid() + " not found!");
-
-    }
+    
 
 }

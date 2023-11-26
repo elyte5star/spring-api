@@ -68,7 +68,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
 
         } else {
-            log.warn("UNPROTECTED ROUTE");
+            log.warn("UNPROTECTED ROUTE-NO BEARER STRING");
         }
 
         // Audience is equivalent to the userid string

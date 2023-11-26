@@ -24,9 +24,9 @@ import org.springframework.http.MediaType;
 
 
 @Component
-public class UnauthorizedEntryPoint implements AuthenticationEntryPoint, Serializable {
+public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Serializable {
     private static final long serialVersionUID = -7858869558953243875L;
-    private static final Logger log = LoggerFactory.getLogger(UnauthorizedEntryPoint.class);
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationEntryPoint.class);
 
 	LocalDateTime current = LocalDateTime.now();
 
