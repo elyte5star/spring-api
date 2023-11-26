@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 
+
 @Entity
 @AllArgsConstructor(staticName = "build")
 @NoArgsConstructor
@@ -48,7 +49,7 @@ public class Product extends AuditEntity {
     private Integer stock_quantity;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "REVIEW_ID")
+    @JoinColumn(name = "PRODUCT_ID")
     @OrderBy("CREATED_AT")
     private List<Review> reviews;
 

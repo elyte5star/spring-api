@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.ArrayList;
 import com.elyte.domain.Review;
 import com.elyte.domain.request.CreateProductRequest;
+import com.elyte.domain.request.CreateReviewRequest;
+
+
 
 @Service
 public class ProductService {
@@ -114,8 +117,8 @@ public class ProductService {
                 newProduct.setName(productRequest.getName());
                 newProduct.setPrice(productRequest.getPrice());
                 newProduct.setStock_quantity(productRequest.getStock_quantity());
-                productsPids.add(newProduct.getPid());
                 productRepository.save(newProduct);
+                productsPids.add(newProduct.getPid());
 
             }
 
@@ -141,13 +144,16 @@ public class ProductService {
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
-    public ResponseEntity<CustomResponseStatus> createReview(Review review) {
-        boolean poductExist = productRepository.existsById(review.getProduct_id());
-        if (poductExist) {
+    public ResponseEntity<CustomResponseStatus> createReview(CreateReviewRequest review) {
+        //boolean poductExist = productRepository.existsById(review.getPid());
+        Optional<Product> product = productRepository.findById(review.getPid());
+
+        if ( product.isPresent()) {
             Review newReview = new Review();
             newReview.setComment(review.getComment());
             newReview.setEmail(review.getEmail());
             newReview.setRating(review.getRating());
+            newReview.setProduct(product.get());
             reviewRepository.save(newReview);
             CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.CREATED.value(),
                     ApplicationConsts.I200_MSG,
@@ -155,7 +161,7 @@ public class ProductService {
                     ApplicationConsts.SRC, ApplicationConsts.timeNow(), newReview.getRid());
             return new ResponseEntity<>(resp, HttpStatus.CREATED);
         }
-        throw new ResourceNotFoundException("Product with id :" + review.getProduct_id() + " not found!");
+        throw new ResourceNotFoundException("Product with id :" + review.getPid() + " not found!");
 
     }
 

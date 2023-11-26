@@ -22,6 +22,7 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 import com.elyte.domain.response.CustomResponseStatus;
+import com.elyte.domain.request.CreateReviewRequest;
 
 
 
@@ -56,7 +57,7 @@ public class ProductsController {
     }
 
     @GetMapping("/{pid}")
-    @Operation(summary = "Get A Product By pid")
+    @Operation(summary = "Get a product by pid")
     public ResponseEntity<CustomResponseStatus> findProductById(@PathVariable String pid) throws ResourceNotFoundException {
         return productService.ProductById(pid);
 
@@ -64,7 +65,7 @@ public class ProductsController {
 
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Create A Product", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Create a product", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CustomResponseStatus> createProduct(@RequestBody @Valid CreateProductRequest product) {
         return productService.createOneProduct(product);
 
@@ -72,14 +73,14 @@ public class ProductsController {
 
     @PostMapping("/create/many")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Create Many Products", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> createManyProducts(@RequestBody List<Product> products) {
-        return productService.createMany(products);
+    @Operation(summary = "Create many products", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> createManyProducts(@RequestBody List<CreateProductRequest> productsRequests) {
+        return productService.createMany(productsRequests);
     }
 
     @PostMapping("/create-review")
-    @Operation(summary = "Create A Product Review")
-    public ResponseEntity<CustomResponseStatus> createProductReview(@RequestBody @Valid Review review ) {
+    @Operation(summary = "Create a product Review")
+    public ResponseEntity<CustomResponseStatus> createProductReview(@RequestBody @Valid CreateReviewRequest review ) {
         return productService.createReview(review);
 
     }
