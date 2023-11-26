@@ -59,6 +59,8 @@ tasks.test {
     project.property("snippetsDir")?.let { outputs.dir(it) }
 }
 
+
+
 tasks.asciidoctor {
     project.property("snippetsDir")?.let { inputs.dir(it) }
     dependsOn(tasks.test)

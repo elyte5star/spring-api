@@ -55,8 +55,9 @@ public class Product extends AuditEntity{
     @NotNull(message = "quantity is required")
     private Integer stock_quantity;
 
+
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER,mappedBy = "product")
-    @OrderBy("CREATED_AT")
+    @OrderBy
     private List<Review> reviews;
 
     
