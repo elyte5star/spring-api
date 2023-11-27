@@ -28,7 +28,6 @@ public class ReviewService {
     public ResponseEntity<CustomResponseStatus> createReview(CreateReviewRequest review) {
         // boolean poductExist = productRepository.existsById(review.getPid());
 
-       
         Optional<Product> product = productRepository.findById(review.getPid());
 
         if (product.isPresent()) {

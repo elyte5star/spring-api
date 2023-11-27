@@ -1,8 +1,8 @@
 package com.elyte.security;
 
 //JwtAuthenticationEntryPoint extends Spring’s AuthenticationEntryPoint class and overrides its method commence. 
-//It rejects every unauthenticated request and sends error code 401.
 
+//It rejects every unauthenticated request and sends error code 401.
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,30 +19,33 @@ import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.utils.ApplicationConsts;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.time.LocalDateTime;
-import org.springframework.http.MediaType;
 
+import org.springframework.http.MediaType;
 
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Serializable {
-    private static final long serialVersionUID = -7858869558953243875L;
-    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationEntryPoint.class);
 
-	LocalDateTime current = LocalDateTime.now();
+	private static final long serialVersionUID = -7858869558953243875L;
+
+	private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationEntryPoint.class);
 
 	@Override
-	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-		CustomResponseStatus status = CustomResponseStatus.build(HttpServletResponse.SC_UNAUTHORIZED,authException.getMessage(), ApplicationConsts.FAILURE,authException.getClass().getName(),current.format(ApplicationConsts.dtf),null);
-		ErrorResponse errorResponse = ErrorResponse.build(status,ApplicationConsts.ARC_MSG);
+	public void commence(HttpServletRequest request, HttpServletResponse response,
+			AuthenticationException authException) throws IOException {
+		CustomResponseStatus status = CustomResponseStatus.build(HttpServletResponse.SC_UNAUTHORIZED,
+				authException.getMessage(), ApplicationConsts.FAILURE, authException.getClass().getName(),
+				ApplicationConsts.timeNow(), null);
+		ErrorResponse errorResponse = ErrorResponse.build(status, ApplicationConsts.ARC_MSG);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		OutputStream responseStream = response.getOutputStream();
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.writeValue(responseStream, errorResponse);
-        log.error("Unauthorized error: {}", authException.getMessage());
+		log.error("Unauthorized error: {}", authException.getMessage());
 		responseStream.flush();
-		
+
 	}
-    
+
+	
 
 }

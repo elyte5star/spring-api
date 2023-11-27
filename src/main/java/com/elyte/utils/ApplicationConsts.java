@@ -2,6 +2,8 @@ package com.elyte.utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ApplicationConsts {
 
@@ -11,6 +13,7 @@ public class ApplicationConsts {
     public static final String SRC = "0";
     public static final String ARC = "1";
     public static final String ARC_MSG = "Authentication required.";
+    public static final String ADR_MSG = "Admin right required.";
     public static final String FRC = "2";
     public static final String SEC = "0";
     public static final String FEC = "2";
@@ -48,6 +51,14 @@ public class ApplicationConsts {
         LocalDateTime current = LocalDateTime.now();
         return  current.format(dtf);
 
+    }
+
+    public static String convertObjectToJson(Object object) throws JsonProcessingException {
+        if (object == null) {
+            return null;
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(object);
     }
 
 }

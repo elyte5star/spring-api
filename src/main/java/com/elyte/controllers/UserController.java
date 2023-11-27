@@ -28,12 +28,6 @@ public class UserController {
     private UserService userService;
 
 
-    @GetMapping("")
-    @Operation(summary = "Get all users", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> getAllUsers() {
-        return userService.getUsers();
-    }
-
     @GetMapping("/{userid}")
     @Operation(summary = "Get a user by userid",security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CustomResponseStatus> findUserById(@PathVariable @Valid String userid) throws ResourceNotFoundException {

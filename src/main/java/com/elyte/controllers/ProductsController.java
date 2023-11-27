@@ -1,25 +1,19 @@
 
 package com.elyte.controllers;
-
-import com.elyte.domain.Product;
-import com.elyte.domain.request.CreateProductRequest;
+import com.elyte.domain.request.CreateReviewRequest;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.service.ProductService;
+import com.elyte.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
-import org.springframework.security.access.prepost.PreAuthorize;
-import java.util.List;
 import com.elyte.domain.response.CustomResponseStatus;
 
 
@@ -32,27 +26,23 @@ public class ProductsController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private ReviewService reviewService;
+
     @GetMapping("")
     @Operation(summary = "Get all products")
     public ResponseEntity<CustomResponseStatus> getAllProducts() {
         return productService.getAllProducts();
     }
 
-    @DeleteMapping("/{pid}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Delete A Product", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> deleteProduct(@PathVariable String pid) throws ResourceNotFoundException {
-        return productService.deleteProduct(pid);
+    
+    @PostMapping("/create/review")
+    @Operation(summary = "Create a product review")
+    public ResponseEntity<CustomResponseStatus> createProductReview(@RequestBody @Valid CreateReviewRequest review ) {
+        return reviewService.createReview(review);
 
     }
-
-    @PutMapping("/{pid}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Update A Product", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> updateProduct(@RequestBody Product product, @PathVariable String pid)
-            throws ResourceNotFoundException {
-        return productService.updateProduct(product, pid);
-    }
+    
 
     @GetMapping("/{pid}")
     @Operation(summary = "Get a product by pid")
@@ -61,21 +51,5 @@ public class ProductsController {
 
     }
 
-    @PostMapping("/create")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Create a product", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> createProduct(@RequestBody @Valid CreateProductRequest product) {
-        return productService.createOneProduct(product);
-
-    }
-
-    @PostMapping("/create/many")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Create many products", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> createManyProducts(@RequestBody List<CreateProductRequest> productsRequests) {
-        return productService.createMany(productsRequests);
-    }
-
-   
 
 }
