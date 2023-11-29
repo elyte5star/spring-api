@@ -1,36 +1,31 @@
 package com.elyte.service;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import com.elyte.domain.User;
-import java.time.LocalDateTime;
 import com.elyte.repository.UserRepository;
-import com.elyte.security.JwtUserPrincipal;
+import com.elyte.security.UserPrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.elyte.utils.ApplicationConsts;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class JwtCredentialsService implements UserDetailsService {
+public class CredentialsService implements UserDetailsService {
 
-    private static final Logger log = LoggerFactory.getLogger(JwtCredentialsService.class);
+    private static final Logger log = LoggerFactory.getLogger(CredentialsService.class);
 
-    LocalDateTime current = LocalDateTime.now();
-    
     @Autowired
     private UserRepository userRepository;
 
     @Override
     @Transactional
-    public JwtUserPrincipal loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserPrincipal loadUserByUsername(String username) throws UsernameNotFoundException {
 
         log.debug("---loadUserByUsername called.---");
 
@@ -38,7 +33,7 @@ public class JwtCredentialsService implements UserDetailsService {
 
         if (user == null) {
 
-            throw new UsernameNotFoundException(String.format("User with userid %s doesnt not exist", username));
+            throw new UsernameNotFoundException(String.format("User with username : %s doesnt not exist", username));
         }
 
         Set<GrantedAuthority> authorities = new HashSet<>(1);
@@ -51,11 +46,11 @@ public class JwtCredentialsService implements UserDetailsService {
 
         
         user.setUserid(user.getUserid());
-        user.setLastLoginDate(current.format(ApplicationConsts.dtf));
+        user.setLastLoginDate(ApplicationConsts.timeNow());
         user.setActive(true);
         userRepository.save(user);
 
-        JwtUserPrincipal customUserDetail=new JwtUserPrincipal();
+        UserPrincipal customUserDetail=new UserPrincipal();
         customUserDetail.setAuthorities(authorities);
         customUserDetail.setUser(user);
        

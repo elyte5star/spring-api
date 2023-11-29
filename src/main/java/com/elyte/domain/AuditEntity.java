@@ -4,13 +4,12 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import java.sql.Timestamp;
 import lombok.Getter;
 import lombok.Setter;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,7 +23,7 @@ public abstract class AuditEntity {
 
     @CreatedDate
     @Column(name = "CREATED_AT",columnDefinition = "timestamp default '1970-04-10 20:47:05.967394'", updatable = false)
-    private Timestamp created_at;
+    private LocalDateTime created_at;
 
     @LastModifiedBy
     @Column(name = "LAST_MODIFIED_BY",length = 50)
@@ -32,7 +31,7 @@ public abstract class AuditEntity {
 
     @LastModifiedDate
     @Column(name = "LAST_MODIFIED_AT", columnDefinition = "timestamp default '1970-04-10 20:47:05.967394'")
-    private Timestamp lastModifiedAt;
+    private LocalDateTime lastModifiedAt;
 
  
 }

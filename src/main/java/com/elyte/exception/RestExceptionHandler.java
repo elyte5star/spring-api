@@ -8,9 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
-
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -25,10 +23,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.boot.json.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice
 public class RestExceptionHandler {
@@ -43,8 +41,7 @@ public class RestExceptionHandler {
                 e.getClass().getName(),
                 ApplicationConsts.timeNow(), null);
         errorResponse.setStatus(status);
-        log.error("Exception.getMessage--{}", e.getMessage());
-        log.error("Exception.getClass--{}", e.getClass());
+        log.error("[+] ResourceNotFoundException--{}", e.getMessage());
         return new ResponseEntity<>(errorResponse, null, HttpStatus.NOT_FOUND);
 
     }
@@ -65,8 +62,7 @@ public class RestExceptionHandler {
             mp.put(fieldError.getField(), fieldError.getDefaultMessage());
         });
         map.put("errors", mp);
-        log.error("Exception.getMessage--{}", e.getMessage());
-        log.error("Exception.getClass--{}", e.getClass());
+        log.error("[+] MethodArgumentNotValidException--{}", e.getMessage());
         return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
     }
 
@@ -78,8 +74,7 @@ public class RestExceptionHandler {
                 e.getClass().getName(),
                 ApplicationConsts.timeNow(), null);
         errorResponse.setStatus(status);
-        log.error("Exception.getMessage--{}", e.getMessage());
-        log.error("Exception.getClass--{}", e.getClass());
+        log.error("[+] BadCredentialsException--{}", e.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -91,8 +86,7 @@ public class RestExceptionHandler {
                 e.getClass().getName(),
                 ApplicationConsts.timeNow(), null);
         errorResponse.setStatus(status);
-        log.error("Exception.getMessage--{}", e.getMessage());
-        log.error("Exception.getClass--{}", e.getClass());
+        log.error("[+] NullPointerException--{}", e.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -105,8 +99,7 @@ public class RestExceptionHandler {
                 e.getClass().getName(),
                 ApplicationConsts.timeNow(), null);
         errorResponse.setStatus(status);
-        log.error("Exception.getMessage--{}", e.getMessage());
-        log.error("Exception.getClass--{}", e.getClass());
+        log.error("[+] NoHandlerFoundException--{}", e.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
@@ -118,8 +111,7 @@ public class RestExceptionHandler {
                 e.getClass().getName(),
                 ApplicationConsts.timeNow(), null);
         errorResponse.setStatus(status);
-        log.error("Exception.getMessage--{}", e.getMessage());
-        log.error("Exception.getClass--{}", e.getClass());
+        log.error("[+] DisabledException--{}", e.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
@@ -131,8 +123,7 @@ public class RestExceptionHandler {
                 e.getClass().getName(),
                 ApplicationConsts.timeNow(), null);
         errorResponse.setStatus(status);
-        log.error("Exception.getMessage--{}", e.getMessage());
-        log.error("Exception.getClass--{}", e.getClass());
+        log.error("[+] DataIntegrityViolationException--{}", e.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
@@ -146,8 +137,7 @@ public class RestExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.build(status, ApplicationConsts.ADR_MSG);
         httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
         httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        log.error("AccessDenied error: {}", accessDeniedException.getMessage());
-        log.error("Exception.getClass--{}", accessDeniedException.getClass());
+        log.error("[+] AccessDenied error: {}", accessDeniedException.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
 
     }
@@ -173,9 +163,19 @@ public class RestExceptionHandler {
         status.setTimeStamp(ApplicationConsts.timeNow());
         status.setSuccess(ApplicationConsts.FAILURE);
         errorResponse.setStatus(status);
-        log.error("Exception.getMessage--{}", e.getMessage());
-        log.error("Exception.getClass--{}", e.getClass());
+        log.error("[+] HttpMessageNotReadableException --{}", e.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<?> handleMaxSizeException(MaxUploadSizeExceededException exc, HttpServletRequest request,
+            HttpServletResponse response) {
+        CustomResponseStatus status = CustomResponseStatus.build(exc.getStatusCode().value(), "File too large!",
+                ApplicationConsts.FAILURE, exc.getClass().getName(), ApplicationConsts.timeNow(),
+                exc.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.build(status, ApplicationConsts.ADR_MSG);
+        log.error("[+] MaxUploadSizeExceededException --{}", exc.getMessage());
+        return new ResponseEntity<>(errorResponse, exc.getStatusCode());
     }
 
 }

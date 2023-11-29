@@ -4,7 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import java.util.Optional;
-import com.elyte.security.JwtUserPrincipal;
+import com.elyte.security.UserPrincipal;
 
 public class AuditAwareImpl implements AuditorAware<String> {
 
@@ -23,7 +23,7 @@ public class AuditAwareImpl implements AuditorAware<String> {
         // try catch is a workaround for ignore class cast exception when running tests
 
         try {
-            JwtUserPrincipal user = (JwtUserPrincipal) authentication.getPrincipal();
+            UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
 
             return Optional.of(user.getUser().getUserid());
 

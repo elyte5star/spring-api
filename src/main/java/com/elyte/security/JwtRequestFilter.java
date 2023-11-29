@@ -10,7 +10,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.elyte.domain.User;
 import com.elyte.repository.UserRepository;
-import com.elyte.service.JwtCredentialsService;
+import com.elyte.service.CredentialsService;
 import com.elyte.utils.EncryptionUtil;
 import java.io.IOException;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -19,15 +19,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.FilterChain;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.context.annotation.Profile;
+import com.elyte.configuration.Profiles;
 
 
+
+//@Profile(Profiles.JWT_AUTH)
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(JwtRequestFilter.class);
 
     @Autowired
-    private JwtCredentialsService jwtCredentialsService;
+    private CredentialsService jwtCredentialsService;
 
    
     @Autowired
@@ -61,10 +65,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             } catch (IllegalArgumentException e) {
 
-                log.error("Unable to get JWT Token");
+                log.error("[+] Unable to get JWT Token");
 
             } catch (ExpiredJwtException e) {
-                log.error("JWT Token has expired");
+                log.error("[+] JWT Token has expired");
             }
 
         } else {
@@ -79,7 +83,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
              User user = userRepository.findByUserid(audience);
 
 
-            JwtUserPrincipal userDetails = this.jwtCredentialsService.loadUserByUsername(user.getUsername());
+            UserPrincipal userDetails = this.jwtCredentialsService.loadUserByUsername(user.getUsername());
 
             // if token is valid configure Spring Security to manually set
             // authentication

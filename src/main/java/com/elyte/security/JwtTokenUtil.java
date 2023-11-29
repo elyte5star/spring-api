@@ -34,7 +34,7 @@ public class JwtTokenUtil implements Serializable {
 
     // generate token for required data i.e. user details
 
-    public String generateToken(JwtUserPrincipal userDetails) {
+    public String generateToken(UserPrincipal userDetails) {
 
         // we can set extra info this claims hashmap and below defined
         // getCustomParamFromToken to get it by passing Map key.
@@ -63,7 +63,7 @@ public class JwtTokenUtil implements Serializable {
     // userName.equals(userDetails.getUsername()));
     // }
 
-    public Boolean validateToken(String token, JwtUserPrincipal userDetails) {
+    public Boolean validateToken(String token, UserPrincipal userDetails) {
         final String audience = getAudienceFromToken(token);
         return (!isTokenExpired(token) && audience.equals(userDetails.getUser().getUserid()));
     }

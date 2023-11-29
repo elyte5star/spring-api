@@ -14,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
-public class JwtUserPrincipal implements UserDetails{
+public class UserPrincipal implements UserDetails{
 
     private User user;
 

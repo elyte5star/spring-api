@@ -1,6 +1,10 @@
 server:
   port: 8001
   name: elyte
+  error:
+    whitelabel:
+      enabled: false
+    path: /error
 
 ---
 management:
@@ -18,6 +22,7 @@ logging:
   pattern:
     console: '%clr(%d{dd-MM-yyyy HH:mm:ss.SSS}){yellow} %clr([%level]){red}  %c{1.} [%t] %m%n'
   level:
+    root: INFO
     org:
       springframework: INFO
       
@@ -40,6 +45,28 @@ springdoc:
 ---
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: '10MB'
+      max-request-size: '10MB'
+      resolve-lazily: true
+
+  mail:
+    templates:
+      path: templates
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    port: 587
+    username: 'elyte5star'
+    password: ${MAIL_PASSWORD:vqynttjhqmfblupu}
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          startttls:
+            enable: true
+
   output:
     ansi:
       enabled: always
@@ -58,6 +85,7 @@ spring:
   # Maximum time static resources should be cached
   web:
     resources:
+      add-mapping: false
       cache:
         cachecontrol:
           max-age: 12h
@@ -94,3 +122,7 @@ api:
   cipher:
     secret: ${CIPHER_SECRET:8a3b7aee84b1856e0f786d7e938ce8908a551779c6b6ceecf92e726e97ef98df}
     salt: ${CIPHER_SALT:7409412499eaa142810374d343ae17f988a99809be4bf42fb79b474d7a198c79}
+
+---
+attachment:
+  invoice: 'path_to_file'

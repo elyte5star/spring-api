@@ -2,10 +2,9 @@ package com.elyte.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 import com.elyte.domain.request.LoginRequestData;
-
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.response.TokenResponse;
-import com.elyte.security.JwtUserPrincipal;
+import com.elyte.security.UserPrincipal;
 import com.elyte.security.JwtTokenUtil;
 import com.elyte.utils.ApplicationConsts;
 import com.elyte.utils.EncryptionUtil;
@@ -22,10 +21,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
+import org.springframework.context.annotation.Profile;
+import com.elyte.configuration.Profiles;
 
+
+//@Profile(Profiles.JWT_AUTH)
 @RestController
 @RequestMapping("/auth")
-public class LoginController {
+public class JwtLoginController {
 
         @Autowired
         private AuthenticationManager authenticationManager;
@@ -37,24 +40,25 @@ public class LoginController {
         public ResponseEntity<CustomResponseStatus> createToken(HttpServletRequest request,
                         @RequestBody @Valid LoginRequestData loginRequestData)
                         throws Exception {
-              
+
                 try {
                         Authentication authentication = authenticationManager.authenticate(
                                         new UsernamePasswordAuthenticationToken(loginRequestData.getUsername(),
                                                         loginRequestData.getPassword()));
-                        final JwtUserPrincipal userDetails = (JwtUserPrincipal) authentication.getPrincipal();
-                       
+                        final UserPrincipal userDetails = (UserPrincipal) authentication.getPrincipal();
+
                         final String token = jwtTokenUtil.generateToken(userDetails);
 
                         TokenResponse tokenResponse = TokenResponse.build(EncryptionUtil.encrypt(token), "bearer",
                                         userDetails.getUsername(), userDetails.getUser().getEmail(),
                                         userDetails.isEnabled(), userDetails.getUser().isAdmin(),
                                         userDetails.getUser().getUserid());
-                
-                        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(),ApplicationConsts.I200_MSG,
+
+                        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(),
+                                        ApplicationConsts.I200_MSG,
                                         ApplicationConsts.SUCCESS,
-                                        ApplicationConsts.SEC, ApplicationConsts.timeNow(),tokenResponse);
-                        
+                                        request.getRequestURL().toString(), ApplicationConsts.timeNow(), tokenResponse);
+
                         return new ResponseEntity<>(resp, HttpStatus.OK);
 
                 } catch (DisabledException e) {

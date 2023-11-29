@@ -12,6 +12,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,6 +40,7 @@ public class User extends AuditEntity{
 
     @Column(name = "USERNAME",unique = true)
     @NotBlank(message = "username is required")
+    @Size(min = 5)
     private String username;
 
     
@@ -70,6 +72,7 @@ public class User extends AuditEntity{
     
     @Column(name = "TELEPHONE",unique = true)
     @Digits(fraction = 0, integer = 10)
+    @Size(min = 7)
     private String telephone;
 
     @Column(name = "DISCOUNT")
