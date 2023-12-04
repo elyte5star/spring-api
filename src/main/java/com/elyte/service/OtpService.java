@@ -19,15 +19,15 @@ public class OtpService {
 
     private static final Logger log = LoggerFactory.getLogger(OtpService.class);
 
-    public static final int OTP_VALIDITY = 3; // 3 minutes
+    public static final int OTP_VALIDITY = 5; // 3 minutes
 
     public Otp generateOtp(String email) {
         String randomString = RandomStringGen.randomString(6);
         Otp otp = new Otp();
         otp.setEmail(email);
         otp.setOtpString(randomString);
+        otp.setDuration(OTP_VALIDITY);
         otp = otpRepository.save(otp);
-        log.info("[+] OTP with id : " + otp.getOtpId() + "CREATED  AND SAVED");
         return otp;
     }
 
@@ -42,16 +42,12 @@ public class OtpService {
                 LocalDateTime now = LocalDateTime.now();
                 LocalDateTime createdAt = otpInDb.getCreated_at();
                 long timeDifference = Duration.between(createdAt, now).toMinutes();
-                if (timeDifference > OTP_VALIDITY)
-                    return "expired";
-
+                if (timeDifference > OTP_VALIDITY) return "expired";
                 deleteOtp(otpInDb);
                 return "valid";
-
             }
-
         }
-
+        log.warn("[+] INVALID OTP ");
         return "invalid";
     }
 

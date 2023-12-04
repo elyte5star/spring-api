@@ -50,6 +50,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             user.setEnabled(true);
             user.setCreatedBy(name);
 			user = userRepository.save(user);
+			log.info("[+] Preloading " + user);
 		}
 		return user;
 	}

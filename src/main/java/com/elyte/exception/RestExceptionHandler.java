@@ -2,6 +2,7 @@ package com.elyte.exception;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +22,44 @@ import com.elyte.utils.ApplicationConsts;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.dao.DataIntegrityViolationException;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.boot.json.JsonParseException;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice
-public class RestExceptionHandler {
+public class RestExceptionHandler implements ErrorController {
 
     private static final Logger log = LoggerFactory.getLogger(RestExceptionHandler.class);
+
+    @GetMapping("/error")
+    public ResponseEntity<CustomResponseStatus> handleError(HttpServletRequest request){
+        Integer code = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+        if(null != code){
+            log.debug("Error thrown -- statusCode {}", code);
+            switch (code){
+                case 404:
+                    CustomResponseStatus status = CustomResponseStatus.build(code, ApplicationConsts.E404_MSG,
+                    ApplicationConsts.FAILURE,
+                    request.getRequestURL().toString(),
+                    ApplicationConsts.timeNow(), null);
+                  
+                    return new ResponseEntity<>(status, HttpStatus.BAD_REQUEST);
+                case 500:
+                     CustomResponseStatus status1 = CustomResponseStatus.build(code, ApplicationConsts.E500_MSG,
+                     ApplicationConsts.FAILURE,
+                     request.getRequestURL().toString(),
+                     ApplicationConsts.timeNow(), null);
+                    return new ResponseEntity<>(status1, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+         CustomResponseStatus status = CustomResponseStatus.build(code,ApplicationConsts.I999_MSG,ApplicationConsts.SUCCESS, request.getRequestURL().toString(),ApplicationConsts.timeNow(), null);
+        return new ResponseEntity<>(status, HttpStatus.OK);
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleUserNotFoundException(ResourceNotFoundException e, HttpServletRequest request) {
@@ -93,7 +121,6 @@ public class RestExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<?> handleNoHandlerFound(Exception e) {
         ErrorResponse errorResponse = new ErrorResponse(ApplicationConsts.E404_MSG);
-
         CustomResponseStatus status = CustomResponseStatus.build(HttpStatus.NOT_FOUND.value(), e.getMessage(),
                 ApplicationConsts.FAILURE,
                 e.getClass().getName(),
@@ -173,9 +200,27 @@ public class RestExceptionHandler {
         CustomResponseStatus status = CustomResponseStatus.build(exc.getStatusCode().value(), "File too large!",
                 ApplicationConsts.FAILURE, exc.getClass().getName(), ApplicationConsts.timeNow(),
                 exc.getMessage());
-        ErrorResponse errorResponse = ErrorResponse.build(status, ApplicationConsts.ADR_MSG);
+        ErrorResponse errorResponse = ErrorResponse.build(status, ApplicationConsts.E413_MSG);
         log.error("[+] MaxUploadSizeExceededException --{}", exc.getMessage());
         return new ResponseEntity<>(errorResponse, exc.getStatusCode());
+    }
+
+    // fallback method
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleFallback(HttpServletRequest request, Exception e) {
+        log.error("[+] Fallback Exception.getMessage--{}", e.getMessage());
+        HttpStatus s = getStatus(request);
+        CustomResponseStatus customStatus = CustomResponseStatus.build(s.value(), e.getMessage(),
+                ApplicationConsts.FAILURE, e.getClass().getName(), ApplicationConsts.timeNow(),
+                e.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.build(customStatus, ApplicationConsts.I999_MSG);
+        return new ResponseEntity<>(errorResponse, s);
+    }
+
+    private HttpStatus getStatus(HttpServletRequest request) {
+        Integer code = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+        HttpStatus status = HttpStatus.resolve(code);
+        return (status != null) ? status : HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
 }

@@ -1,0 +1,28 @@
+package com.elyte.domain.request;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+
+@AllArgsConstructor(staticName = "build")
+@NoArgsConstructor
+@Data
+public class EmailAlert  implements Serializable{
+    
+    private static final long serialVersionUID = 1234567L;
+
+    @Email(message = "invalid email address")
+    private String recipientEmail;
+
+    @NotBlank(message = "username is required")
+    private String recipientUsername;
+
+    @NotBlank(message = "subject is required")
+    private String subject;
+    
+}

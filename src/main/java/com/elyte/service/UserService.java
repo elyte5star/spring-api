@@ -24,6 +24,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+
     public ResponseEntity<CustomResponseStatus> getUsers() {
 
         Iterable<User> allUsersInDb = userRepository.findAll();
@@ -134,5 +135,8 @@ public class UserService {
         throw new ResourceNotFoundException("User with id :" + userid + " not found!");
 
     }
+
+
+    
 
 }

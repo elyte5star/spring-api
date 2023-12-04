@@ -25,6 +25,8 @@ logging:
     root: INFO
     org:
       springframework: INFO
+      security: TRACE
+       
       
 ---
 
@@ -51,22 +53,6 @@ spring:
       max-request-size: '10MB'
       resolve-lazily: true
 
-  mail:
-    templates:
-      path: templates
-    default-encoding: UTF-8
-    host: smtp.gmail.com
-    port: 587
-    username: 'elyte5star'
-    password: ${MAIL_PASSWORD:vqynttjhqmfblupu}
-    protocol: smtp
-    properties:
-      mail:
-        smtp:
-          auth: true
-          startttls:
-            enable: true
-
   output:
     ansi:
       enabled: always
@@ -85,7 +71,6 @@ spring:
   # Maximum time static resources should be cached
   web:
     resources:
-      add-mapping: false
       cache:
         cachecontrol:
           max-age: 12h
@@ -94,7 +79,7 @@ spring:
   # DATA SOURCE
   #===============================
   datasource:
-    url: jdbc:mariadb://localhost:3306/elyte
+    url: jdbc:mariadb://localhost:3306/elyte?createDatabaseIfNotExist=true
     username: userExample
     password: 54321
     driver-class-name: org.mariadb.jdbc.Driver

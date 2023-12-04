@@ -21,11 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
-import org.springframework.context.annotation.Profile;
-import com.elyte.configuration.Profiles;
 
-
-//@Profile(Profiles.JWT_AUTH)
 @RestController
 @RequestMapping("/auth")
 public class JwtLoginController {
@@ -72,5 +68,7 @@ public class JwtLoginController {
                 }
 
         }
+
+        
 
 }

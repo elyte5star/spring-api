@@ -29,7 +29,14 @@ public class ApplicationConsts {
 
     public static final String I204_MSG = "Entity updated";
 
-    
+    public static final String SMTP_MSG = "Hello %s,\n\nYour OTP for registration is %s. It is valid for %s minutes. Do not share it with anyone." +
+     "\n\nRegards,\nTeam ELYTE.\n\n\nThis is system generated mail. Please do not reply to this.";
+
+    public static final String VERIFY_USER_EMAIL_TEMPLATE_NAME = "html/email-alert";
+
+    public static final String EMAIL_WITHATTACHMENT_TEMPLATE_NAME = "html/email-withattachment";
+
+    public static final String EMAIL_TEXT_TEMPLATE_NAME = "text/email-text";
 
     public static final String E205_MSG = "Data integrity violation";
 
@@ -41,9 +48,18 @@ public class ApplicationConsts {
 
     public static final String E404_MSG = "Entity not found.";
 
+    public static final String E403_SMTP_MSG = "Your OTP is expired.";
+
+    public static final String E401_SMTP_MSG = "Your OTP is invalid.";
+
+    public static final String E410_SMTP_MSG = "Your OTP is no longer valid or usable.";
+
     public static final String I999_MSG = "Sorry! Something went wrong. Please try again.";
 
     public static final String E409_MSG = "User account disabled";
+
+    public static final String E413_MSG = "Larger than limits defined by server";
+
 
     public static final String E500_MSG = "Internal Server Error.";
 

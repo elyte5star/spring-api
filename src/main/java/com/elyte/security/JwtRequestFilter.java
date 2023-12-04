@@ -7,7 +7,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import com.elyte.domain.User;
 import com.elyte.repository.UserRepository;
 import com.elyte.service.CredentialsService;
@@ -19,12 +18,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.FilterChain;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.context.annotation.Profile;
-import com.elyte.configuration.Profiles;
 
 
 
-//@Profile(Profiles.JWT_AUTH)
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 

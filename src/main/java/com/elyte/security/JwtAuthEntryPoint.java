@@ -39,7 +39,7 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint, Serializable
 		OutputStream responseStream = response.getOutputStream();
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.writeValue(responseStream, errorResponse);
-		log.error("[+] Unauthorized JWT error: {}", authException.getMessage());
+		log.error("[+] Unauthorized error: {}", authException.getMessage());
 		responseStream.flush();
 
 	}

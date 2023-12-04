@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 
+
+
 @Component
 public class BasicAuthEntryPoint extends BasicAuthenticationEntryPoint implements Serializable {
 
