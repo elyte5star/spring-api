@@ -209,18 +209,13 @@ public class RestExceptionHandler implements ErrorController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleFallback(HttpServletRequest request, Exception e) {
         log.error("[+] Fallback Exception.getMessage--{}", e.getMessage());
-        HttpStatus s = getStatus(request);
-        CustomResponseStatus customStatus = CustomResponseStatus.build(s.value(), e.getMessage(),
+        CustomResponseStatus customStatus = CustomResponseStatus.build(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
                 ApplicationConsts.FAILURE, e.getClass().getName(), ApplicationConsts.timeNow(),
                 e.getMessage());
         ErrorResponse errorResponse = ErrorResponse.build(customStatus, ApplicationConsts.I999_MSG);
-        return new ResponseEntity<>(errorResponse, s);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    private HttpStatus getStatus(HttpServletRequest request) {
-        Integer code = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-        HttpStatus status = HttpStatus.resolve(code);
-        return (status != null) ? status : HttpStatus.INTERNAL_SERVER_ERROR;
-    }
+    
 
 }

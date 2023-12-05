@@ -1,16 +1,16 @@
 @font-face {
     font-family: Raleway;
-    src: url(./google-fonts/Raleway/Raleway-VariableFont_wght.ttf);
+    src: url(./fonts/google-fonts/Raleway/Raleway-VariableFont_wght.ttf);
 }
 
 @font-face {
     font-family: Tangerine;
-    src: url(./google-fonts/Tangerine/Tangerine-Bold.ttf);
+    src: url(./fonts/google-fonts/Tangerine/Tangerine-Bold.ttf);
 }
 
 @font-face {
     font-family: Kaushan Script;
-    src: url(./google-fonts/Kaushan/KaushanScript-Regular.ttf);
+    src: url(./fonts/google-fonts/Kaushan/KaushanScript-Regular.ttf);
 }
 
 :root {

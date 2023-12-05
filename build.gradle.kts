@@ -39,6 +39,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-mail")
+	implementation("org.jasypt:jasypt-springsecurity3:1.9.3")
 	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 	implementation("io.jsonwebtoken:jjwt:0.9.0")
 	implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.1")

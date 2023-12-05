@@ -135,12 +135,10 @@ public class EmailAlertService {
         final Context thymeleafContext = new Context(locale);
 
         Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put("recipientEmail", mailObject.getRecipientEmail());
-        templateModel.put("senderName", NOREPLY_ADDRESS);
         templateModel.put("username", mailObject.getRecipientUsername());
         templateModel.put("otp", otp);
         templateModel.put("duration", duration);
-        templateModel.put("home", "http://localhost:9000");
+        templateModel.put("home", "http://localhost:8001");
         thymeleafContext.setVariables(templateModel);
 
         // Create the HTML body using Thymeleaf

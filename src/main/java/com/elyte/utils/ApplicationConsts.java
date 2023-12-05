@@ -32,7 +32,7 @@ public class ApplicationConsts {
     public static final String SMTP_MSG = "Hello %s,\n\nYour OTP for registration is %s. It is valid for %s minutes. Do not share it with anyone." +
      "\n\nRegards,\nTeam ELYTE.\n\n\nThis is system generated mail. Please do not reply to this.";
 
-    public static final String VERIFY_USER_EMAIL_TEMPLATE_NAME = "html/email-alert";
+    public static final String VERIFY_USER_EMAIL_TEMPLATE_NAME = "html/verify-user";
 
     public static final String EMAIL_WITHATTACHMENT_TEMPLATE_NAME = "html/email-withattachment";
 
