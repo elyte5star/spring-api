@@ -126,7 +126,7 @@ public class EmailAlertService {
     /*
      * Send HTML mail (simple)
      */
-    public void sendSimpleHtmlMail(EmailAlert mailObject, String otp, int duration, final Locale locale)
+    public void sendSimpleHtmlMail(EmailAlert mailObject, String otp, int duration, final Locale locale,String template)
             throws MessagingException {
         if (this.mailSender == null)
             return;
@@ -140,10 +140,9 @@ public class EmailAlertService {
         templateModel.put("duration", duration);
         templateModel.put("home", "http://localhost:8001");
         thymeleafContext.setVariables(templateModel);
-
         // Create the HTML body using Thymeleaf
-        final String htmlBody = this.htmlTemplateEngine.process(ApplicationConsts.VERIFY_USER_EMAIL_TEMPLATE_NAME,
-                thymeleafContext);
+        final String htmlBody = this.htmlTemplateEngine.process(template,thymeleafContext);
+
         sendHtmlMessage(mailObject.getSubject(), mailObject.getRecipientEmail(), htmlBody);
     }
 

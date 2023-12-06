@@ -15,14 +15,10 @@ import com.elyte.service.OtpService;
 import com.elyte.security.JwtTokenUtil;
 import com.elyte.utils.ApplicationConsts;
 import com.elyte.utils.EncryptionUtil;
-
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-
 import java.util.Locale;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -96,7 +92,7 @@ public class JwtLoginController {
                 User user = userRepository.findByUsername(username);
                 Otp otp = otpService.generateOtp(user.getEmail());
                 EmailAlert mailObject = EmailAlert.build(user.getEmail(), user.getUsername(), "Confirm your account");
-                emailAlertService.sendSimpleHtmlMail(mailObject, otp.getOtpString(),otp.getDuration(),locale);
+                emailAlertService.sendSimpleHtmlMail(mailObject, otp.getOtpString(),otp.getDuration(),locale,ApplicationConsts.VERIFY_USER_EMAIL_TEMPLATE_NAME);
         }
 
         

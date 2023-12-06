@@ -35,10 +35,11 @@ public class EmailController {
 
     @PostMapping("/sendHtml")
     @Operation(summary = "Send registration confirmation email")
-    public ResponseEntity<CustomResponseStatus> sendEmail(@RequestBody @Valid EmailAlert mailObject, final Locale locale)
+    public ResponseEntity<CustomResponseStatus> sendEmail(@RequestBody @Valid EmailAlert mailObject,
+            final Locale locale)
             throws MessagingException {
         Otp otp = otpService.generateOtp(mailObject.getRecipientEmail());
-        emailAlertService.sendSimpleHtmlMail(mailObject, otp.getOtpString(),otp.getDuration(),locale);
+        emailAlertService.sendSimpleHtmlMail(mailObject, otp.getOtpString(), otp.getDuration(), locale,ApplicationConsts.VERIFY_USER_EMAIL_TEMPLATE_NAME);
         CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, ApplicationConsts.timeNow(), otp.getOtpString());
@@ -65,7 +66,8 @@ public class EmailController {
             return new ResponseEntity<>(resp, HttpStatus.UNAUTHORIZED);
         } else {
             resp = CustomResponseStatus.build(HttpStatus.GONE.value(), ApplicationConsts.E410_SMTP_MSG,
-                    ApplicationConsts.FAILURE, ApplicationConsts.SRC, ApplicationConsts.timeNow(), "User already verified!");
+                    ApplicationConsts.FAILURE, ApplicationConsts.SRC, ApplicationConsts.timeNow(),
+                    "User already verified!");
             return new ResponseEntity<>(resp, HttpStatus.GONE);
         }
 

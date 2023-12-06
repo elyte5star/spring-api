@@ -24,5 +24,7 @@ public class EmailAlert  implements Serializable{
 
     @NotBlank(message = "subject is required")
     private String subject;
+
+    
     
 }

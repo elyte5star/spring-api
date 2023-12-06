@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public class ApplicationConsts {
 
     public static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -29,10 +31,13 @@ public class ApplicationConsts {
 
     public static final String I204_MSG = "Entity updated";
 
-    public static final String SMTP_MSG = "Hello %s,\n\nYour OTP for registration is %s. It is valid for %s minutes. Do not share it with anyone." +
-     "\n\nRegards,\nTeam ELYTE.\n\n\nThis is system generated mail. Please do not reply to this.";
+    public static final String SMTP_MSG = "Hello %s,\n\nYour OTP for registration is %s. It is valid for %s minutes. Do not share it with anyone."
+            +
+            "\n\nRegards,\nTeam ELYTE.\n\n\nThis is system generated mail. Please do not reply to this.";
 
     public static final String VERIFY_USER_EMAIL_TEMPLATE_NAME = "html/verify-user";
+
+    public static final String RESET_USER_PASSWORD = "html/reset-password";
 
     public static final String EMAIL_WITHATTACHMENT_TEMPLATE_NAME = "html/email-withattachment";
 
@@ -60,12 +65,11 @@ public class ApplicationConsts {
 
     public static final String E413_MSG = "Larger than limits defined by server";
 
-
     public static final String E500_MSG = "Internal Server Error.";
 
-    public static String timeNow(){
+    public static String timeNow() {
         LocalDateTime current = LocalDateTime.now();
-        return  current.format(dtf);
+        return current.format(dtf);
 
     }
 
@@ -75,6 +79,15 @@ public class ApplicationConsts {
         }
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(object);
+    }
+
+    public static String getClientIP(HttpServletRequest request) {
+        final String xfHeader = request.getHeader("X-Forwarded-For");
+        if (xfHeader == null || xfHeader.isEmpty() ||
+                !xfHeader.contains(request.getRemoteAddr())) {
+            return request.getRemoteAddr();
+        }
+        return xfHeader.split(",")[0];
     }
 
 }

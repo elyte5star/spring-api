@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.elyte.domain.Otp;
 import com.elyte.domain.User;
 import com.elyte.domain.request.CreateUserRequest;
@@ -16,9 +15,8 @@ import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
 import java.util.Optional;
 import com.elyte.utils.CheckNullEmptyBlank;
-
 import jakarta.mail.MessagingException;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import com.elyte.utils.CheckIfUserExist;
 import java.util.List;
@@ -34,11 +32,13 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private PassowrdResetService passowrdResetService;
+
+    @Autowired
     private EmailAlertService emailAlertService;
 
     @Autowired
     private OtpService otpService;
-
 
     public ResponseEntity<CustomResponseStatus> getUsers() {
 
@@ -50,8 +50,8 @@ public class UserService {
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
-    public ResponseEntity<CustomResponseStatus> addUser(CreateUserRequest createUserRequest,Locale locale)
-            throws DataIntegrityViolationException,MessagingException {
+    public ResponseEntity<CustomResponseStatus> addUser(CreateUserRequest createUserRequest, Locale locale)
+            throws DataIntegrityViolationException, MessagingException {
         if (!CheckIfUserExist.isExisting(createUserRequest, userRepository)) {
             User newUser = new User();
             newUser.setUsername(createUserRequest.getUsername());
@@ -59,15 +59,17 @@ public class UserService {
             newUser.setTelephone(createUserRequest.getTelephone());
             newUser.setEmail(createUserRequest.getEmail());
             newUser.setLastLoginDate("0");
-            //newUser.setEnabled(createUserRequest.isEnabled());
+            // newUser.setEnabled(createUserRequest.isEnabled());
             newUser = userRepository.save(newUser);
             Otp otp = otpService.generateOtp(newUser.getEmail());
             EmailAlert mailObject = EmailAlert.build(newUser.getEmail(), newUser.getUsername(), "Confirm your account");
-            emailAlertService.sendSimpleHtmlMail(mailObject, otp.getOtpString(),otp.getDuration(),locale);
+            emailAlertService.sendSimpleHtmlMail(mailObject, otp.getOtpString(), otp.getDuration(), locale,
+                    ApplicationConsts.VERIFY_USER_EMAIL_TEMPLATE_NAME);
             CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.CREATED.value(),
                     ApplicationConsts.I201_MSG,
                     ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(),Map.of("userid",newUser.getUserid(),"otp",otp.getOtpString()));
+                    ApplicationConsts.SRC, ApplicationConsts.timeNow(),
+                    Map.of("userid", newUser.getUserid(), "otp", otp.getOtpString()));
             return new ResponseEntity<>(resp, HttpStatus.CREATED);
         }
 
@@ -154,7 +156,39 @@ public class UserService {
 
     }
 
+    public ResponseEntity<CustomResponseStatus> createPasswordResetTokenForUser(HttpServletRequest request,
+            String email) throws ResourceNotFoundException, MessagingException {
+        final String result = passowrdResetService.createPasswordResetTokenForUser(request, email);
+        if ("NotFound".equals(result)) {
+            throw new ResourceNotFoundException("User with email :" + email + " not found!");
+        }
+        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+                ApplicationConsts.SUCCESS,
+                ApplicationConsts.SRC, ApplicationConsts.timeNow(), result);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+    }
 
     
+    public ResponseEntity<CustomResponseStatus> validatePasswordResetToken(String encryptedToken)
+            throws ResourceNotFoundException {
+        final String result = passowrdResetService.validatePasswordResetToken(encryptedToken);
+        if (result == null) {
+            CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+                    ApplicationConsts.SUCCESS,
+                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), "passsword Changed!");
+            return new ResponseEntity<>(resp, HttpStatus.OK);
+
+        } else if ("expired".equals(result)) {
+            CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.FORBIDDEN.value(),
+                    ApplicationConsts.E403_SMTP_MSG,
+                    ApplicationConsts.FAILURE, ApplicationConsts.SRC, ApplicationConsts.timeNow(), null);
+            return new ResponseEntity<>(resp, HttpStatus.FORBIDDEN);
+
+        } else {
+            throw new ResourceNotFoundException("Token :" + encryptedToken + " not found!");
+
+        }
+
+    }
 
 }

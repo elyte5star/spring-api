@@ -42,6 +42,8 @@ public class MultiAuthSecurityConfig {
             "/index",
             "/login",
             "/users/signup",
+            "/users/resetPassword",
+            "/users/changePassword",
             "/mail/sendHtml",
             "/mail/verify-otp",
             "/reviews/create-review",
