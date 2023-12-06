@@ -33,6 +33,6 @@ public class CreateUserRequest implements Serializable {
 
     // private final boolean admin = false;
 
-    private boolean enabled = true;
+    //private boolean enabled = true;
 
 }

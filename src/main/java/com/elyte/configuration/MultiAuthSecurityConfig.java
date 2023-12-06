@@ -3,6 +3,7 @@ package com.elyte.configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,8 +20,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
 
 @Configuration
 @EnableWebSecurity
@@ -43,14 +42,6 @@ public class MultiAuthSecurityConfig {
             "/index",
             "/login",
             "/users/signup",
-            "/resources/**", 
-            "/static/**", 
-            "/css/**", "/js/**",
-            "/images/**",
-            "/resources/static/**",
-            "/fonts/**",
-            "/favicon.ico",
-            "/favicon.png",
             "/mail/sendHtml",
             "/mail/verify-otp",
             "/reviews/create-review",
@@ -62,7 +53,6 @@ public class MultiAuthSecurityConfig {
 
     };
 
-   
     @Bean
     SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
         log.debug("SecurityConfig initialized.");
@@ -92,6 +82,17 @@ public class MultiAuthSecurityConfig {
     PasswordEncoder passwordEncoder() {
         log.debug("PasswordEncoder invoked.");
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/resources/**",
+                "/static/**",
+                "/css/**", "/js/**",
+                "/images/**",
+                "/resources/static/**",
+                "/fonts/**",
+                "/favicon.ico");
     }
 
 }

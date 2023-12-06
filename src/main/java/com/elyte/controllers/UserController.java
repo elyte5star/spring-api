@@ -1,7 +1,11 @@
 package com.elyte.controllers;
 
 import com.elyte.domain.request.CreateUserRequest;
+
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +19,7 @@ import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
@@ -42,8 +47,8 @@ public class UserController {
 
     @PostMapping("/signup")
     @Operation(summary = "Create a user")
-    public ResponseEntity<CustomResponseStatus> createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
-        return userService.addUser(createUserRequest);
+    public ResponseEntity<CustomResponseStatus> createUser(@RequestBody @Valid CreateUserRequest createUserRequest,final Locale locale) throws DataIntegrityViolationException,MessagingException{
+        return userService.addUser(createUserRequest,locale);
     }
 
     @DeleteMapping("/{userid}")

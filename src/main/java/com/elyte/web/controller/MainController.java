@@ -34,6 +34,12 @@ public class MainController {
         return "login";
     }
 
+     /* error page. */
+    @GetMapping(value= "/error")
+    public String error() {
+        return "error";
+    }
+
     @PostMapping("/login")
     public ResponseEntity<CustomResponseStatus> login(HttpServletRequest request,
             @RequestBody @Valid LoginRequest loginRequest) {

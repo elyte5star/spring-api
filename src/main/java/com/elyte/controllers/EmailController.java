@@ -7,9 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import java.util.Locale;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -67,7 +65,7 @@ public class EmailController {
             return new ResponseEntity<>(resp, HttpStatus.UNAUTHORIZED);
         } else {
             resp = CustomResponseStatus.build(HttpStatus.GONE.value(), ApplicationConsts.E410_SMTP_MSG,
-                    ApplicationConsts.FAILURE, ApplicationConsts.SRC, ApplicationConsts.timeNow(), null);
+                    ApplicationConsts.FAILURE, ApplicationConsts.SRC, ApplicationConsts.timeNow(), "User already verified!");
             return new ResponseEntity<>(resp, HttpStatus.GONE);
         }
 

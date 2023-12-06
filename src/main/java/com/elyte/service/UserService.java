@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.elyte.domain.Otp;
 import com.elyte.domain.User;
 import com.elyte.domain.request.CreateUserRequest;
 import com.elyte.exception.ResourceNotFoundException;
@@ -14,15 +16,28 @@ import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
 import java.util.Optional;
 import com.elyte.utils.CheckNullEmptyBlank;
+
+import jakarta.mail.MessagingException;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import com.elyte.utils.CheckIfUserExist;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import com.elyte.domain.request.EmailAlert;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailAlertService emailAlertService;
+
+    @Autowired
+    private OtpService otpService;
 
 
     public ResponseEntity<CustomResponseStatus> getUsers() {
@@ -35,8 +50,8 @@ public class UserService {
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
-    public ResponseEntity<CustomResponseStatus> addUser(CreateUserRequest createUserRequest)
-            throws DataIntegrityViolationException {
+    public ResponseEntity<CustomResponseStatus> addUser(CreateUserRequest createUserRequest,Locale locale)
+            throws DataIntegrityViolationException,MessagingException {
         if (!CheckIfUserExist.isExisting(createUserRequest, userRepository)) {
             User newUser = new User();
             newUser.setUsername(createUserRequest.getUsername());
@@ -44,12 +59,15 @@ public class UserService {
             newUser.setTelephone(createUserRequest.getTelephone());
             newUser.setEmail(createUserRequest.getEmail());
             newUser.setLastLoginDate("0");
-            newUser.setEnabled(createUserRequest.isEnabled());
-            userRepository.save(newUser);
+            //newUser.setEnabled(createUserRequest.isEnabled());
+            newUser = userRepository.save(newUser);
+            Otp otp = otpService.generateOtp(newUser.getEmail());
+            EmailAlert mailObject = EmailAlert.build(newUser.getEmail(), newUser.getUsername(), "Confirm your account");
+            emailAlertService.sendSimpleHtmlMail(mailObject, otp.getOtpString(),otp.getDuration(),locale);
             CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.CREATED.value(),
                     ApplicationConsts.I201_MSG,
                     ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), newUser.getUserid());
+                    ApplicationConsts.SRC, ApplicationConsts.timeNow(),Map.of("userid",newUser.getUserid(),"otp",otp.getOtpString()));
             return new ResponseEntity<>(resp, HttpStatus.CREATED);
         }
 

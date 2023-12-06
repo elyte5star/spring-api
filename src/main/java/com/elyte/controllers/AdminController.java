@@ -1,6 +1,9 @@
 package com.elyte.controllers;
 import java.util.List;
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +26,7 @@ import com.elyte.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
 
@@ -59,8 +63,8 @@ public class AdminController {
     @PostMapping("/users/create-user")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Create a user",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
-        return userService.addUser(createUserRequest);
+    public ResponseEntity<CustomResponseStatus> createUser(@RequestBody @Valid CreateUserRequest createUserRequest,final Locale locale) throws DataIntegrityViolationException,MessagingException{
+        return userService.addUser(createUserRequest,locale);
     }
 
     @DeleteMapping("/users/delete/{userid}")
