@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -35,20 +36,18 @@ public class Job extends AuditEntity{
     @Column(name = "JOB_ID")
     private String job_id;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OWNER_ID", referencedColumnName = "USER_ID")
     private User owner;
 
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "TASK_ID")
-    @OrderBy
+    @JoinColumn(name = "tasks")
     private List<Task> tasks;
 
-
-    @Column(name = "NUMBER_OF_TASKS")
-    private int numberOfTasks;
+    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false, name = "user_id")
+    private User user;
 
 
     @Column(name = "JOB_REQUEST", columnDefinition = "json")

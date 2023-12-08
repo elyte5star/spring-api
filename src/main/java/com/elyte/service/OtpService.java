@@ -30,7 +30,7 @@ public class OtpService {
 
     private static final Logger log = LoggerFactory.getLogger(OtpService.class);
 
-    public static final int OTP_VALIDITY = 5; // 5 minutes
+    public static final int OTP_VALIDITY = 1; // 5 minutes
 
     public Otp generateOtp(Locale locale,User user) throws MessagingException {
         String randomString = RandomStringGen.randomString(6);

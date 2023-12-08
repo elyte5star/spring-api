@@ -33,7 +33,7 @@ public class Task extends AuditEntity{
 
 
     @ManyToOne(targetEntity =Job.class,fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false,name = "JOB_ID")
+    @JoinColumn(nullable = false,name = "job_id")
     private Job job;
 
 

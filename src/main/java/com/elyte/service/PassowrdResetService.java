@@ -2,7 +2,7 @@ package com.elyte.service;
 import java.util.Calendar;
 import com.elyte.domain.PasswordResetToken;
 import com.elyte.domain.User;
-import com.elyte.repository.PasswordTokenRepository;
+import com.elyte.repository.PasswordResetTokenRepository;
 import com.elyte.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class PassowrdResetService {
     private EmailAlertService emailAlertService;
 
     @Autowired
-    private PasswordTokenRepository passwordTokenRepository;
+    private PasswordResetTokenRepository passwordTokenRepository;
 
     private boolean isTokenExpired(PasswordResetToken passToken) {
         final Calendar cal = Calendar.getInstance();
