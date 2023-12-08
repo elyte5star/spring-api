@@ -65,8 +65,10 @@ public class EmailAlertService {
         // Send email
         this.mailSender.send(mimeMessage);
     }
-
-    public void sendRegistrationOtpMail(EmailAlert mailObject, String otp, int duration, final Locale locale) {
+     /*
+     * Send String mail
+     */
+    public void sendStringMail(EmailAlert mailObject, String messages,final Locale locale) {
 
         if (this.mailSender == null)
             return;
@@ -76,8 +78,7 @@ public class EmailAlertService {
             message.setFrom(NOREPLY_ADDRESS);
             message.setTo(mailObject.getRecipientEmail());
             message.setSubject(mailObject.getSubject());
-            message.setText(
-                    String.format(ApplicationConsts.SMTP_MSG, mailObject.getRecipientUsername(), otp, duration));
+            message.setText(messages);    
             this.mailSender.send(message);
             log.debug("[+] Mail sent successfully.");
 

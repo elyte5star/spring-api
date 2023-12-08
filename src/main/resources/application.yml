@@ -111,3 +111,9 @@ api:
 ---
 attachment:
   invoice: 'path_to_file'
+
+---
+geo:
+  ip:
+    lib:
+      enabled: true

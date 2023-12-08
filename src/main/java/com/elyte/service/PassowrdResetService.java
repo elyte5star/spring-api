@@ -1,14 +1,9 @@
 package com.elyte.service;
 import java.util.Calendar;
-import java.util.Date;
-
 import com.elyte.domain.PasswordResetToken;
 import com.elyte.domain.User;
 import com.elyte.repository.PasswordTokenRepository;
 import com.elyte.repository.UserRepository;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.mail.MessagingException;
@@ -25,8 +20,6 @@ import com.elyte.domain.request.EmailAlert;
 public class PassowrdResetService {
 
     private static final int EXPIRATION = 60 * 24;
-
-    private static final Logger log = LoggerFactory.getLogger(PassowrdResetService.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -45,7 +38,6 @@ public class PassowrdResetService {
     private boolean isTokenFound(PasswordResetToken passToken) {
         return passToken != null;
     }
-
     public String validatePasswordResetToken(String encryptedToken) {
 
         String token = EncryptionUtil.decrypt(encryptedToken);
@@ -60,35 +52,24 @@ public class PassowrdResetService {
     }
 
     public String createPasswordResetTokenForUser(HttpServletRequest request, String email) throws MessagingException {
-        
         User user = userRepository.findByEmail(email);
         if (user == null) return "NotFound";
-        String token = RandomStringGen.randomString(24);
+        String token = RandomStringGen.randomString(16);
         PasswordResetToken myToken = new PasswordResetToken();
         myToken.setToken(token);
         myToken.setUser(user);
-        myToken.setExpiryDate(calculateExpiryDate());
-        myToken = passwordTokenRepository.save(myToken);
+        myToken.setExpiryDate(RandomStringGen.calculateExpiryDate(EXPIRATION));
+        passwordTokenRepository.save(myToken);
         EmailAlert mailObject = EmailAlert.build(user.getEmail(), user.getUsername(), "Reset your password");
-
-        String contextPath = getAppUrl(request);
-
-        
+        String contextPath = getAppUrl(request);        
         String encryptedToken =  EncryptionUtil.encrypt(token);
-
-        String url = contextPath + "/users/changePassword?token=" + encryptedToken;
-
+        String url = contextPath + "/users/reset/confirm-token?token=" + encryptedToken;
         emailAlertService.sendSimpleHtmlMail(mailObject, url, (EXPIRATION/60), request.getLocale(),
                 ApplicationConsts.RESET_USER_PASSWORD);
         return encryptedToken;
 
     }
 
-    private Date calculateExpiryDate() {
-        final Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(new Date().getTime());
-        cal.add(Calendar.MINUTE, EXPIRATION);
-        return new Date(cal.getTime().getTime());
-    }
+    
 
 }

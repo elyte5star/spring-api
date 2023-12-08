@@ -43,5 +43,10 @@
     "name": "attachment.invoice",
     "type": "java.lang.String",
     "description": "A description for 'attachment.invoice'"
+  },
+  {
+    "name": "geo.ip.lib.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'geo.ip.lib.enabled'"
   }
 ]}

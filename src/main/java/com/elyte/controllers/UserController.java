@@ -62,17 +62,27 @@ public class UserController {
 
     }
 
-    @PostMapping("/resetPassword")
+    @GetMapping("/reset/password")
+    @Operation(summary = "Reset password request")
     public ResponseEntity<CustomResponseStatus> resetPassword(HttpServletRequest request,
             @RequestParam("email") @Valid String userEmail) throws ResourceNotFoundException, MessagingException {
         return userService.createPasswordResetTokenForUser(request, userEmail);
 
     }
 
-    @PostMapping("/changePassword")
+    @GetMapping("/reset/confirm-token")
+    @Operation(summary = "Confirm password request token")
     public ResponseEntity<CustomResponseStatus> validatePasswordResetToken(
             @RequestParam("token") @Valid final String token) throws ResourceNotFoundException {
         return userService.validatePasswordResetToken(token);
+
+    }
+
+    @GetMapping("/enableNewLocation")
+    @Operation(summary = "Confirm password request token")
+    public ResponseEntity<CustomResponseStatus> enableNewLocation(Locale locale,
+            @RequestParam("token") @Valid final String token) throws ResourceNotFoundException {
+        return userService.enableNewLocation(locale,token);
 
     }
 

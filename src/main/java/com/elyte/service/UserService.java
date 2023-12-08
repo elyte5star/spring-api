@@ -1,44 +1,72 @@
 package com.elyte.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.elyte.domain.NewLocationToken;
 import com.elyte.domain.Otp;
 import com.elyte.domain.User;
+import com.elyte.domain.UserLocation;
 import com.elyte.domain.request.CreateUserRequest;
 import com.elyte.exception.ResourceNotFoundException;
+import com.elyte.repository.NewLocationTokenRepository;
+import com.elyte.repository.UserLocationRepository;
 import com.elyte.repository.UserRepository;
+import com.elyte.security.UserPrincipal;
 import com.elyte.utils.ApplicationConsts;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
 import java.util.Optional;
 import com.elyte.utils.CheckNullEmptyBlank;
+import com.elyte.utils.RandomStringGen;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import com.elyte.utils.CheckIfUserExist;
+import com.maxmind.geoip2.DatabaseReader;
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import com.elyte.domain.request.EmailAlert;
+import org.springframework.core.env.Environment;
 
 @Service
 public class UserService {
+
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
+    private UserLocationRepository userLocationRepository;
+
+    @Autowired
+    @Qualifier("GeoIPCountry")
+    private DatabaseReader databaseReader;
+
+    @Autowired
     private PassowrdResetService passowrdResetService;
 
     @Autowired
-    private EmailAlertService emailAlertService;
+    private NewLocationTokenRepository newLocationTokenRepository;
+
+    
 
     @Autowired
     private OtpService otpService;
+
+    @Autowired
+    private Environment env;
 
     public ResponseEntity<CustomResponseStatus> getUsers() {
 
@@ -61,10 +89,7 @@ public class UserService {
             newUser.setLastLoginDate("0");
             // newUser.setEnabled(createUserRequest.isEnabled());
             newUser = userRepository.save(newUser);
-            Otp otp = otpService.generateOtp(newUser.getEmail());
-            EmailAlert mailObject = EmailAlert.build(newUser.getEmail(), newUser.getUsername(), "Confirm your account");
-            emailAlertService.sendSimpleHtmlMail(mailObject, otp.getOtpString(), otp.getDuration(), locale,
-                    ApplicationConsts.VERIFY_USER_EMAIL_TEMPLATE_NAME);
+            Otp otp = otpService.generateOtp(locale,newUser);
             CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.CREATED.value(),
                     ApplicationConsts.I201_MSG,
                     ApplicationConsts.SUCCESS,
@@ -168,14 +193,13 @@ public class UserService {
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
-    
     public ResponseEntity<CustomResponseStatus> validatePasswordResetToken(String encryptedToken)
             throws ResourceNotFoundException {
         final String result = passowrdResetService.validatePasswordResetToken(encryptedToken);
         if (result == null) {
             CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                     ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), "passsword Changed!");
+                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), "Reset Token Validated!");
             return new ResponseEntity<>(resp, HttpStatus.OK);
 
         } else if ("expired".equals(result)) {
@@ -188,6 +212,85 @@ public class UserService {
             throw new ResourceNotFoundException("Token :" + encryptedToken + " not found!");
 
         }
+
+    }
+
+    public void changeUserPassword(final User user, final String password) {
+        user.setPassword(new BCryptPasswordEncoder().encode(password));
+        userRepository.save(user);
+    }
+
+    private boolean isGeoIpLibEnabled() {
+        return Boolean.parseBoolean(env.getProperty("geo.ip.lib.enabled"));
+    }
+
+    public NewLocationToken newLocationLogin(String username, String ip) {
+        if (!isGeoIpLibEnabled()) {
+            return null;
+        }
+        try {
+            final InetAddress ipAddress = InetAddress.getByName(ip);
+            final String country = databaseReader.country(ipAddress).getCountry().getName();
+            log.warn(country + "====****");
+            final User user = userRepository.findByUsername(username);
+            final UserLocation userLocation = userLocationRepository.findByCountryAndUser(country, user);
+            if ((userLocation == null) || !userLocation.isEnabled()) {
+                return createNewLocationToken(country, user);
+
+            }
+
+        } catch (final Exception e) {
+            return null;
+
+        }
+        return null;
+
+    }
+
+    private NewLocationToken createNewLocationToken(String country, User user) {
+        UserLocation location = new UserLocation();
+        location.setCountry(country);
+        location.setUser(user);
+        location = userLocationRepository.save(location);
+        final String token = RandomStringGen.randomString(32);
+        final NewLocationToken newLocationToken = new NewLocationToken();
+        newLocationToken.setToken(token);
+        newLocationToken.setUserLocation(location);
+        return newLocationTokenRepository.save(newLocationToken);
+
+    }
+
+    public UserPrincipal getUserPrincipal() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+        return (UserPrincipal) authentication.getPrincipal();
+    }
+
+    public ResponseEntity<CustomResponseStatus> enableNewLocation(Locale locale, @Valid String token) {
+        final String result = isValidNewLocationToken(token);
+        if (result == null) {
+            throw new ResourceNotFoundException("Invalid Login Location!");
+        }
+        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG_LOC,
+                ApplicationConsts.SUCCESS,
+                ApplicationConsts.SRC, ApplicationConsts.timeNow(), result);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+
+    }
+
+    public String isValidNewLocationToken(String token) {
+        final NewLocationToken locationToken = newLocationTokenRepository.findByToken(token);
+        if (locationToken != null) {
+
+            UserLocation userLocation = locationToken.getUserLocation();
+            userLocation.setEnabled(true);
+            userLocation = userLocationRepository.save(userLocation);
+            newLocationTokenRepository.delete(locationToken);
+            return userLocation.getCountry();
+        }
+        return null;
 
     }
 

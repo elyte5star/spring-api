@@ -2,15 +2,12 @@ package com.elyte.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.elyte.domain.Otp;
 import com.elyte.domain.User;
-import com.elyte.domain.request.EmailAlert;
 import com.elyte.domain.request.LoginRequestData;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.response.TokenResponse;
 import com.elyte.repository.UserRepository;
 import com.elyte.security.UserPrincipal;
-import com.elyte.service.EmailAlertService;
 import com.elyte.service.OtpService;
 import com.elyte.security.JwtTokenUtil;
 import com.elyte.utils.ApplicationConsts;
@@ -37,9 +34,6 @@ public class JwtLoginController {
 
         @Autowired
         private AuthenticationManager authenticationManager;
-
-        @Autowired
-        private EmailAlertService emailAlertService;
 
         @Autowired
         private UserRepository userRepository;
@@ -76,9 +70,9 @@ public class JwtLoginController {
                         return new ResponseEntity<>(resp, HttpStatus.OK);
 
                 } catch (DisabledException e) {
-                        
                         makeOtpRequest(loginRequestData.getUsername(), locale);
-                        throw new DisabledException("USER_DISABLED", e);
+                       
+                        throw new DisabledException("USER_DISABLED.OTP SENT TO EMAIL", e);
 
                 } catch (BadCredentialsException e) {
 
@@ -90,9 +84,7 @@ public class JwtLoginController {
 
         public void makeOtpRequest(String username,final Locale locale) throws MessagingException{
                 User user = userRepository.findByUsername(username);
-                Otp otp = otpService.generateOtp(user.getEmail());
-                EmailAlert mailObject = EmailAlert.build(user.getEmail(), user.getUsername(), "Confirm your account");
-                emailAlertService.sendSimpleHtmlMail(mailObject, otp.getOtpString(),otp.getDuration(),locale,ApplicationConsts.VERIFY_USER_EMAIL_TEMPLATE_NAME);
+                otpService.generateOtp(locale,user);  
         }
 
         

@@ -13,11 +13,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.elyte.security.JwtRequestFilter;
 import com.elyte.security.JwtAuthEntryPoint;
 import com.elyte.utils.LoggingFilter;
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import java.io.IOException;
+import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +46,9 @@ public class MultiAuthSecurityConfig {
             "/index",
             "/login",
             "/users/signup",
-            "/users/resetPassword",
-            "/users/changePassword",
+            "/users/enableNewLocation",
+            "/users/reset/password",
+            "/users/reset/confirm-token",
             "/mail/sendHtml",
             "/mail/verify-otp",
             "/reviews/create-review",
@@ -71,6 +76,15 @@ public class MultiAuthSecurityConfig {
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
 
+    }
+
+    @Bean(name = "GeoIPCountry")
+    DatabaseReader databaseReader() throws IOException, GeoIp2Exception {
+        final File resource = new File(this.getClass()
+            .getClassLoader()
+            .getResource("maxmind/GeoLite2-Country.mmdb")
+            .getFile());
+        return new DatabaseReader.Builder(resource).build();
     }
 
     @Bean

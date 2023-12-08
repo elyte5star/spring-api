@@ -1,12 +1,13 @@
 package com.elyte.domain;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OrderBy;
+
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
 import jakarta.validation.constraints.Digits;
@@ -64,9 +65,8 @@ public class User extends AuditEntity{
     @Column(name = "ENABLED", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean enabled;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "BOOKING_ID")
-    @OrderBy
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @JoinColumn(name = "BOOKING_IDS")
     private List<Booking> bookings;
 
     

@@ -1,4 +1,6 @@
 package com.elyte.utils;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 import java.security.SecureRandom;
 
@@ -10,10 +12,16 @@ public class RandomStringGen {
     static SecureRandom rnd = new SecureRandom();
 
 
-    public static String generateString() {
+    public static String generateString() { 
         return UUID.randomUUID().toString();
     }
 
+    public static Date calculateExpiryDate(int EXPIRATION) {
+        final Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(new Date().getTime());
+        cal.add(Calendar.MINUTE, EXPIRATION);
+        return new Date(cal.getTime().getTime());
+    }
 
     
     public static String randomString(int len){

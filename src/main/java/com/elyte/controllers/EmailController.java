@@ -1,6 +1,4 @@
 package com.elyte.controllers;
-
-import com.elyte.service.EmailAlertService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -16,16 +14,20 @@ import org.springframework.stereotype.Controller;
 import com.elyte.service.OtpService;
 import com.elyte.utils.ApplicationConsts;
 import com.elyte.domain.Otp;
+import com.elyte.domain.User;
 import com.elyte.domain.request.EmailAlert;
 import com.elyte.domain.request.ValidateOtpRequest;
 import com.elyte.domain.response.CustomResponseStatus;
+import com.elyte.repository.UserRepository;
 
 @Controller
 @RequestMapping("/mail")
 public class EmailController {
 
+   
+
     @Autowired
-    private EmailAlertService emailAlertService;
+    private UserRepository userRepository;
 
     @Autowired
     private OtpService otpService;
@@ -38,8 +40,8 @@ public class EmailController {
     public ResponseEntity<CustomResponseStatus> sendEmail(@RequestBody @Valid EmailAlert mailObject,
             final Locale locale)
             throws MessagingException {
-        Otp otp = otpService.generateOtp(mailObject.getRecipientEmail());
-        emailAlertService.sendSimpleHtmlMail(mailObject, otp.getOtpString(), otp.getDuration(), locale,ApplicationConsts.VERIFY_USER_EMAIL_TEMPLATE_NAME);
+        User user = userRepository.findByUsername(mailObject.getRecipientUsername());
+        Otp otp = otpService.generateOtp(locale,user);
         CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, ApplicationConsts.timeNow(), otp.getOtpString());

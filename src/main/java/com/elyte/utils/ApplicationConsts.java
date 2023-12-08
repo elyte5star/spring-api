@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.servlet.http.HttpServletRequest;
+
 
 public class ApplicationConsts {
 
@@ -24,6 +24,8 @@ public class ApplicationConsts {
     public static final String I201_MSG = "Entity created successful";
 
     public static final String I200_MSG = "Operation successful";
+
+    public static final String I200_MSG_LOC = "Operation successful,Location Validated";
 
     public static final String I202_MSG = "Input validation failed";
 
@@ -61,7 +63,7 @@ public class ApplicationConsts {
 
     public static final String I999_MSG = "Sorry! Something went wrong. Please try again.";
 
-    public static final String E409_MSG = "User account disabled";
+    public static final String E423_MSG = "User account disabled";
 
     public static final String E413_MSG = "Larger than limits defined by server";
 
@@ -81,13 +83,6 @@ public class ApplicationConsts {
         return mapper.writeValueAsString(object);
     }
 
-    public static String getClientIP(HttpServletRequest request) {
-        final String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null || xfHeader.isEmpty() ||
-                !xfHeader.contains(request.getRemoteAddr())) {
-            return request.getRemoteAddr();
-        }
-        return xfHeader.split(",")[0];
-    }
+    
 
 }
