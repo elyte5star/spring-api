@@ -57,7 +57,6 @@ public class CredentialsService implements UserDetailsService {
         
         user.setUserid(user.getUserid());
         user.setLastLoginDate(ApplicationConsts.timeNow());
-        user.setActive(true);
         userRepository.save(user);
 
         UserPrincipal customUserDetail=new UserPrincipal();

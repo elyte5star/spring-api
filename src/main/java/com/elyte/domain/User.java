@@ -7,7 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
 import jakarta.validation.constraints.Digits;
@@ -18,9 +17,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
+import java.util.Date;
 
 @Entity
 @AllArgsConstructor
@@ -55,8 +54,14 @@ public class User extends AuditEntity{
     private String email;
 
     
-    @Column(name = "ACCOUNT_LOCKED", columnDefinition = "BOOLEAN DEFAULT false")
-    private boolean locked;
+    @Column(name = "ACCOUNT_NON_LOCKED", columnDefinition = "BOOLEAN DEFAULT true")
+    private boolean accountNonLocked;
+
+    @Column(name = "FAILED_ATTEMPT",columnDefinition = "integer default 0")
+    private int failedAttempt;
+     
+    @Column(name = "LOCK_TIME")
+    private Date lockTime=null;
 
     
     @Column(name = "ADMIN", columnDefinition = "BOOLEAN DEFAULT false")

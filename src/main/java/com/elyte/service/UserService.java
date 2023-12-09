@@ -59,7 +59,6 @@ public class UserService {
     @Value("${attachment.invoice}")
     private String attachmentPath;
 
-
     @Autowired
     private PassowrdResetService passowrdResetService;
 
@@ -89,15 +88,8 @@ public class UserService {
             newUser.setTelephone(createUserRequest.getTelephone());
             newUser.setEmail(createUserRequest.getEmail());
             newUser.setLastLoginDate("0");
-            // newUser.setEnabled(createUserRequest.isEnabled());
             newUser = userRepository.save(newUser);
-            Otp otp = otpService.generateOtp(locale, newUser);
-            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(),
-                    ApplicationConsts.I201_MSG,
-                    ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(),
-                    Map.of("userid", newUser.getUserid(), "otp", otp.getOtpString()));
-            return new ResponseEntity<>(resp, HttpStatus.CREATED);
+            return sendOtp(newUser.getUsername(), locale);
         }
 
         throw new DataIntegrityViolationException("A USER WITH THE DETAILS EXIST ALREADY");
@@ -105,7 +97,6 @@ public class UserService {
     }
 
     public ResponseEntity<CustomResponseStatus> userById(String userid) throws ResourceNotFoundException {
-
         User user = userRepository.findByUserid(userid);
         if (user == null) {
             throw new ResourceNotFoundException("User with id :" + userid + " not found!");
@@ -302,10 +293,11 @@ public class UserService {
             throw new ResourceNotFoundException("User with username :" + username + " not found!");
         }
         Otp otp = otpService.generateOtp(locale, user);
-        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, ApplicationConsts.timeNow(), otp.getOtpString());
-        return new ResponseEntity<>(resp, HttpStatus.OK);
+                ApplicationConsts.SRC, ApplicationConsts.timeNow(),
+                Map.of("userid", user.getUserid(), "otp", otp.getOtpString()));
+        return new ResponseEntity<>(resp, HttpStatus.CREATED);
 
     }
 
