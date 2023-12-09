@@ -29,7 +29,7 @@ public class ProductService {
 
     public ResponseEntity<CustomResponseStatus> getAllProducts() {
         Iterable<Product> allProducts = productRepository.findAll();
-        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, ApplicationConsts.timeNow(), allProducts);
         return new ResponseEntity<>(resp, HttpStatus.OK);
@@ -51,7 +51,7 @@ public class ProductService {
             URI newUserUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{pid}")
                     .buildAndExpand(newProduct.getPid()).toUri();
             responseHeaders.setLocation(newUserUri);
-            CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.CREATED.value(),
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(),
                     ApplicationConsts.I200_MSG,
                     ApplicationConsts.SUCCESS,
                     ApplicationConsts.SRC, ApplicationConsts.timeNow(), newProduct.getPid());
@@ -68,7 +68,7 @@ public class ProductService {
 
             throw new ResourceNotFoundException("Product with id :" + pid + " not found!");
         }
-        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, ApplicationConsts.timeNow(), product.get());
         return new ResponseEntity<>(resp, HttpStatus.OK);
@@ -82,7 +82,7 @@ public class ProductService {
         if (product.isPresent()) {
 
             productRepository.deleteById(pid);
-            CustomResponseStatus status = CustomResponseStatus.build(HttpStatus.NO_CONTENT.value(),
+            CustomResponseStatus status = new CustomResponseStatus(HttpStatus.NO_CONTENT.value(),
                     ApplicationConsts.I200_MSG,
                     ApplicationConsts.SUCCESS,
                     ApplicationConsts.SRC, ApplicationConsts.timeNow(), null);
@@ -117,7 +117,7 @@ public class ProductService {
 
             }
 
-            CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                     ApplicationConsts.SUCCESS,
                     ApplicationConsts.SRC, ApplicationConsts.timeNow(), productsPids);
             return new ResponseEntity<>(resp, HttpStatus.OK);
@@ -133,7 +133,7 @@ public class ProductService {
             throw new ResourceNotFoundException("Product with id :" + pid + " not found!");
         }
         product = productRepository.save(product);
-        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, ApplicationConsts.timeNow(), product);
         return new ResponseEntity<>(resp, HttpStatus.OK);

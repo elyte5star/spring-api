@@ -60,7 +60,7 @@ public class PassowrdResetService {
         myToken.setUser(user);
         myToken.setExpiryDate(RandomStringGen.calculateExpiryDate(EXPIRATION));
         passwordTokenRepository.save(myToken);
-        EmailAlert mailObject = EmailAlert.build(user.getEmail(), user.getUsername(), "Reset your password");
+        EmailAlert mailObject =new EmailAlert(user.getEmail(), user.getUsername(), "Reset your password");
         String contextPath = getAppUrl(request);        
         String encryptedToken =  EncryptionUtil.encrypt(token);
         String url = contextPath + "/users/reset/confirm-token?token=" + encryptedToken;

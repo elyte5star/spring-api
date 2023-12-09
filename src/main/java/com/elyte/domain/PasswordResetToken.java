@@ -18,7 +18,7 @@ import jakarta.validation.constraints.NotBlank;
 
 
 
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter

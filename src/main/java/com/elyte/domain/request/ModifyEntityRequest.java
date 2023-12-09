@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 
 
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class ModifyEntityRequest  implements Serializable{

@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor()
 @NoArgsConstructor
 @Data
 public class ValidateOtpRequest  implements Serializable{

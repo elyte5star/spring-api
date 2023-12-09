@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter

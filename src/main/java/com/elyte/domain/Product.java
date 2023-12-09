@@ -19,7 +19,7 @@ import jakarta.persistence.CascadeType;
 
 
 @Entity
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter

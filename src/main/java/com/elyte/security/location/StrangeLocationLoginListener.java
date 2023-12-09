@@ -26,7 +26,7 @@ public class StrangeLocationLoginListener implements ApplicationListener<OnStran
                 + event.getNewLocationToken().getToken();
         final String changePassUri = event.getAppUrl() + "/users/changePassword.html";
 
-        EmailAlert mailObject = EmailAlert.build(event.getEmail(), event.getUsername(),
+        EmailAlert mailObject = new EmailAlert(event.getEmail(), event.getUsername(),
                 "Login attempt from a different location");
         final String message = messages.getMessage("differentLocation",
                 new Object[] { new Date().toString(), event.getNewLocationToken().getUserLocation().getCountry(),

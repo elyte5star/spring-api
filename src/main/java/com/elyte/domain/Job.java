@@ -18,14 +18,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.persistence.OrderBy;
+
 
 
 
 @Setter
 @Getter
 @Entity
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor()
 @NoArgsConstructor
 @Table(name="JOBS")
 @JsonIgnoreProperties(ignoreUnknown = true)

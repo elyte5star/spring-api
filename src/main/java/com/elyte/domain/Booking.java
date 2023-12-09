@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "BOOKINGS")
 public class Booking extends AuditEntity {

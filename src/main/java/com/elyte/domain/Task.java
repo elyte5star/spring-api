@@ -17,7 +17,7 @@ import jakarta.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter

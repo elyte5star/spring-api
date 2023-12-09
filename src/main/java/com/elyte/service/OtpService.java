@@ -30,7 +30,7 @@ public class OtpService {
 
     private static final Logger log = LoggerFactory.getLogger(OtpService.class);
 
-    public static final int OTP_VALIDITY = 1; // 5 minutes
+    public static final int OTP_VALIDITY = 5; // 5 minutes
 
     public Otp generateOtp(Locale locale,User user) throws MessagingException {
         String randomString = RandomStringGen.randomString(6);
@@ -40,7 +40,7 @@ public class OtpService {
         otp.setUser(user);
         otp.setExpiryDate(RandomStringGen.calculateExpiryDate(OTP_VALIDITY));
         otp = otpRepository.save(otp);
-        EmailAlert mailObject = EmailAlert.build(user.getEmail(), user.getUsername(), "Confirm your account");
+        EmailAlert mailObject = new EmailAlert(user.getEmail(), user.getUsername(), "Confirm your account");
         emailAlertService.sendSimpleHtmlMail(mailObject, otp.getOtpString(), OTP_VALIDITY, locale,
                     ApplicationConsts.VERIFY_USER_EMAIL_TEMPLATE_NAME);
         return otp;

@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 
 
 
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class CreateUserRequest implements Serializable {

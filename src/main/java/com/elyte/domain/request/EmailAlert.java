@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor()
 @NoArgsConstructor
 @Data
 public class EmailAlert  implements Serializable{

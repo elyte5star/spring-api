@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import com.elyte.domain.User;
 import com.elyte.repository.UserRepository;
+import com.elyte.security.LoginAttemptService;
 import com.elyte.security.UserPrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +24,18 @@ public class CredentialsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+
+    @Autowired
+    private LoginAttemptService loginAttemptService;
+
     @Override
     @Transactional
     public UserPrincipal loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        if (loginAttemptService.isBlocked()) {
+            
+            throw new RuntimeException("blocked");
+        }
 
         log.debug("---loadUserByUsername called.---");
 

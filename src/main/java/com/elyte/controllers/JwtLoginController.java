@@ -57,12 +57,12 @@ public class JwtLoginController {
 
                         final String token = jwtTokenUtil.generateToken(userDetails);
 
-                        TokenResponse tokenResponse = TokenResponse.build(EncryptionUtil.encrypt(token), "bearer",
+                        TokenResponse tokenResponse = new TokenResponse(EncryptionUtil.encrypt(token), "bearer",
                                         userDetails.getUsername(), userDetails.getUser().getEmail(),
                                         userDetails.isEnabled(), userDetails.getUser().isAdmin(),
                                         userDetails.getUser().getUserid());
 
-                        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(),
+                        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(),
                                         ApplicationConsts.I200_MSG,
                                         ApplicationConsts.SUCCESS,
                                         request.getRequestURL().toString(), ApplicationConsts.timeNow(), tokenResponse);
@@ -86,7 +86,5 @@ public class JwtLoginController {
                 User user = userRepository.findByUsername(username);
                 otpService.generateOtp(locale,user);  
         }
-
-        
 
 }

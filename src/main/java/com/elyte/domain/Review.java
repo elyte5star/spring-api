@@ -21,7 +21,7 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter

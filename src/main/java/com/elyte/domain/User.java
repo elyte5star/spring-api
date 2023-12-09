@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 @Entity
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -55,8 +55,8 @@ public class User extends AuditEntity{
     private String email;
 
     
-    @Column(name = "ACTIVE", columnDefinition = "BOOLEAN DEFAULT false")
-    private boolean active;
+    @Column(name = "ACCOUNT_LOCKED", columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean locked;
 
     
     @Column(name = "ADMIN", columnDefinition = "BOOLEAN DEFAULT false")

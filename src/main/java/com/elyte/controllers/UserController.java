@@ -1,9 +1,6 @@
 package com.elyte.controllers;
-
 import com.elyte.domain.request.CreateUserRequest;
-
 import java.util.Locale;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
+import com.elyte.domain.request.ValidateOtpRequest;
 
 @RestController
 @RequestMapping("/users")
@@ -32,6 +30,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
 
     @GetMapping("/{userid}")
     @Operation(summary = "Get a user by userid", security = @SecurityRequirement(name = "bearerAuth"))
@@ -59,6 +58,22 @@ public class UserController {
     public ResponseEntity<CustomResponseStatus> deleteUser(@PathVariable @Valid String userid)
             throws ResourceNotFoundException {
         return userService.deleteUser(userid);
+
+    }
+
+    @GetMapping("/signup/send-otp")
+    @Operation(summary = "Send registration confirmation OTP")
+    public ResponseEntity<CustomResponseStatus> sendOtp( @RequestParam("username") @RequestBody @Valid String username,
+            final Locale locale)
+            throws MessagingException,ResourceNotFoundException {
+        return userService.sendOtp(username, locale);
+
+    }
+
+    @PostMapping(value = "/signup/verify-otp")
+    @Operation(summary = "Verify OTP")
+    public ResponseEntity<CustomResponseStatus> otpValidator(@RequestBody @Valid ValidateOtpRequest otp) throws Exception{
+        return userService.validateOtp(otp);
 
     }
 

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,7 @@ import com.elyte.security.UserPrincipal;
 import com.elyte.utils.ApplicationConsts;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
+import com.elyte.domain.request.ValidateOtpRequest;
 import java.util.Optional;
 import com.elyte.utils.CheckNullEmptyBlank;
 import com.elyte.utils.RandomStringGen;
@@ -54,13 +56,15 @@ public class UserService {
     @Qualifier("GeoIPCountry")
     private DatabaseReader databaseReader;
 
+    @Value("${attachment.invoice}")
+    private String attachmentPath;
+
+
     @Autowired
     private PassowrdResetService passowrdResetService;
 
     @Autowired
     private NewLocationTokenRepository newLocationTokenRepository;
-
-    
 
     @Autowired
     private OtpService otpService;
@@ -69,12 +73,10 @@ public class UserService {
     private Environment env;
 
     public ResponseEntity<CustomResponseStatus> getUsers() {
-
         Iterable<User> allUsersInDb = userRepository.findAll();
-        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, ApplicationConsts.timeNow(), allUsersInDb);
-
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
@@ -89,8 +91,8 @@ public class UserService {
             newUser.setLastLoginDate("0");
             // newUser.setEnabled(createUserRequest.isEnabled());
             newUser = userRepository.save(newUser);
-            Otp otp = otpService.generateOtp(locale,newUser);
-            CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.CREATED.value(),
+            Otp otp = otpService.generateOtp(locale, newUser);
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(),
                     ApplicationConsts.I201_MSG,
                     ApplicationConsts.SUCCESS,
                     ApplicationConsts.SRC, ApplicationConsts.timeNow(),
@@ -108,7 +110,7 @@ public class UserService {
         if (user == null) {
             throw new ResourceNotFoundException("User with id :" + userid + " not found!");
         }
-        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, ApplicationConsts.timeNow(), user);
         return new ResponseEntity<>(resp, HttpStatus.OK);
@@ -148,7 +150,7 @@ public class UserService {
                 userInDb.getEmail(), userInDb.getTelephone());
         if (usersList.isEmpty()) {
             userInDb = userRepository.save(userInDb);
-            CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.NO_CONTENT.value(),
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.NO_CONTENT.value(),
                     ApplicationConsts.I204_MSG,
                     ApplicationConsts.SUCCESS,
                     ApplicationConsts.SRC, ApplicationConsts.timeNow(), userInDb);
@@ -163,14 +165,14 @@ public class UserService {
         if (userInDb.isPresent()) {
             try {
                 userRepository.deleteById(userid);
-                CustomResponseStatus status = CustomResponseStatus.build(HttpStatus.NO_CONTENT.value(),
+                CustomResponseStatus status = new CustomResponseStatus(HttpStatus.NO_CONTENT.value(),
                         ApplicationConsts.I200_MSG,
                         ApplicationConsts.SUCCESS,
                         ApplicationConsts.SRC, ApplicationConsts.timeNow(), null);
                 return new ResponseEntity<>(status, HttpStatus.OK);
 
             } catch (Exception e) {
-                CustomResponseStatus status = CustomResponseStatus.build(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                CustomResponseStatus status = new CustomResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                         ApplicationConsts.E500_MSG,
                         ApplicationConsts.FAILURE,
                         e.getClass().getName(), ApplicationConsts.timeNow(), null);
@@ -187,7 +189,7 @@ public class UserService {
         if ("NotFound".equals(result)) {
             throw new ResourceNotFoundException("User with email :" + email + " not found!");
         }
-        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, ApplicationConsts.timeNow(), result);
         return new ResponseEntity<>(resp, HttpStatus.OK);
@@ -197,13 +199,13 @@ public class UserService {
             throws ResourceNotFoundException {
         final String result = passowrdResetService.validatePasswordResetToken(encryptedToken);
         if (result == null) {
-            CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                     ApplicationConsts.SUCCESS,
                     ApplicationConsts.SRC, ApplicationConsts.timeNow(), "Reset Token Validated!");
             return new ResponseEntity<>(resp, HttpStatus.OK);
 
         } else if ("expired".equals(result)) {
-            CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.FORBIDDEN.value(),
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.FORBIDDEN.value(),
                     ApplicationConsts.E403_SMTP_MSG,
                     ApplicationConsts.FAILURE, ApplicationConsts.SRC, ApplicationConsts.timeNow(), null);
             return new ResponseEntity<>(resp, HttpStatus.FORBIDDEN);
@@ -273,7 +275,7 @@ public class UserService {
         if (result == null) {
             throw new ResourceNotFoundException("Invalid Login Location!");
         }
-        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG_LOC,
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG_LOC,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, ApplicationConsts.timeNow(), result);
         return new ResponseEntity<>(resp, HttpStatus.OK);
@@ -291,6 +293,47 @@ public class UserService {
             return userLocation.getCountry();
         }
         return null;
+
+    }
+
+    public ResponseEntity<CustomResponseStatus> sendOtp(String username, Locale locale) throws MessagingException {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new ResourceNotFoundException("User with username :" + username + " not found!");
+        }
+        Otp otp = otpService.generateOtp(locale, user);
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+                ApplicationConsts.SUCCESS,
+                ApplicationConsts.SRC, ApplicationConsts.timeNow(), otp.getOtpString());
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+
+    }
+
+    public ResponseEntity<CustomResponseStatus> validateOtp(@Valid ValidateOtpRequest otp) {
+        String status = otpService.verifyOtp(otp.getEmail(), otp.getOtpString());
+        if ("valid".equals(status)) {
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.ACCEPTED.value(),
+                    ApplicationConsts.I200_MSG,
+                    ApplicationConsts.SUCCESS,
+                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), "Account verified!");
+            return new ResponseEntity<>(resp, HttpStatus.ACCEPTED);
+        } else if ("expired".equals(status)) {
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.FORBIDDEN.value(),
+                    ApplicationConsts.E403_SMTP_MSG,
+                    ApplicationConsts.FAILURE, ApplicationConsts.SRC, ApplicationConsts.timeNow(), null);
+            return new ResponseEntity<>(resp, HttpStatus.FORBIDDEN);
+        } else if ("invalid".equals(status)) {
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.UNAUTHORIZED.value(),
+                    ApplicationConsts.E401_SMTP_MSG,
+                    ApplicationConsts.FAILURE, ApplicationConsts.SRC, ApplicationConsts.timeNow(), null);
+            return new ResponseEntity<>(resp, HttpStatus.UNAUTHORIZED);
+        } else {
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.GONE.value(),
+                    ApplicationConsts.E410_SMTP_MSG,
+                    ApplicationConsts.FAILURE, ApplicationConsts.SRC, ApplicationConsts.timeNow(),
+                    "User already verified!");
+            return new ResponseEntity<>(resp, HttpStatus.GONE);
+        }
 
     }
 

@@ -46,7 +46,7 @@ public class UserPrincipal implements UserDetails{
     }
 
     public boolean isAccountNonExpired() {
-        return true;
+        return (!user.isLocked());
     }
 
     public boolean isAccountNonLocked() {

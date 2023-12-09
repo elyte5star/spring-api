@@ -37,7 +37,7 @@ public class ReviewService {
             newReview.setRating(review.getRating());
             newReview.setProduct(product.get());
             reviewRepository.save(newReview);
-            CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.CREATED.value(),
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(),
                     ApplicationConsts.I200_MSG,
                     ApplicationConsts.SUCCESS,
                     ApplicationConsts.SRC, ApplicationConsts.timeNow(), newReview.getRid());
@@ -49,7 +49,7 @@ public class ReviewService {
 
     public ResponseEntity<CustomResponseStatus> getAllReviews() {
         Iterable<Review> allProductsReviews = reviewRepository.findAll();
-        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+        CustomResponseStatus resp =new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, ApplicationConsts.timeNow(), allProductsReviews);
         return new ResponseEntity<>(resp, HttpStatus.OK);
@@ -59,7 +59,7 @@ public class ReviewService {
         Optional<Review> review = reviewRepository.findById(rid);
 
         if (review.isPresent()) {
-            CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                     ApplicationConsts.SUCCESS,
                     ApplicationConsts.SRC, ApplicationConsts.timeNow(), review.get());
             return new ResponseEntity<>(resp, HttpStatus.OK);
