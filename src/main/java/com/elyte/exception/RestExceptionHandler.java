@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -97,6 +99,16 @@ public class RestExceptionHandler implements ErrorController {
 
         log.error("[+] BadCredentialsException--{}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<?> handleLockedException(Exception e) {
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.LOCKED.value(), e.getMessage(),
+                ApplicationConsts.FAILURE,
+                e.getClass().getName(),
+                ApplicationConsts.timeNow(), ApplicationConsts.E423_MSG);
+        log.error("[+] LockedException--{}", e.getMessage());
+        return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.LOCKED);
     }
 
     @ExceptionHandler(NullPointerException.class)

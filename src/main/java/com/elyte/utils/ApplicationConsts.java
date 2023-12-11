@@ -63,7 +63,7 @@ public class ApplicationConsts {
 
     public static final String I999_MSG = "Sorry! Something went wrong. Please try again.";
 
-    public static final String E423_MSG = "User account disabled";
+    public static final String E423_MSG = "User account disabled/locked";
 
     public static final String E413_MSG = "Larger than limits defined by server";
 

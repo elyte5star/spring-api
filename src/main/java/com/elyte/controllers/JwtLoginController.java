@@ -2,17 +2,13 @@ package com.elyte.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.elyte.domain.User;
 import com.elyte.domain.request.LoginRequestData;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.response.TokenResponse;
-import com.elyte.repository.UserRepository;
 import com.elyte.security.UserPrincipal;
-import com.elyte.service.OtpService;
 import com.elyte.security.JwtTokenUtil;
 import com.elyte.utils.ApplicationConsts;
 import com.elyte.utils.EncryptionUtil;
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,17 +33,11 @@ public class JwtLoginController {
         private AuthenticationManager authenticationManager;
 
         @Autowired
-        private UserRepository userRepository;
-
-        @Autowired
-        private OtpService otpService;
-
-        @Autowired
         private JwtTokenUtil jwtTokenUtil;
 
         @PostMapping("/token")
         public ResponseEntity<CustomResponseStatus> createToken(HttpServletRequest request,
-                        @RequestBody @Valid LoginRequestData loginRequestData,final Locale locale)
+                        @RequestBody @Valid LoginRequestData loginRequestData, final Locale locale)
                         throws Exception {
 
                 try {
@@ -70,21 +61,19 @@ public class JwtLoginController {
                         return new ResponseEntity<>(resp, HttpStatus.OK);
 
                 } catch (DisabledException e) {
-                        makeOtpRequest(loginRequestData.getUsername(), locale);
-                       
-                        throw new DisabledException("USER_DISABLED.OTP SENT TO EMAIL", e);
+
+                        throw new DisabledException("USER_DISABLED.CONFIRM YOUR IDENTITY", e);
 
                 } catch (BadCredentialsException e) {
 
                         throw new BadCredentialsException("INVALID_CREDENTIALS", e);
 
+                }catch (LockedException e) {
+
+                        throw new LockedException("YOUR ACCOUNT HAS BEEN LOCKED DUE TO MANY FAILED ATTEMPTS", e);
+
                 }
 
-        }
-
-        public void makeOtpRequest(String username,final Locale locale) throws MessagingException{
-                User user = userRepository.findByUsername(username);
-                otpService.generateOtp(locale,user);  
         }
 
 }

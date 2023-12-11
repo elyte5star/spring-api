@@ -1,4 +1,5 @@
 package com.elyte.controllers;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -29,7 +30,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
-
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -37,42 +37,44 @@ public class AdminController {
     @Autowired
     private UserService userService;
 
-
     @Autowired
     private ProductService productService;
-
 
     @Autowired
     private ReviewService reviewService;
 
-
     @GetMapping("/users/find-one/{userid}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Get a user by userid",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> findUserById(@PathVariable @Valid String userid) throws ResourceNotFoundException {
+    @Operation(summary = "Get a user by userid", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> findUserById(@PathVariable @Valid String userid)
+            throws ResourceNotFoundException {
         return userService.userById(userid);
     }
 
+
     @PutMapping("/users/update-user/{userid}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Update a user",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> updateUser(@RequestBody ModifyEntityRequest user,@PathVariable String userid) throws ResourceNotFoundException{
+    @Operation(summary = "Update a user", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> updateUser(@RequestBody ModifyEntityRequest user,
+            @PathVariable String userid) throws ResourceNotFoundException {
         return userService.updateUserInfo(user, userid);
     }
 
     @PostMapping("/users/create-user")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Create a user",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> createUser(@RequestBody @Valid CreateUserRequest createUserRequest,final Locale locale) throws DataIntegrityViolationException,MessagingException{
-        return userService.addUser(createUserRequest,locale);
+    @Operation(summary = "Create a user", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> createUser(@RequestBody @Valid CreateUserRequest createUserRequest,
+            final Locale locale) throws DataIntegrityViolationException, MessagingException {
+        return userService.addUser(createUserRequest, locale);
     }
 
     @DeleteMapping("/users/delete/{userid}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Delete a user",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> deleteUser(@PathVariable @Valid String userid) throws ResourceNotFoundException{
+    @Operation(summary = "Delete a user", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> deleteUser(@PathVariable @Valid String userid)
+            throws ResourceNotFoundException {
         return userService.deleteUser(userid);
-       
+
     }
 
     @GetMapping("/users/get-all")
@@ -82,19 +84,18 @@ public class AdminController {
         return userService.getUsers();
     }
 
-
     @GetMapping("/reviews")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Get all reviews",security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get all reviews", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CustomResponseStatus> getAllReviews() {
         return reviewService.getAllReviews();
     }
 
-
     @GetMapping("/reviews/{rid}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Get a review by rid",security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> findReviewById(@PathVariable String rid) throws ResourceNotFoundException {
+    @Operation(summary = "Get a review by rid", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> findReviewById(@PathVariable String rid)
+            throws ResourceNotFoundException {
         return reviewService.ReviewById(rid);
 
     }
@@ -118,19 +119,18 @@ public class AdminController {
     @PostMapping("/products/create/many-products")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Create many products", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> createManyProducts(@RequestBody List<CreateProductRequest> productsRequests) {
+    public ResponseEntity<CustomResponseStatus> createManyProducts(
+            @RequestBody List<CreateProductRequest> productsRequests) {
         return productService.createMany(productsRequests);
     }
-
 
     @DeleteMapping("/products/delete/{pid}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Delete a product", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> deleteProduct(@PathVariable String pid) throws ResourceNotFoundException {
+    public ResponseEntity<CustomResponseStatus> deleteProduct(@PathVariable String pid)
+            throws ResourceNotFoundException {
         return productService.deleteProduct(pid);
 
     }
 
-
-    
 }

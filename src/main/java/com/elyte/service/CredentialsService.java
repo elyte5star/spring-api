@@ -32,10 +32,6 @@ public class CredentialsService implements UserDetailsService {
     @Transactional
     public UserPrincipal loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        if (loginAttemptService.isBlocked()) {
-            
-            throw new RuntimeException("blocked");
-        }
 
         log.debug("---loadUserByUsername called.---");
 

@@ -1,5 +1,4 @@
 package com.elyte.configuration;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -10,12 +9,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import com.elyte.security.JwtRequestFilter;
+import com.elyte.security.JwtFilter;
 import com.elyte.security.JwtAuthEntryPoint;
 import com.elyte.utils.LoggingFilter;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -36,7 +36,7 @@ public class MultiAuthSecurityConfig {
     private JwtAuthEntryPoint jwtAuthenticationEntryPoint;
 
     @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+    private JwtFilter jwtRequestFilter;
 
     @Autowired
     private LoggingFilter loggingFilter;
@@ -45,9 +45,11 @@ public class MultiAuthSecurityConfig {
             "/",
             "/index",
             "/login",
+            "/admin/currentusername",
             "/users/signup/**",
             "/users/enableNewLocation",
             "/users/reset/password",
+            "/users/logout",
             "/users/reset/confirm-token",
             "/reviews/create-review",
             "/auth/token",
@@ -92,6 +94,9 @@ public class MultiAuthSecurityConfig {
         log.debug("AuthenticationManager invoked.");
         return authenticationConfiguration.getAuthenticationManager();
     }
+
+
+   
 
     @Bean
     PasswordEncoder passwordEncoder() {

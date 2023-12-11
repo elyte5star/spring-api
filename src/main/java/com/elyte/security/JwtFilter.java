@@ -1,4 +1,5 @@
 package com.elyte.security;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,26 +11,25 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.elyte.domain.User;
 import com.elyte.repository.UserRepository;
 import com.elyte.service.CredentialsService;
-import com.elyte.utils.EncryptionUtil;
 import java.io.IOException;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.FilterChain;
 import jakarta.validation.constraints.NotNull;
 
-
-
 @Component
-public class JwtRequestFilter extends OncePerRequestFilter {
+public class JwtFilter extends OncePerRequestFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(JwtRequestFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(JwtFilter.class);
 
     @Autowired
     private CredentialsService jwtCredentialsService;
 
-   
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
@@ -41,62 +41,41 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             @NotNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
-
         String audience = null;
-        String encryptedJwtToken = null;
-        String jwtToken = null;
 
-        log.debug("Inside JwtRequestFilter--OncePerRequestFilter");
+        String token = jwtTokenUtil.extractTokenFromRequest(request);
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-
-            encryptedJwtToken = authHeader.substring(7);
-
-            jwtToken = EncryptionUtil.decrypt(encryptedJwtToken);
+        if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             try {
+
                 // username = jwtTokenUtil.getUserNameFromToken(jwtToken);
-                audience = jwtTokenUtil.getAudienceFromToken(jwtToken);
+                // Audience is equivalent to the userid string
+                jwtTokenUtil.validateToken(token);
+                audience = jwtTokenUtil.getAudienceFromToken(token);
+                User user = userRepository.findByUserid(audience);
+                UserPrincipal userPrincipal = jwtCredentialsService.loadUserByUsername(user.getUsername());
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userPrincipal, null, userPrincipal.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
 
+            } catch (MalformedJwtException e) {
+                log.error("[+] Invalid JWT token");
+            } catch (UnsupportedJwtException ex) {
+                log.error("[+] Unsupported JWT token");
             } catch (IllegalArgumentException e) {
-
-                log.error("[+] Unable to get JWT Token");
-
+                log.error("[+] JWT claims string is empty");
             } catch (ExpiredJwtException e) {
                 log.error("[+] JWT Token has expired");
+            } catch (SignatureException e) {
+                log.error("there is an error with the signature of you token ");
             }
 
         } else {
             log.warn("[+] UNPROTECTED ROUTE");
         }
 
-        // Audience is equivalent to the userid string
-        // A work around incase the user modifies its details
-
-        if (audience != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-             User user = userRepository.findByUserid(audience);
-
-
-            UserPrincipal userDetails = this.jwtCredentialsService.loadUserByUsername(user.getUsername());
-
-            // if token is valid configure Spring Security to manually set
-            // authentication
-
-            if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
-
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-
-            }
-
-        }
-        
         filterChain.doFilter(request, response);
 
     }

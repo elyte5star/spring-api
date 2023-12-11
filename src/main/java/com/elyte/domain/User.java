@@ -54,8 +54,8 @@ public class User extends AuditEntity{
     private String email;
 
     
-    @Column(name = "ACCOUNT_NON_LOCKED", columnDefinition = "BOOLEAN DEFAULT true")
-    private boolean accountNonLocked;
+    @Column(name = "ACCOUNT_NOT_LOCKED")
+    private boolean accountNonLocked=true;
 
     @Column(name = "FAILED_ATTEMPT",columnDefinition = "integer default 0")
     private int failedAttempt;

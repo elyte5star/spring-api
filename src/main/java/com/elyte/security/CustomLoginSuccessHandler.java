@@ -22,6 +22,7 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         UserPrincipal userDetails = (UserPrincipal) authentication.getPrincipal();
         User user = userDetails.getUser();
         if (user.getFailedAttempt() > 0) {
+            
             loginAttemptService.resetFailedAttempts(user.getUsername());
         }
          

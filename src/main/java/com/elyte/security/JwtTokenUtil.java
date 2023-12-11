@@ -7,12 +7,12 @@ package com.elyte.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
+import com.elyte.utils.EncryptionUtil;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,9 +63,8 @@ public class JwtTokenUtil implements Serializable {
     // userName.equals(userDetails.getUsername()));
     // }
 
-    public Boolean validateToken(String token, UserPrincipal userDetails) {
-        final String audience = getAudienceFromToken(token);
-        return (!isTokenExpired(token) && audience.equals(userDetails.getUser().getUserid()));
+    public Boolean validateToken(String token) {
+        return (!isTokenExpired(token));
     }
 
     // retrieve username from jwt token
@@ -103,6 +102,22 @@ public class JwtTokenUtil implements Serializable {
     // for retrieving any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+    }
+
+    public String extractTokenFromRequest(HttpServletRequest request) {
+        // Get the Authorization header from the request
+        String authorizationHeader = request.getHeader("Authorization");
+
+        // Check if the Authorization header is not null and starts with "Bearer "
+        if ((authorizationHeader != null) && authorizationHeader.startsWith("Bearer ")) {
+            // Extract the JWT token (remove "Bearer " prefix)
+            String encryptedJwtToken = authorizationHeader.substring(7);
+
+            return EncryptionUtil.decrypt(encryptedJwtToken);
+        }
+
+        // If the Authorization header is not valid, return null
+        return null;
     }
 
 }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 import com.elyte.domain.NewLocationToken;
 import com.elyte.domain.Otp;
@@ -30,6 +31,7 @@ import com.elyte.utils.CheckNullEmptyBlank;
 import com.elyte.utils.RandomStringGen;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -94,6 +96,17 @@ public class UserService {
 
         throw new DataIntegrityViolationException("A USER WITH THE DETAILS EXIST ALREADY");
 
+    }
+
+    public ResponseEntity<CustomResponseStatus> perfomLogout(Authentication authentication, HttpServletRequest request,
+            HttpServletResponse response) {
+        if (authentication != null) {
+            new SecurityContextLogoutHandler().logout(request, response, authentication);
+        }
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+                ApplicationConsts.SUCCESS,
+                ApplicationConsts.SRC, ApplicationConsts.timeNow(), "Logged Out!");
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
     public ResponseEntity<CustomResponseStatus> userById(String userid) throws ResourceNotFoundException {
@@ -170,6 +183,7 @@ public class UserService {
                 return new ResponseEntity<>(status, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
+        
         throw new ResourceNotFoundException("User with id :" + userid + " not found!");
 
     }

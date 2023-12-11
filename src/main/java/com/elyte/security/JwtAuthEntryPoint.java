@@ -17,8 +17,6 @@ import java.io.OutputStream;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.utils.ApplicationConsts;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 @Component
@@ -28,11 +26,6 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint, Serializable
 
 	private static final Logger log = LoggerFactory.getLogger(JwtAuthEntryPoint.class);
 
-	@Autowired
-    private LoginAttemptService loginAttemptService;
-
-	
-
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) throws IOException {
@@ -41,7 +34,6 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint, Serializable
 				ApplicationConsts.timeNow(), ApplicationConsts.ARC_MSG);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		if(loginAttemptService.isBlocked()) status.setResult("User blocked");
 		OutputStream responseStream = response.getOutputStream();
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.writeValue(responseStream, status);

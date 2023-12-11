@@ -56,7 +56,7 @@ public class OtpService {
             if (otp.equalsIgnoreCase(otpInDb.getOtpString())) {
                 if (otpInDb.getUser().isEnabled()) {
                     return "enabled";
-                } else if (isOtpExpired(otpInDb)) {
+                } else if (!isOtpExpired(otpInDb)) {
                     otpInDb.getUser().setEnabled(true);
                     deleteOtp(otpInDb);
                     return "valid";
