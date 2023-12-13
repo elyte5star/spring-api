@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.elyte.domain.User;
 import com.elyte.repository.UserRepository;
+import com.elyte.service.ActiveUsersService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -39,12 +40,15 @@ public class AuthenticationEvents {
     private UserRepository userRepository;
 
     @Autowired
+    private ActiveUsersService activeUsers;
+
+    @Autowired
     private LoginAttemptService loginAttemptService;
 
     @EventListener
     public void onSuccess(AuthenticationSuccessEvent event) {
         final UserPrincipal userDetails = (UserPrincipal) event.getAuthentication().getPrincipal();
-        System.out.println(userDetails.getAuthorities().toString());
+        activeUsers.registerLoggedUser(userDetails.getUsername());
         User user = userDetails.getUser();
         if (user.getFailedAttempt() > 0) {
             loginAttemptService.resetUserFailedAttempts(user);

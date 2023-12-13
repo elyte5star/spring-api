@@ -27,7 +27,7 @@ public class JwtTokenUtil implements Serializable {
 
     private static final long serialVersionUID = 7383112237L;
 
-    public static final int JWT_TOKEN_VALIDITY = 10 * 60; // 10 minutes
+    public static final int JWT_TOKEN_VALIDITY = 10; // 10 minutes 
 
     @Value("${api.jwt.secret}")
     private String secret;
@@ -53,7 +53,7 @@ public class JwtTokenUtil implements Serializable {
     // compaction of the JWT to a URL-safe string
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 60 * 1000))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 

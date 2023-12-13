@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 import com.elyte.domain.NewLocationToken;
 import com.elyte.domain.Otp;
@@ -31,7 +30,6 @@ import com.elyte.utils.CheckNullEmptyBlank;
 import com.elyte.utils.RandomStringGen;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -53,6 +51,9 @@ public class UserService {
 
     @Autowired
     private UserLocationRepository userLocationRepository;
+
+    @Autowired
+    private ActiveUsersService activeUsers;
 
     @Autowired
     @Qualifier("GeoIPCountry")
@@ -98,17 +99,7 @@ public class UserService {
 
     }
 
-    public ResponseEntity<CustomResponseStatus> perfomLogout(Authentication authentication, HttpServletRequest request,
-            HttpServletResponse response) {
-        if (authentication != null) {
-            new SecurityContextLogoutHandler().logout(request, response, authentication);
-        }
-        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, ApplicationConsts.timeNow(), "Logged Out!");
-        return new ResponseEntity<>(resp, HttpStatus.OK);
-    }
-
+   
     public ResponseEntity<CustomResponseStatus> userById(String userid) throws ResourceNotFoundException {
         User user = userRepository.findByUserid(userid);
         if (user == null) {
@@ -183,7 +174,7 @@ public class UserService {
                 return new ResponseEntity<>(status, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-        
+
         throw new ResourceNotFoundException("User with id :" + userid + " not found!");
 
     }
@@ -341,6 +332,25 @@ public class UserService {
             return new ResponseEntity<>(resp, HttpStatus.GONE);
         }
 
+    }
+
+    public ResponseEntity<CustomResponseStatus> getLoggedUsers() {
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+                ApplicationConsts.SUCCESS,
+                ApplicationConsts.SRC, ApplicationConsts.timeNow(), activeUsers.getActiveUsers());
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+
+    }
+
+    public ResponseEntity<CustomResponseStatus> isActiveUser(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new ResourceNotFoundException("User with username : " + username + " not found!");
+        }
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+                ApplicationConsts.SUCCESS,
+                ApplicationConsts.SRC, ApplicationConsts.timeNow(), activeUsers.isUserActive(username)?"User online":"User is offline");
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
 }

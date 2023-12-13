@@ -16,10 +16,10 @@ public class RandomStringGen {
         return UUID.randomUUID().toString();
     }
 
-    public static Date calculateExpiryDate(int EXPIRATION) {
+    public static Date calculateExpiryDate(int EXPIRATION_MINUTES) {
         final Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(new Date().getTime());
-        cal.add(Calendar.MINUTE, EXPIRATION);
+        cal.add(Calendar.MINUTE, EXPIRATION_MINUTES);
         return new Date(cal.getTime().getTime());
     }
 

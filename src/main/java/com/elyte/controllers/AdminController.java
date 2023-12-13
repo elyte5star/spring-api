@@ -51,6 +51,22 @@ public class AdminController {
         return userService.userById(userid);
     }
 
+    @GetMapping("/users/loggedUsers")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Operation(summary = "Get active users", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> getLoggedUsers()
+            throws ResourceNotFoundException {
+        return userService.getLoggedUsers();
+    }
+
+    @GetMapping("/users/isLoggedIn{username}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Operation(summary = "Check if a user is active", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> isActiveUser(@PathVariable @Valid String username)
+            throws ResourceNotFoundException {
+        return userService.isActiveUser(username);
+    }
+
 
     @PutMapping("/users/update-user/{userid}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -132,5 +148,8 @@ public class AdminController {
         return productService.deleteProduct(pid);
 
     }
+
+
+    
 
 }
