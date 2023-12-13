@@ -38,7 +38,7 @@ public class LoginAttemptService {
                 });
     }
 
-    public void loginFailed(final String key) {
+    public void increaseUnknownUserFailedAttemptsByIP(final String key) {
         int attempts;
         try {
             attempts = attemptsCache.get(key);
@@ -50,7 +50,7 @@ public class LoginAttemptService {
 
     }
 
-    public boolean isBlocked() {
+    public boolean isIpBlocked() {
         try {
             return attemptsCache.get(getClientIP()) >= MAX_ATTEMPT;
         } catch (final ExecutionException e) {
@@ -70,34 +70,36 @@ public class LoginAttemptService {
         return request.getRemoteAddr();
     }
 
-    public void resetFailedAttempts(String username) {
-        userRepository.updateFailedAttempts(0, username);
+    public void resetUserFailedAttempts(User user) {
+        user.setFailedAttempt(0);
+        userRepository.save(user);
     }
 
-    // public void lock(User user) {
-    // user.setAccountNonLocked(false);
-    // user.setLockTime(new Date());
-    // userRepository.save(user);
-    // }
+    public void lockUserAccount(User user) {
+        user.setAccountNonLocked(false);
+        user.setLockTime(new Date());
+        userRepository.save(user);
+    }
 
-    // public void increaseFailedAttempts(User user) {
-    // int newFailAttempts = user.getFailedAttempt() + 1;
-    // userRepository.updateFailedAttempts(newFailAttempts, user.getUsername());
-    // }
+    public void increaseUserFailedAttempts(User user) {
+        int newFailAttempts = user.getFailedAttempt() + 1;
+        user.setFailedAttempt(newFailAttempts);
+        userRepository.save(user);
+    }
 
-    // public boolean unlockWhenTimeExpired(User user) {
-    // long lockTimeInMillis = user.getLockTime().getTime();
-    // long currentTimeInMillis = System.currentTimeMillis();
+    public boolean unlockWhenTimeExpired(User user) {
+        long lockTimeInMillis = user.getLockTime().getTime();
+        long currentTimeInMillis = System.currentTimeMillis();
 
-    // if (lockTimeInMillis + LOCK_TIME_DURATION < currentTimeInMillis) {
-    // user.setAccountNonLocked(true);
-    // user.setLockTime(null);
-    // user.setFailedAttempt(0);
-    // userRepository.save(user);
-    // return true;
-    // }
+        if (lockTimeInMillis + LOCK_TIME_DURATION < currentTimeInMillis) {
+            user.setAccountNonLocked(true);
+            user.setLockTime(null);
+            user.setFailedAttempt(0);
+            userRepository.save(user);
+            return true;
+        }
 
-    // return false;
-    // }
+        return false;
+    }
 
 }

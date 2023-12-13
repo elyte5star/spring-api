@@ -1,4 +1,5 @@
 package com.elyte.service;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -8,8 +9,6 @@ import com.elyte.domain.User;
 import com.elyte.repository.UserRepository;
 import com.elyte.security.LoginAttemptService;
 import com.elyte.security.UserPrincipal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.elyte.utils.ApplicationConsts;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,11 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CredentialsService implements UserDetailsService {
 
-    private static final Logger log = LoggerFactory.getLogger(CredentialsService.class);
-
     @Autowired
     private UserRepository userRepository;
-
 
     @Autowired
     private LoginAttemptService loginAttemptService;
@@ -32,8 +28,11 @@ public class CredentialsService implements UserDetailsService {
     @Transactional
     public UserPrincipal loadUserByUsername(String username) throws UsernameNotFoundException {
 
+        if (loginAttemptService.isIpBlocked()) {
 
-        log.debug("---loadUserByUsername called.---");
+            throw new RuntimeException("Your IP has been locked due to 5 failed attempts."
+                    + " It will be unlocked after 24 hours.");
+        }
 
         User user = userRepository.findByUsername(username);
 
@@ -50,22 +49,16 @@ public class CredentialsService implements UserDetailsService {
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         }
 
-        
         user.setUserid(user.getUserid());
         user.setLastLoginDate(ApplicationConsts.timeNow());
         userRepository.save(user);
 
-        UserPrincipal customUserDetail=new UserPrincipal();
+        UserPrincipal customUserDetail = new UserPrincipal();
         customUserDetail.setAuthorities(authorities);
         customUserDetail.setUser(user);
-       
+
         return customUserDetail;
 
     }
-
-
-
-    
-
 
 }
