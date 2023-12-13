@@ -1,12 +1,12 @@
 package com.elyte.domain;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
 import jakarta.validation.constraints.Digits;
@@ -17,12 +17,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
+import java.util.Date;
 
 @Entity
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -54,8 +54,14 @@ public class User extends AuditEntity{
     private String email;
 
     
-    @Column(name = "ACTIVE", columnDefinition = "BOOLEAN DEFAULT false")
-    private boolean active;
+    @Column(name = "ACCOUNT_NOT_LOCKED")
+    private boolean accountNonLocked=true;
+
+    @Column(name = "FAILED_ATTEMPT",columnDefinition = "integer default 0")
+    private int failedAttempt;
+     
+    @Column(name = "LOCK_TIME")
+    private Date lockTime=null;
 
     
     @Column(name = "ADMIN", columnDefinition = "BOOLEAN DEFAULT false")
@@ -64,9 +70,8 @@ public class User extends AuditEntity{
     @Column(name = "ENABLED", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean enabled;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "BOOKING_ID")
-    @OrderBy
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @JoinColumn(name = "BOOKING_IDS")
     private List<Booking> bookings;
 
     

@@ -3,12 +3,15 @@ package com.elyte.exception;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,20 +19,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import com.elyte.domain.response.ErrorResponse;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.utils.ApplicationConsts;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.mail.MailAuthenticationException;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.context.request.WebRequest;
 
 @RestControllerAdvice
 public class RestExceptionHandler implements ErrorController {
@@ -37,135 +39,134 @@ public class RestExceptionHandler implements ErrorController {
     private static final Logger log = LoggerFactory.getLogger(RestExceptionHandler.class);
 
     @GetMapping("/error")
-    public ResponseEntity<CustomResponseStatus> handleError(HttpServletRequest request){
+    public ResponseEntity<CustomResponseStatus> handleError(HttpServletRequest request) {
         Integer code = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-        if(null != code){
+        if (null != code) {
             log.debug("Error thrown -- statusCode {}", code);
-            switch (code){
+            switch (code) {
                 case 404:
-                    CustomResponseStatus status = CustomResponseStatus.build(code, ApplicationConsts.E404_MSG,
-                    ApplicationConsts.FAILURE,
-                    request.getRequestURL().toString(),
-                    ApplicationConsts.timeNow(), null);
-                  
-                    return new ResponseEntity<>(status, HttpStatus.BAD_REQUEST);
+                    CustomResponseStatus status = new CustomResponseStatus(code, ApplicationConsts.E404_MSG,
+                            ApplicationConsts.FAILURE,
+                            request.getRequestURL().toString(),
+                            ApplicationConsts.timeNow(), null);
+
+                    return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
                 case 500:
-                     CustomResponseStatus status1 = CustomResponseStatus.build(code, ApplicationConsts.E500_MSG,
-                     ApplicationConsts.FAILURE,
-                     request.getRequestURL().toString(),
-                     ApplicationConsts.timeNow(), null);
-                    return new ResponseEntity<>(status1, HttpStatus.INTERNAL_SERVER_ERROR);
+                    CustomResponseStatus status1 = new CustomResponseStatus(code, ApplicationConsts.E500_MSG,
+                            ApplicationConsts.FAILURE,
+                            request.getRequestURL().toString(),
+                            ApplicationConsts.timeNow(), null);
+                    return new ResponseEntity<>(status1, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-         CustomResponseStatus status = CustomResponseStatus.build(code,ApplicationConsts.I999_MSG,ApplicationConsts.SUCCESS, request.getRequestURL().toString(),ApplicationConsts.timeNow(), null);
-        return new ResponseEntity<>(status, HttpStatus.OK);
+        CustomResponseStatus status = new CustomResponseStatus(code, ApplicationConsts.I999_MSG,
+                ApplicationConsts.SUCCESS, request.getRequestURL().toString(), ApplicationConsts.timeNow(), null);
+        return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.OK);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleUserNotFoundException(ResourceNotFoundException e, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ApplicationConsts.E404_MSG);
-        CustomResponseStatus status = CustomResponseStatus.build(HttpStatus.NOT_FOUND.value(), e.getMessage(),
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage(),
                 ApplicationConsts.FAILURE,
                 e.getClass().getName(),
-                ApplicationConsts.timeNow(), null);
-        errorResponse.setStatus(status);
+                ApplicationConsts.timeNow(), ApplicationConsts.E404_MSG);
+
         log.error("[+] ResourceNotFoundException--{}", e.getMessage());
-        return new ResponseEntity<>(errorResponse, null, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.NOT_FOUND);
 
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleInvalidArgument(MethodArgumentNotValidException e) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        ErrorResponse errorDetail = new ErrorResponse(ApplicationConsts.I202_MSG);
-        CustomResponseStatus status = CustomResponseStatus.build(HttpStatus.BAD_REQUEST.value(),
-                "Input validation failed",
-                ApplicationConsts.FAILURE,
-                e.getClass().getName(), ApplicationConsts.timeNow(), null);
-        errorDetail.setStatus(status);
-        Map<String, Object> map = objectMapper.convertValue(errorDetail, new TypeReference<>() {
-        });
         Map<String, Object> mp = new HashMap<String, Object>();
         e.getBindingResult().getFieldErrors().forEach(fieldError -> {
             mp.put(fieldError.getField(), fieldError.getDefaultMessage());
         });
-        map.put("errors", mp);
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(),
+                "Input validation failed",
+                ApplicationConsts.FAILURE,
+                e.getClass().getName(), ApplicationConsts.timeNow(), Map.of("errors", mp));
         log.error("[+] MethodArgumentNotValidException--{}", e.getMessage());
-        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleBadCredentialsException(Exception e) {
-        ErrorResponse errorResponse = new ErrorResponse(ApplicationConsts.E401_MSG);
-        CustomResponseStatus status = CustomResponseStatus.build(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
                 ApplicationConsts.FAILURE,
                 e.getClass().getName(),
-                ApplicationConsts.timeNow(), null);
-        errorResponse.setStatus(status);
+                ApplicationConsts.timeNow(), ApplicationConsts.E401_MSG);
+
         log.error("[+] BadCredentialsException--{}", e.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<?> handleLockedException(Exception e) {
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.LOCKED.value(), e.getMessage(),
+                ApplicationConsts.FAILURE,
+                e.getClass().getName(),
+                ApplicationConsts.timeNow(), ApplicationConsts.E423_MSG);
+        log.error("[+] LockedException--{}", e.getMessage());
+        return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.LOCKED);
     }
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<?> handleNullPointer(Exception e) {
-        ErrorResponse errorResponse = new ErrorResponse(ApplicationConsts.I999_MSG);
-        CustomResponseStatus status = CustomResponseStatus.build(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
                 ApplicationConsts.FAILURE,
                 e.getClass().getName(),
-                ApplicationConsts.timeNow(), null);
-        errorResponse.setStatus(status);
+                ApplicationConsts.timeNow(), ApplicationConsts.I999_MSG);
+
         log.error("[+] NullPointerException--{}", e.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<?> handleNoHandlerFound(Exception e) {
-        ErrorResponse errorResponse = new ErrorResponse(ApplicationConsts.E404_MSG);
-        CustomResponseStatus status = CustomResponseStatus.build(HttpStatus.NOT_FOUND.value(), e.getMessage(),
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage(),
                 ApplicationConsts.FAILURE,
                 e.getClass().getName(),
-                ApplicationConsts.timeNow(), null);
-        errorResponse.setStatus(status);
+                ApplicationConsts.timeNow(), ApplicationConsts.E404_MSG);
+
         log.error("[+] NoHandlerFoundException--{}", e.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<?> handleDisabledException(Exception e) {
-        ErrorResponse errorResponse = new ErrorResponse(ApplicationConsts.E409_MSG);
-        CustomResponseStatus status = CustomResponseStatus.build(HttpStatus.CONFLICT.value(), e.getMessage(),
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.LOCKED.value(), e.getMessage(),
                 ApplicationConsts.FAILURE,
                 e.getClass().getName(),
-                ApplicationConsts.timeNow(), null);
-        errorResponse.setStatus(status);
+                ApplicationConsts.timeNow(), ApplicationConsts.E423_MSG);
         log.error("[+] DisabledException--{}", e.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.LOCKED);
     }
 
+    // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> handleDataIntegrityViolationException(Exception e) {
-        ErrorResponse errorResponse = new ErrorResponse(ApplicationConsts.E205_MSG);
-        CustomResponseStatus status = CustomResponseStatus.build(HttpStatus.CONFLICT.value(), e.getMessage(),
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.CONFLICT.value(), e.getMessage(),
                 ApplicationConsts.FAILURE,
                 e.getClass().getName(),
-                ApplicationConsts.timeNow(), null);
-        errorResponse.setStatus(status);
+                ApplicationConsts.timeNow(), ApplicationConsts.E205_MSG);
+
         log.error("[+] DataIntegrityViolationException--{}", e.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(value = { AccessDeniedException.class })
     public ResponseEntity<?> handleAccessDeniedException(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse,
             AccessDeniedException accessDeniedException) throws IOException {
-        CustomResponseStatus status = CustomResponseStatus.build(HttpServletResponse.SC_FORBIDDEN, "NOT_PERMITTED",
+        CustomResponseStatus status = new CustomResponseStatus(HttpServletResponse.SC_FORBIDDEN, "NOT_PERMITTED",
                 ApplicationConsts.FAILURE, accessDeniedException.getClass().getName(), ApplicationConsts.timeNow(),
                 accessDeniedException.getMessage());
-        ErrorResponse errorResponse = ErrorResponse.build(status, ApplicationConsts.ADR_MSG);
+
         httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
         httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
         log.error("[+] AccessDenied error: {}", accessDeniedException.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.FORBIDDEN);
 
     }
 
@@ -184,36 +185,53 @@ public class RestExceptionHandler implements ErrorController {
             status.setMessage(ApplicationConsts.E400_MSG);
 
         }
-        ErrorResponse errorResponse = new ErrorResponse(ApplicationConsts.E400_MSG);
         status.setCode(HttpStatus.BAD_REQUEST.value());
         status.setPath(e.getClass().getName());
         status.setTimeStamp(ApplicationConsts.timeNow());
         status.setSuccess(ApplicationConsts.FAILURE);
-        errorResponse.setStatus(status);
         log.error("[+] HttpMessageNotReadableException --{}", e.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<?> handleMaxSizeException(MaxUploadSizeExceededException exc, HttpServletRequest request,
             HttpServletResponse response) {
-        CustomResponseStatus status = CustomResponseStatus.build(exc.getStatusCode().value(), "File too large!",
+        CustomResponseStatus customStatus = new CustomResponseStatus(exc.getStatusCode().value(), "File too large!",
                 ApplicationConsts.FAILURE, exc.getClass().getName(), ApplicationConsts.timeNow(),
-                exc.getMessage());
-        ErrorResponse errorResponse = ErrorResponse.build(status, ApplicationConsts.E413_MSG);
+                ApplicationConsts.E413_MSG);
         log.error("[+] MaxUploadSizeExceededException --{}", exc.getMessage());
-        return new ResponseEntity<>(errorResponse, exc.getStatusCode());
+        return new ResponseEntity<>(customStatus, new HttpHeaders(), exc.getStatusCode());
+    }
+
+    @ExceptionHandler({ MailAuthenticationException.class })
+    public ResponseEntity<?> handleMail(final RuntimeException ex, final WebRequest request) {
+        log.error("[+] 500 Status Code- MailError", ex.getMessage());
+        CustomResponseStatus customStatus = new CustomResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "message.email.config.error", ApplicationConsts.FAILURE, ex.getClass().getName(),
+                ApplicationConsts.timeNow(),
+                "MailError");
+        return new ResponseEntity<>(customStatus, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
     // fallback method
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleFallback(HttpServletRequest request, Exception e) {
         log.error("[+] Fallback Exception.getMessage--{}", e.getMessage());
-        CustomResponseStatus customStatus = CustomResponseStatus.build(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
+        CustomResponseStatus customStatus = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
                 ApplicationConsts.FAILURE, e.getClass().getName(), ApplicationConsts.timeNow(),
-                e.getMessage());
-        ErrorResponse errorResponse = ErrorResponse.build(customStatus, ApplicationConsts.I999_MSG);
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+                ApplicationConsts.I999_MSG);
+        return new ResponseEntity<>(customStatus, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UnusualLocationException.class)
+    public ResponseEntity<?> handleUnusualLocationException(HttpServletRequest request, Exception e) {
+        log.error("[+] Unusual location--{}", e.getMessage());
+        CustomResponseStatus customStatus = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
+                ApplicationConsts.FAILURE, e.getClass().getName(), ApplicationConsts.timeNow(),
+                ApplicationConsts.I999_MSG);
+        return new ResponseEntity<>(customStatus, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+
     }
 
     

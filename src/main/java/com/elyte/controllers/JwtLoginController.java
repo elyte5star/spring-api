@@ -2,28 +2,19 @@ package com.elyte.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.elyte.domain.Otp;
-import com.elyte.domain.User;
-import com.elyte.domain.request.EmailAlert;
 import com.elyte.domain.request.LoginRequestData;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.response.TokenResponse;
-import com.elyte.repository.UserRepository;
 import com.elyte.security.UserPrincipal;
-import com.elyte.service.EmailAlertService;
-import com.elyte.service.OtpService;
 import com.elyte.security.JwtTokenUtil;
 import com.elyte.utils.ApplicationConsts;
 import com.elyte.utils.EncryptionUtil;
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,62 +30,31 @@ public class JwtLoginController {
         private AuthenticationManager authenticationManager;
 
         @Autowired
-        private EmailAlertService emailAlertService;
-
-        @Autowired
-        private UserRepository userRepository;
-
-        @Autowired
-        private OtpService otpService;
-
-        @Autowired
         private JwtTokenUtil jwtTokenUtil;
 
         @PostMapping("/token")
         public ResponseEntity<CustomResponseStatus> createToken(HttpServletRequest request,
-                        @RequestBody @Valid LoginRequestData loginRequestData,final Locale locale)
+                        @RequestBody @Valid LoginRequestData loginRequestData, final Locale locale)
                         throws Exception {
+                Authentication authentication = authenticationManager.authenticate(
+                                new UsernamePasswordAuthenticationToken(loginRequestData.getUsername(),
+                                                loginRequestData.getPassword()));
+                final UserPrincipal userDetails = (UserPrincipal) authentication.getPrincipal();
 
-                try {
-                        Authentication authentication = authenticationManager.authenticate(
-                                        new UsernamePasswordAuthenticationToken(loginRequestData.getUsername(),
-                                                        loginRequestData.getPassword()));
-                        final UserPrincipal userDetails = (UserPrincipal) authentication.getPrincipal();
+                final String token = jwtTokenUtil.generateToken(userDetails);
 
-                        final String token = jwtTokenUtil.generateToken(userDetails);
+                TokenResponse tokenResponse = new TokenResponse(EncryptionUtil.encrypt(token), "bearer",
+                                userDetails.getUsername(), userDetails.getUser().getEmail(),
+                                userDetails.isEnabled(), userDetails.getUser().isAdmin(),
+                                userDetails.getUser().getUserid());
 
-                        TokenResponse tokenResponse = TokenResponse.build(EncryptionUtil.encrypt(token), "bearer",
-                                        userDetails.getUsername(), userDetails.getUser().getEmail(),
-                                        userDetails.isEnabled(), userDetails.getUser().isAdmin(),
-                                        userDetails.getUser().getUserid());
+                CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(),
+                                ApplicationConsts.I200_MSG,
+                                ApplicationConsts.SUCCESS,
+                                request.getRequestURL().toString(), ApplicationConsts.timeNow(), tokenResponse);
 
-                        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(),
-                                        ApplicationConsts.I200_MSG,
-                                        ApplicationConsts.SUCCESS,
-                                        request.getRequestURL().toString(), ApplicationConsts.timeNow(), tokenResponse);
-
-                        return new ResponseEntity<>(resp, HttpStatus.OK);
-
-                } catch (DisabledException e) {
-                        
-                        makeOtpRequest(loginRequestData.getUsername(), locale);
-                        throw new DisabledException("USER_DISABLED", e);
-
-                } catch (BadCredentialsException e) {
-
-                        throw new BadCredentialsException("INVALID_CREDENTIALS", e);
-
-                }
+                return new ResponseEntity<>(resp, HttpStatus.OK);
 
         }
-
-        public void makeOtpRequest(String username,final Locale locale) throws MessagingException{
-                User user = userRepository.findByUsername(username);
-                Otp otp = otpService.generateOtp(user.getEmail());
-                EmailAlert mailObject = EmailAlert.build(user.getEmail(), user.getUsername(), "Confirm your account");
-                emailAlertService.sendSimpleHtmlMail(mailObject, otp.getOtpString(),otp.getDuration(),locale,ApplicationConsts.VERIFY_USER_EMAIL_TEMPLATE_NAME);
-        }
-
-        
 
 }

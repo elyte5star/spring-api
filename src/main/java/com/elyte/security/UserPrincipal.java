@@ -50,7 +50,7 @@ public class UserPrincipal implements UserDetails{
     }
 
     public boolean isAccountNonLocked() {
-        return true;
+        return user.isAccountNonLocked();
     }
 
     public boolean isCredentialsNonExpired() {

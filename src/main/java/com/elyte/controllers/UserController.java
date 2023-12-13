@@ -1,9 +1,7 @@
 package com.elyte.controllers;
 
 import com.elyte.domain.request.CreateUserRequest;
-
 import java.util.Locale;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +20,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+
 import jakarta.validation.Valid;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
+import com.elyte.domain.request.ValidateOtpRequest;
 
 @RestController
 @RequestMapping("/users")
@@ -62,18 +62,46 @@ public class UserController {
 
     }
 
-    @PostMapping("/resetPassword")
+    @GetMapping("/signup/send-otp")
+    @Operation(summary = "Send registration confirmation OTP")
+    public ResponseEntity<CustomResponseStatus> sendOtp(@RequestParam("username") @RequestBody @Valid String username,
+            final Locale locale)
+            throws MessagingException, ResourceNotFoundException {
+        return userService.sendOtp(username, locale);
+
+    }
+
+    @PostMapping(value = "/signup/verify-otp")
+    @Operation(summary = "Verify OTP")
+    public ResponseEntity<CustomResponseStatus> otpValidator(@RequestBody @Valid ValidateOtpRequest otp)
+            throws Exception {
+        return userService.validateOtp(otp);
+
+    }
+
+    @GetMapping("/reset/password")
+    @Operation(summary = "Reset password request")
     public ResponseEntity<CustomResponseStatus> resetPassword(HttpServletRequest request,
             @RequestParam("email") @Valid String userEmail) throws ResourceNotFoundException, MessagingException {
         return userService.createPasswordResetTokenForUser(request, userEmail);
 
     }
 
-    @PostMapping("/changePassword")
+    @GetMapping("/reset/confirm-token")
+    @Operation(summary = "Confirm password request token")
     public ResponseEntity<CustomResponseStatus> validatePasswordResetToken(
             @RequestParam("token") @Valid final String token) throws ResourceNotFoundException {
         return userService.validatePasswordResetToken(token);
 
     }
 
+    @GetMapping("/enableNewLocation")
+    @Operation(summary = "Confirm password request token")
+    public ResponseEntity<CustomResponseStatus> enableNewLocation(Locale locale,
+            @RequestParam("token") @Valid final String token) throws ResourceNotFoundException {
+        return userService.enableNewLocation(locale, token);
+
+    }
+
+    
 }

@@ -47,7 +47,7 @@ public class MainController {
                 .unauthenticated(loginRequest.username(), loginRequest.password());
         Authentication authenticationResponse = authenticationManager.authenticate(authenticationRequest);
         final UserPrincipal userDetails = (UserPrincipal) authenticationResponse.getPrincipal();
-        CustomResponseStatus resp = CustomResponseStatus.build(HttpStatus.OK.value(),
+        CustomResponseStatus resp =new CustomResponseStatus(HttpStatus.OK.value(),
                 ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
                 request.getRequestURL().toString(), ApplicationConsts.timeNow(), userDetails);

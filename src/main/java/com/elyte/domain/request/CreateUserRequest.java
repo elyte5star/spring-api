@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 
 
 
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class CreateUserRequest implements Serializable {
@@ -29,10 +29,5 @@ public class CreateUserRequest implements Serializable {
     @Digits(fraction = 0, integer = 10)
     private String telephone;
 
-    // private boolean active = false;
-
-    // private final boolean admin = false;
-
-    //private boolean enabled = true;
 
 }

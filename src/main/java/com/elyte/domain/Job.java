@@ -8,7 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
@@ -17,14 +17,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.persistence.OrderBy;
+
 
 
 
 @Setter
 @Getter
 @Entity
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor()
 @NoArgsConstructor
 @Table(name="JOBS")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -35,20 +35,14 @@ public class Job extends AuditEntity{
     @Column(name = "JOB_ID")
     private String job_id;
 
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "OWNER_ID", referencedColumnName = "USER_ID")
+    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false, name = "user_id")
     private User owner;
 
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "TASK_ID")
-    @OrderBy
+    @JoinColumn(name = "tasks")
     private List<Task> tasks;
-
-
-    @Column(name = "NUMBER_OF_TASKS")
-    private int numberOfTasks;
 
 
     @Column(name = "JOB_REQUEST", columnDefinition = "json")
@@ -61,8 +55,6 @@ public class Job extends AuditEntity{
 
     @Column(name = "JOB_STATUS", columnDefinition = "json")
     private JobStatus jobStatus;
-
-
 
     
 }

@@ -14,10 +14,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 
 
 
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -31,13 +32,16 @@ public class PasswordResetToken extends AuditEntity{
     @Column(name = "TOKEN_ID")
     private String tokenid;
 
+
+    @Column(name = "TOKEN")
+    @NotBlank(message = "Token is required")
     private String token;
 
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
-
+    @Column(name = "EXPIRY_DATE")
     private Date expiryDate;
 
     

@@ -111,3 +111,16 @@ api:
 ---
 attachment:
   invoice: 'path_to_file'
+
+---
+geo:
+  ip:
+    lib:
+      enabled: true
+---
+
+
+#6 o'clock of every day
+purge:
+  cron:
+    expression: '0 0 6 * * *'

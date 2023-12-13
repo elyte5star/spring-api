@@ -7,12 +7,12 @@ package com.elyte.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
+import com.elyte.utils.EncryptionUtil;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public class JwtTokenUtil implements Serializable {
 
     private static final long serialVersionUID = 7383112237L;
 
-    public static final int JWT_TOKEN_VALIDITY = 10 * 60; // 10 minutes
+    public static final int JWT_TOKEN_VALIDITY = 10; // 10 minutes 
 
     @Value("${api.jwt.secret}")
     private String secret;
@@ -53,7 +53,7 @@ public class JwtTokenUtil implements Serializable {
     // compaction of the JWT to a URL-safe string
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 60 * 1000))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
@@ -63,9 +63,8 @@ public class JwtTokenUtil implements Serializable {
     // userName.equals(userDetails.getUsername()));
     // }
 
-    public Boolean validateToken(String token, UserPrincipal userDetails) {
-        final String audience = getAudienceFromToken(token);
-        return (!isTokenExpired(token) && audience.equals(userDetails.getUser().getUserid()));
+    public Boolean validateToken(String token) {
+        return (!isTokenExpired(token));
     }
 
     // retrieve username from jwt token
@@ -103,6 +102,22 @@ public class JwtTokenUtil implements Serializable {
     // for retrieving any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+    }
+
+    public String extractTokenFromRequest(HttpServletRequest request) {
+        // Get the Authorization header from the request
+        String authorizationHeader = request.getHeader("Authorization");
+
+        // Check if the Authorization header is not null and starts with "Bearer "
+        if ((authorizationHeader != null) && authorizationHeader.startsWith("Bearer ")) {
+            // Extract the JWT token (remove "Bearer " prefix)
+            String encryptedJwtToken = authorizationHeader.substring(7);
+
+            return EncryptionUtil.decrypt(encryptedJwtToken);
+        }
+
+        // If the Authorization header is not valid, return null
+        return null;
     }
 
 }

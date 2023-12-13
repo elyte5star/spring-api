@@ -19,4 +19,5 @@ public interface UserRepository extends CrudRepository<User, String> {
     @Query("SELECT u FROM User u WHERE u.userid <> ?1 and (u.username = ?2 or u.email = ?3 or u.telephone=?4)")
     List<User> checkIfUserDetailsIstaken(String userid,String username,String email,String telephone);
 
+ 
 }

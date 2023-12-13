@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 
 
 
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class LoginRequestData implements Serializable{

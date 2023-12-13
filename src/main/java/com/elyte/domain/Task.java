@@ -17,7 +17,7 @@ import jakarta.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
@@ -32,8 +32,8 @@ public class Task extends AuditEntity{
     private String task_id;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "JOB", referencedColumnName = "JOB_ID")
+    @ManyToOne(targetEntity =Job.class,fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false,name = "job_id")
     private Job job;
 
 

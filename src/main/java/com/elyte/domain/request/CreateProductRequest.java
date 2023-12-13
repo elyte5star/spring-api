@@ -1,5 +1,4 @@
 package com.elyte.domain.request;
-
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,7 @@ import jakarta.validation.constraints.NotNull;
 
 
 
-@AllArgsConstructor(staticName = "build")
+@AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class CreateProductRequest implements Serializable{

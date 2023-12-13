@@ -1,5 +1,4 @@
 package com.elyte.configuration;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -10,14 +9,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import com.elyte.security.JwtRequestFilter;
+import com.elyte.security.JwtFilter;
 import com.elyte.security.JwtAuthEntryPoint;
 import com.elyte.utils.LoggingFilter;
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import java.io.IOException;
+import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +36,7 @@ public class MultiAuthSecurityConfig {
     private JwtAuthEntryPoint jwtAuthenticationEntryPoint;
 
     @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+    private JwtFilter jwtRequestFilter;
 
     @Autowired
     private LoggingFilter loggingFilter;
@@ -41,11 +45,12 @@ public class MultiAuthSecurityConfig {
             "/",
             "/index",
             "/login",
-            "/users/signup",
-            "/users/resetPassword",
-            "/users/changePassword",
-            "/mail/sendHtml",
-            "/mail/verify-otp",
+            "/admin/currentusername",
+            "/users/signup/**",
+            "/users/enableNewLocation",
+            "/users/reset/password",
+            "/users/logout",
+            "/users/reset/confirm-token",
             "/reviews/create-review",
             "/auth/token",
             "/v3/api-docs/**",
@@ -62,6 +67,7 @@ public class MultiAuthSecurityConfig {
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated())
+                     
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -73,12 +79,24 @@ public class MultiAuthSecurityConfig {
 
     }
 
+    @Bean(name = "GeoIPCountry")
+    DatabaseReader databaseReader() throws IOException, GeoIp2Exception {
+        final File resource = new File(this.getClass()
+            .getClassLoader()
+            .getResource("maxmind/GeoLite2-Country.mmdb")
+            .getFile());
+        return new DatabaseReader.Builder(resource).build();
+    }
+
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         log.debug("AuthenticationManager invoked.");
         return authenticationConfiguration.getAuthenticationManager();
     }
+
+
+   
 
     @Bean
     PasswordEncoder passwordEncoder() {

@@ -47,6 +47,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 			user.setLastLoginDate("0");
 			user.setAdmin(true);
 			user.setEnabled(true);
+			user.setAccountNonLocked(true);
 			user.setCreatedBy(name);
 			user = userRepository.save(user);
 
