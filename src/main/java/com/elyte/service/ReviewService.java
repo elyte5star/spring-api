@@ -8,6 +8,8 @@ import com.elyte.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.elyte.repository.ProductRepository;
 import com.elyte.repository.ReviewRepository;
+
+import java.util.List;
 import java.util.Optional;
 import com.elyte.utils.ApplicationConsts;
 import org.springframework.http.HttpStatus;
@@ -19,8 +21,6 @@ public class ReviewService {
 
     @Autowired
     private ReviewRepository reviewRepository;
-
-     
 
     @Autowired
     private ProductRepository productRepository;
@@ -49,23 +49,23 @@ public class ReviewService {
 
     public ResponseEntity<CustomResponseStatus> getAllReviews() {
         Iterable<Review> allProductsReviews = reviewRepository.findAll();
-        CustomResponseStatus resp =new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, ApplicationConsts.timeNow(), allProductsReviews);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
-    public ResponseEntity<CustomResponseStatus> ReviewById(String rid) throws ResourceNotFoundException {
-        Optional<Review> review = reviewRepository.findById(rid);
-
-        if (review.isPresent()) {
+    public ResponseEntity<CustomResponseStatus> ReviewsByProductId(String pid) throws ResourceNotFoundException {
+        Optional<Product> product = productRepository.findById(pid);
+        if (product.isPresent()) {
+            List<Review> reviews = reviewRepository.findByProductPid(pid);
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                     ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), review.get());
+                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), reviews);
             return new ResponseEntity<>(resp, HttpStatus.OK);
 
         }
-        throw new ResourceNotFoundException("Product review with id :" + rid + " not found!");
+        throw new ResourceNotFoundException("Product with id :" + pid + " not found!");
 
     }
 }

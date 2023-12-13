@@ -42,11 +42,16 @@ public class ProductsController {
         return reviewService.createReview(review);
 
     }
-    
+    @GetMapping("/{pid}/reviews")
+    @Operation(summary = "Get reviews of a product by pid")
+    public ResponseEntity<CustomResponseStatus> getAllReviewsByProductId(@PathVariable  @Valid String pid) throws ResourceNotFoundException {
+        return reviewService.ReviewsByProductId(pid);
+
+    }
 
     @GetMapping("/{pid}")
     @Operation(summary = "Get a product by pid")
-    public ResponseEntity<CustomResponseStatus> findProductById(@PathVariable String pid) throws ResourceNotFoundException {
+    public ResponseEntity<CustomResponseStatus> findProductById(@PathVariable  @Valid String pid) throws ResourceNotFoundException {
         return productService.ProductById(pid);
 
     }

@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
@@ -36,18 +35,14 @@ public class Job extends AuditEntity{
     @Column(name = "JOB_ID")
     private String job_id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "OWNER_ID", referencedColumnName = "USER_ID")
+    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false, name = "user_id")
     private User owner;
 
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "tasks")
     private List<Task> tasks;
-
-    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "user_id")
-    private User user;
 
 
     @Column(name = "JOB_REQUEST", columnDefinition = "json")
@@ -60,8 +55,6 @@ public class Job extends AuditEntity{
 
     @Column(name = "JOB_STATUS", columnDefinition = "json")
     private JobStatus jobStatus;
-
-
 
     
 }

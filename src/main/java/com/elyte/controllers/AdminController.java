@@ -59,7 +59,7 @@ public class AdminController {
         return userService.getLoggedUsers();
     }
 
-    @GetMapping("/users/isLoggedIn{username}")
+    @GetMapping("/users/isLoggedIn/{username}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Check if a user is active", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CustomResponseStatus> isActiveUser(@PathVariable @Valid String username)
@@ -107,12 +107,11 @@ public class AdminController {
         return reviewService.getAllReviews();
     }
 
-    @GetMapping("/reviews/{rid}")
+    @GetMapping("/{pid}/reviews")
+    @Operation(summary = "Get reviews of a product by pid")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "Get a review by rid", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> findReviewById(@PathVariable String rid)
-            throws ResourceNotFoundException {
-        return reviewService.ReviewById(rid);
+    public ResponseEntity<CustomResponseStatus> getAllReviewsByProductId(@PathVariable  @Valid String pid) throws ResourceNotFoundException {
+        return reviewService.ReviewsByProductId(pid);
 
     }
 
