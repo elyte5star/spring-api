@@ -1,4 +1,5 @@
 package com.elyte.configuration;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -10,14 +11,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.elyte.security.JwtFilter;
+import com.elyte.security.BasicAuthEntryPoint;
 import com.elyte.security.JwtAuthEntryPoint;
 import com.elyte.utils.LoggingFilter;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import java.io.IOException;
@@ -36,6 +38,9 @@ public class MultiAuthSecurityConfig {
     private JwtAuthEntryPoint jwtAuthenticationEntryPoint;
 
     @Autowired
+    private BasicAuthEntryPoint basicAuthEntryPoint;
+
+    @Autowired
     private JwtFilter jwtRequestFilter;
 
     @Autowired
@@ -45,7 +50,6 @@ public class MultiAuthSecurityConfig {
             "/",
             "/index",
             "/login",
-            "/admin/currentusername",
             "/users/signup/**",
             "/users/enableNewLocation",
             "/users/reset/password",
@@ -61,14 +65,35 @@ public class MultiAuthSecurityConfig {
     };
 
     @Bean
+    @Order(1)
+    SecurityFilterChain basicFilterChain(HttpSecurity http) throws Exception {
+        log.debug("Basic SecurityConfig initialized.");
+        http.formLogin(form -> form
+                .loginPage("/login").successForwardUrl("/index")
+                .failureUrl("/login-error"))
+                .csrf(AbstractHttpConfigurer::disable)
+                .securityMatcher("/admin/**")
+                .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/login","/login-error").permitAll()
+                        .anyRequest().hasAuthority("ROLE_ADMIN"))
+                .httpBasic(httpSecurityHttpBasicConfigurer -> {
+                    httpSecurityHttpBasicConfigurer.authenticationEntryPoint(basicAuthEntryPoint);
+                })
+
+                .exceptionHandling(handling -> handling.accessDeniedPage("/403.html"))
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        return http.build();
+    }
+
+    @Bean
     SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
-        log.debug("SecurityConfig initialized.");
+        log.debug("Bearer SecurityConfig initialized.");
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated())
-                     
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .exceptionHandling(
+                        ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint).accessDeniedPage("/403.html"))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         // Add a filter to log the request-response of every request
@@ -82,9 +107,9 @@ public class MultiAuthSecurityConfig {
     @Bean(name = "GeoIPCountry")
     DatabaseReader databaseReader() throws IOException, GeoIp2Exception {
         final File resource = new File(this.getClass()
-            .getClassLoader()
-            .getResource("maxmind/GeoLite2-Country.mmdb")
-            .getFile());
+                .getClassLoader()
+                .getResource("maxmind/GeoLite2-Country.mmdb")
+                .getFile());
         return new DatabaseReader.Builder(resource).build();
     }
 
@@ -94,9 +119,6 @@ public class MultiAuthSecurityConfig {
         log.debug("AuthenticationManager invoked.");
         return authenticationConfiguration.getAuthenticationManager();
     }
-
-
-   
 
     @Bean
     PasswordEncoder passwordEncoder() {

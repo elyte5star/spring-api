@@ -2,6 +2,8 @@ package com.elyte.configuration;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
@@ -11,6 +13,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -57,6 +60,12 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
     public void setEnvironment(final Environment environment) {
         this.environment = environment;
     }
+
+    @Bean
+    @ConditionalOnMissingBean(RequestContextListener.class)
+	RequestContextListener requestContextListener() {
+		return new RequestContextListener();
+	}
 
     /*
      * SPRING + JAVAMAIL: JavaMailSender instance, configured via .properties files.

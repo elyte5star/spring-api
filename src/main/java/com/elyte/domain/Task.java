@@ -12,8 +12,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
-
-
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -33,20 +34,19 @@ public class Task extends AuditEntity{
 
 
     @ManyToOne(targetEntity =Job.class,fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(nullable = false,name = "job_id")
+    @JsonIgnore
     private Job job;
-
 
     @Column(name = "RESULT", columnDefinition = "json")
     private String result;
-
 
     @Column(name = "STARTED")
     private String started;
 
     @Column(name = "FINISHED")
     private String finished;
-
 
     @Column(name = "JOB_STATUS", columnDefinition = "json")
     private JobStatus jobStatus;

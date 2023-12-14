@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.elyte.domain.NewLocationToken;
@@ -20,7 +18,6 @@ import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.NewLocationTokenRepository;
 import com.elyte.repository.UserLocationRepository;
 import com.elyte.repository.UserRepository;
-import com.elyte.security.UserPrincipal;
 import com.elyte.utils.ApplicationConsts;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
@@ -256,14 +253,6 @@ public class UserService {
         newLocationToken.setUserLocation(location);
         return newLocationTokenRepository.save(newLocationToken);
 
-    }
-
-    public UserPrincipal getUserPrincipal() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return null;
-        }
-        return (UserPrincipal) authentication.getPrincipal();
     }
 
     public ResponseEntity<CustomResponseStatus> enableNewLocation(Locale locale, @Valid String token) {

@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
@@ -40,8 +41,8 @@ public class Job extends AuditEntity{
     private User owner;
 
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "tasks")
+    @OneToMany(cascade = CascadeType.ALL,fetch=FetchType.EAGER,mappedBy = "job")
+    @OrderBy
     private List<Task> tasks;
 
 
