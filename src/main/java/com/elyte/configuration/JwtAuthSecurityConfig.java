@@ -11,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.elyte.security.JwtFilter;
-import com.elyte.security.BasicAuthEntryPoint;
 import com.elyte.security.JwtAuthEntryPoint;
 import com.elyte.utils.LoggingFilter;
 import com.maxmind.geoip2.DatabaseReader;
@@ -19,7 +18,7 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import java.io.IOException;
@@ -30,15 +29,13 @@ import org.slf4j.LoggerFactory;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class MultiAuthSecurityConfig {
+public class JwtAuthSecurityConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(MultiAuthSecurityConfig.class);
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthSecurityConfig.class);
 
     @Autowired
     private JwtAuthEntryPoint jwtAuthenticationEntryPoint;
 
-    @Autowired
-    private BasicAuthEntryPoint basicAuthEntryPoint;
 
     @Autowired
     private JwtFilter jwtRequestFilter;
@@ -49,7 +46,6 @@ public class MultiAuthSecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/",
             "/index",
-            "/login",
             "/users/signup/**",
             "/users/enableNewLocation",
             "/users/reset/password",
@@ -64,26 +60,7 @@ public class MultiAuthSecurityConfig {
 
     };
 
-    @Bean
-    @Order(1)
-    SecurityFilterChain basicFilterChain(HttpSecurity http) throws Exception {
-        log.debug("Basic SecurityConfig initialized.");
-        http.formLogin(form -> form
-                .loginPage("/login").successForwardUrl("/index")
-                .failureUrl("/login-error"))
-                .csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher("/admin/**")
-                .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/login","/login-error").permitAll()
-                        .anyRequest().hasAuthority("ROLE_ADMIN"))
-                .httpBasic(httpSecurityHttpBasicConfigurer -> {
-                    httpSecurityHttpBasicConfigurer.authenticationEntryPoint(basicAuthEntryPoint);
-                })
-
-                .exceptionHandling(handling -> handling.accessDeniedPage("/403.html"))
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        return http.build();
-    }
+    
 
     @Bean
     SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {

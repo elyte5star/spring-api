@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,16 +16,20 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.elyte.domain.Job;
 import com.elyte.domain.Product;
 import com.elyte.domain.request.CreateProductRequest;
 import com.elyte.domain.request.CreateUserRequest;
 import com.elyte.domain.request.ModifyEntityRequest;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.exception.ResourceNotFoundException;
+import com.elyte.queue.RabbitMqHandler;
 import com.elyte.service.ProductService;
 import com.elyte.service.ReviewService;
 import com.elyte.service.UserService;
-
+import com.elyte.utils.ApplicationConsts;
+import com.elyte.domain.Task;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
@@ -39,6 +44,9 @@ public class AdminController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private RabbitMqHandler rabbitMqHandler;
 
     @Autowired
     private ReviewService reviewService;
@@ -66,7 +74,6 @@ public class AdminController {
             throws ResourceNotFoundException {
         return userService.isActiveUser(username);
     }
-
 
     @PutMapping("/users/update-user/{userid}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -100,17 +107,18 @@ public class AdminController {
         return userService.getUsers();
     }
 
-    @GetMapping("/reviews")
+    @GetMapping("/reviews/all-reviews")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Get all reviews", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CustomResponseStatus> getAllReviews() {
         return reviewService.getAllReviews();
     }
 
-    @GetMapping("/{pid}/reviews")
-    @Operation(summary = "Get reviews of a product by pid")
+    @GetMapping("/reviews/{pid}/reviews")
+    @Operation(summary = "Get reviews of a product by pid", security = @SecurityRequirement(name = "bearerAuth"))
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<CustomResponseStatus> getAllReviewsByProductId(@PathVariable  @Valid String pid) throws ResourceNotFoundException {
+    public ResponseEntity<CustomResponseStatus> getAllReviewsByProductId(@PathVariable @Valid String pid)
+            throws ResourceNotFoundException {
         return reviewService.ReviewsByProductId(pid);
 
     }
@@ -148,7 +156,40 @@ public class AdminController {
 
     }
 
+    @GetMapping("/jobs/{jid}/tasks")
+    @Operation(summary = "Get tasks of a job by jid", security = @SecurityRequirement(name = "bearerAuth"))
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<CustomResponseStatus> getTasksByJobId(@PathVariable @Valid String jid)
+            throws ResourceNotFoundException {
+        List<Task> tasks = rabbitMqHandler.getTasksByJobId(jid);
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+                ApplicationConsts.SUCCESS, ApplicationConsts.SRC, ApplicationConsts.timeNow(), tasks);
+        return new ResponseEntity<>(status, HttpStatus.OK);
 
-    
+    }
+
+    @GetMapping("/jobs/find-one/{jid}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Operation(summary = "Get a job by jid", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> findJobById(@PathVariable @Valid String jid)
+            throws ResourceNotFoundException {
+        Job job = rabbitMqHandler.getJob(jid);
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+                ApplicationConsts.SUCCESS, ApplicationConsts.SRC, ApplicationConsts.timeNow(), job);
+        return new ResponseEntity<>(status, HttpStatus.OK);
+
+    }
+
+    @GetMapping("/jobs/{userid}/jobs")
+    @Operation(summary = "Get jobs of a user by userid", security = @SecurityRequirement(name = "bearerAuth"))
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<CustomResponseStatus> getJobsByuserId(@PathVariable @Valid String userid)
+            throws ResourceNotFoundException {
+        List<Job> jobs = rabbitMqHandler.getJobsByUserid( userid);
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+                ApplicationConsts.SUCCESS, ApplicationConsts.SRC, ApplicationConsts.timeNow(), jobs);
+        return new ResponseEntity<>(status, HttpStatus.OK);
+
+    }
 
 }

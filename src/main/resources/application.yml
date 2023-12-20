@@ -63,10 +63,48 @@ spring:
 
   # Message Broker
   rabbitmq:
-    host: ${RABBIT_HOST:rabbitQ}
-    port: 5672
+    host: ${RABBIT_HOST:localhost}
+    port: ${RABBITMQ_NODE_PORT:5672}
     username: ${RABBITMQ_DEFAULT_USER:rabbitUser}
     password: ${RABBITMQ_DEFAULT_PASS:elyteRQ}
+    exchange: elyteExchange
+    ssl:
+      enabled: false
+    listener:
+      simple:
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+        acknowledge-mode: auto
+    auto-config:
+      info-headers:
+        source-application:  Utimore e-Market
+        department: Utimore-services/booking
+      queues:
+        queue-one:
+          name: SEARCH
+          dead-letter-enabled: false
+          durable: true
+        queue-two:
+          name: BOOKING
+          durable: true
+        queue-mock:
+          name: LOST_ITEM
+          durable: true
+
+      bindings:
+        binding-one:
+          queue: queue-one
+          routing-key: rkey-one
+        binding-two:
+          queue: queue-two
+          routing-key: rkey-two
+        binding-mock:
+          queue: queue-mock
+          routing-key: rkey-mock
+        
+
+    
 
   # Maximum time static resources should be cached
   web:

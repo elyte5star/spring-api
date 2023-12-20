@@ -1,8 +1,7 @@
 package com.elyte.domain;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,44 +11,44 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
+import java.io.Serializable;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-@Getter
 @Entity
 @Table(name="TASKS")
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Task extends AuditEntity{
+public class Task implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "TASK_ID")
-    private String task_id;
+    private String tid;
 
+    @Column(name = "CREATED",updatable = false)
+    private String created;
 
-    @ManyToOne(targetEntity =Job.class,fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(nullable = false,name = "job_id")
+    @JoinColumn(name = "JOB_ID")
     @JsonIgnore
     private Job job;
 
     @Column(name = "RESULT", columnDefinition = "json")
     private String result;
 
-    @Column(name = "STARTED")
+    @Column(name = "STARTED",updatable = false)
     private String started;
 
-    @Column(name = "FINISHED")
+    @Column(name = "FINISHED",updatable = false)
     private String finished;
 
-    @Column(name = "JOB_STATUS", columnDefinition = "json")
-    private JobStatus jobStatus;
+    @Column(name = "STATUS")
+    private JobStatus status;
 
     
 }

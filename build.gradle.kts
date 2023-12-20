@@ -52,6 +52,7 @@ dependencies {
 	implementation("org.glassfish.external:glassfish-jaxb:10.0-b28")
 	compileOnly("org.projectlombok:lombok")
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.16.0-rc1")
+    implementation("com.jwebmp.jackson.datatype:jackson-datatype-jsr310:0.63.0.19")
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

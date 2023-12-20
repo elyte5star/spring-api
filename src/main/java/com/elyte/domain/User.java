@@ -68,7 +68,7 @@ public class User extends AuditEntity {
     private boolean enabled;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "BOOKING_IDS")
+    @JoinColumn(name = "BOOKINGS")
     private List<Booking> bookings;
 
     @Column(name = "TELEPHONE", unique = true)

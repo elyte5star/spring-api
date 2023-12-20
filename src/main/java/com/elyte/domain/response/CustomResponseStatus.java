@@ -14,7 +14,7 @@ public class CustomResponseStatus implements Serializable{
     
     private int code;
     private String message;
-    private boolean success;
+    private boolean success=false;
     private String path;
     private String timeStamp;
     private Object result = null;

@@ -14,6 +14,6 @@ public class JobStatus implements Serializable {
     
     private Enum<JobState> jobState;
 
-    private boolean finished;
+    private boolean finished=false;
     
 }

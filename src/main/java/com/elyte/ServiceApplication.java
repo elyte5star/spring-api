@@ -14,8 +14,6 @@ public class ServiceApplication {
 		SpringApplication.run(ServiceApplication.class, args);
 	}
 
-	
-
 	// AuthenticationEventPublisher
 	@Bean
 	AuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
