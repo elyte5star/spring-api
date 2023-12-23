@@ -153,5 +153,15 @@
     "name": "spring.rabbitmq.auto-config.bindings.binding-mock.routing-key",
     "type": "java.lang.String",
     "description": "A description for 'spring.rabbitmq.auto-config.bindings.binding-mock.routing-key'"
+  },
+  {
+    "name": "payment.STRIPE_-sECRET_-kEY",
+    "type": "java.lang.String",
+    "description": "A description for 'payment.STRIPE_-sECRET_-kEY'"
+  },
+  {
+    "name": "payment.STRIPE_-pUBLIC_-kEY",
+    "type": "java.lang.String",
+    "description": "A description for 'payment.STRIPE_-pUBLIC_-kEY'"
   }
 ]}

@@ -15,13 +15,9 @@ public class Payment implements Serializable{
 
     private static final long serialVersionUID = 1234567L;
 
-    private String cardType;
-    private String cardNumber;
-    private String expiryDate;
-    private String cardCvv;
-    private String nameOnCard;
-    
-    private BillingAddress billing_address;
+    private CardDetails cardDetails;
+
+    private BillingAddress billing_address=null;
 
     private  BillingAddress shippingAddress;
 }

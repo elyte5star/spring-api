@@ -3,6 +3,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import com.elyte.domain.Job;
 import com.elyte.domain.Task;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,8 +16,10 @@ public class QueueItem implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
+    @JsonProperty("Job")
     private Job job;
 
+    @JsonProperty("Task")
     private Task task;
     
 }

@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 
 
@@ -81,6 +83,14 @@ public class ApplicationConsts {
         }
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(object);
+    }
+
+     public static String convertObjectToGson(Object object) throws JsonProcessingException {
+        if (object == null) {
+            return null;
+        }
+        Gson gson  = new GsonBuilder().create();
+        return gson.toJson(object);
     }
 
     

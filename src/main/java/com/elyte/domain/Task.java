@@ -23,6 +23,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name="TASKS")
 public class Task implements Serializable{
+    
+    private static final long serialVersionUID = 1234567L;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -37,9 +40,6 @@ public class Task implements Serializable{
     @JoinColumn(name = "JOB_ID")
     @JsonIgnore
     private Job job;
-
-    @Column(name = "RESULT", columnDefinition = "json")
-    private String result;
 
     @Column(name = "STARTED",updatable = false)
     private String started;

@@ -1,15 +1,27 @@
 package com.elyte.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
+import com.stripe.Stripe;
+import com.stripe.exception.ApiConnectionException;
+import com.stripe.exception.AuthenticationException;
+import com.stripe.exception.CardException;
+import com.stripe.exception.InvalidRequestException;
+import com.stripe.exception.RateLimitException;
+import com.stripe.exception.StripeException;
+//import com.stripe.model.Charge;
 import com.elyte.domain.Booking;
 import com.elyte.domain.Job;
 import com.elyte.domain.User;
+import com.elyte.domain.Payment.BillingAddress;
+import com.elyte.domain.Payment.CardDetails;
 import com.elyte.domain.enums.JobType;
+import com.elyte.domain.request.BookingJob;
 import com.elyte.domain.request.CreateBooking;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.exception.ResourceNotFoundException;
@@ -17,7 +29,10 @@ import com.elyte.queue.RabbitMqHandler;
 import com.elyte.repository.BookingRepository;
 import com.elyte.repository.UserRepository;
 import com.elyte.utils.ApplicationConsts;
+import jakarta.annotation.PostConstruct;
 import java.util.Map;
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -29,12 +44,24 @@ public class BookingService {
     @Autowired
     private RabbitMqHandler rabbitMqHandler;
 
+    @Value("${payment.STRIPE_SECRET_KEY}")
+    private String secretKey;
+
+    @Value("${payment.STRIPE_PUBLIC_KEY}")
+    private String stripePublicKey;
+
     @Autowired
     private UserRepository userRepository;
 
-    public ResponseEntity<CustomResponseStatus> bookingsByUserid(String userid) throws ResourceNotFoundException{
-        Optional<User> user =userRepository.findById(userid);
-        if(user.isPresent()){
+    @PostConstruct
+    public void init() {
+
+        Stripe.apiKey = secretKey;
+    }
+
+    public ResponseEntity<CustomResponseStatus> bookingsByUserid(String userid) throws ResourceNotFoundException {
+        Optional<User> user = userRepository.findById(userid);
+        if (user.isPresent()) {
             List<Booking> bookings = bookingRepository.findByUserUserid(userid);
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                     ApplicationConsts.SUCCESS,
@@ -49,8 +76,14 @@ public class BookingService {
     public ResponseEntity<CustomResponseStatus> createBookingQ(CreateBooking createBooking) throws Exception {
         Optional<User> user = userRepository.findById(createBooking.getUserid());
         if (user.isPresent()) {
+            // confirm payment before creating job
+            boolean paymentConfirmation = handlePayment(createBooking.getPaymentDetails().getCardDetails(),
+                    createBooking.getPaymentDetails().getBilling_address(), createBooking.getTotalPrice());
+            if (!paymentConfirmation)
+                throw new Exception("Payment not Successful!");
             Job job = rabbitMqHandler.createJob(JobType.BOOKING);
-            job.setJobRequest(ApplicationConsts.convertObjectToJson(createBooking));
+            BookingJob bookingJob= new BookingJob(createBooking.getUserid(), createBooking.getTotalPrice(), createBooking.getCart(), createBooking.getPaymentDetails().getShippingAddress());
+            job.setBookingRequest(bookingJob.toString());;
             job.setUser(user.get());
             Map<String, Object> result = rabbitMqHandler.jobWithOneTask(job, "BOOKING");
             if (Boolean.TRUE.equals(result.get("success"))) {
@@ -68,6 +101,27 @@ public class BookingService {
         throw new ResourceNotFoundException("[+] REQUEST FROM UNKNOWN USER WITH ID :" + createBooking.getUserid());
     }
 
+    private boolean handlePayment(CardDetails cardDetails, BillingAddress billingAddress, BigDecimal totalAmount)
+            throws CardException, RateLimitException, InvalidRequestException, AuthenticationException,
+            ApiConnectionException, StripeException, Exception {
+        if (totalAmount.compareTo(BigDecimal.ZERO) > 0) {
+            Map<String, Object> chargeParams = new HashMap<>();
 
+            try {
+                // Use Stripe's library to make requests..
+                // chargeParams.put("amount", totalAmount);
+                // chargeParams.put("currency", cardDetails.getCurrency());
+                // chargeParams.put("source", stripePublicKey);
+                // Charge.create(chargeParams);
+                chargeParams.put("description", "Product payment");
+                return true;
+            } catch (Exception e) {
+                // Something else happened, completely unrelated to Stripe
+            }
+            return false;
+        }
 
+        throw new Exception("Amount not specified");
+
+    }
 }

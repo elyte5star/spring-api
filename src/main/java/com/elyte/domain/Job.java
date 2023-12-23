@@ -1,6 +1,6 @@
 package com.elyte.domain;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import com.elyte.domain.enums.JobType;
@@ -14,6 +14,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
 import jakarta.persistence.CascadeType;
@@ -27,6 +29,8 @@ import lombok.Data;
 @NoArgsConstructor
 @Table(name="JOBS")
 public class Job implements Serializable{
+
+    private static final long serialVersionUID = 1234567L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -44,15 +48,14 @@ public class Job implements Serializable{
 
     @OneToMany(cascade = CascadeType.ALL,fetch=FetchType.EAGER,mappedBy = "job")
     @OrderBy
-    private List<Task> tasks;
+    private Set<Task> tasks;
 
-    @Column(name = "JOB_REQUEST", columnDefinition = "json")
-    private String jobRequest;
+    @Column(name = "JOB_REQUEST",columnDefinition = "LONGTEXT")
+    private String bookingRequest;
 
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "JOB_TYPE")
-    private Enum<JobType> jobType;
-
+    private JobType jobType;
 
     @Column(name = "JOB_STATUS")
     private JobStatus jobStatus;

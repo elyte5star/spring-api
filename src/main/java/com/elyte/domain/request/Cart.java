@@ -1,5 +1,6 @@
 package com.elyte.domain.request;
 import java.io.Serializable;
+import java.util.Set;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class Cart implements Serializable{
     private static final long serialVersionUID = 1234567L;
 
-    private Double calculated_price;
+    private Set<CreateProductRequest> itemsList;
 
     private int itemsQuantity;
     

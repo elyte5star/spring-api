@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.2.0"
+	id("org.springframework.boot") version "3.2.1"
 	id("io.spring.dependency-management") version "1.1.4"
 	id("org.asciidoctor.jvm.convert") version "3.3.2"
 }
@@ -30,6 +30,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-amqp")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
+	implementation("com.google.code.gson:gson:2.10.1")
 	implementation("com.maxmind.geoip2:geoip2:4.2.0")
 	implementation("org.wiremock:wiremock:3.3.1")
 	implementation("com.maxmind.db:maxmind-db:3.1.0")
@@ -47,6 +48,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.jasypt:jasypt-springsecurity3:1.9.3")
 	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
+	implementation("com.stripe:stripe-java:24.9.0-beta.1")
 	implementation("io.jsonwebtoken:jjwt:0.9.0")
 	implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.1")
 	implementation("org.glassfish.external:glassfish-jaxb:10.0-b28")
@@ -54,6 +56,7 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.16.0-rc1")
     implementation("com.jwebmp.jackson.datatype:jackson-datatype-jsr310:0.63.0.19")
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.amqp:spring-rabbit-test")
