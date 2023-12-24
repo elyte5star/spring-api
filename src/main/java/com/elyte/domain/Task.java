@@ -1,7 +1,10 @@
 package com.elyte.domain;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.GeneratedValue;
@@ -15,25 +18,25 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.elyte.domain.enums.Status;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="TASKS")
-public class Task implements Serializable{
-    
-    private static final long serialVersionUID = 1234567L;
+@Table(name = "TASKS")
+public class Task implements Serializable {
 
+    private static final long serialVersionUID = 1234567L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "TASK_ID")
     private String tid;
 
-    @Column(name = "CREATED",updatable = false)
+    @Column(name = "CREATED", updatable = false)
     private String created;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -42,16 +45,18 @@ public class Task implements Serializable{
     @JsonIgnore
     private Job job;
 
-    @Column(name = "STARTED",updatable = false)
+    @Column(name = "STARTED", updatable = false)
     private String started;
 
-   
-    @Column(name = "ENDED",updatable = false)
+    @Column(name = "ENDED", updatable = false)
     private String ended;
 
     @Embedded
-    @Column(name = "STATUS")
-    private JobStatus status;
+    @AttributeOverrides({
+            @AttributeOverride(name = "state", column = @Column(name = "TASK_STATUS")),
+            @AttributeOverride(name = "finished", column = @Column(name = "FINISHED")),
 
-    
+    })
+    private Status taskStatus;
+
 }

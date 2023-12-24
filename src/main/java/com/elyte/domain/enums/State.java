@@ -1,6 +1,6 @@
 package com.elyte.domain.enums;
 
-public enum JobState {
+public enum State {
     NOTSET,
     RECEIVED,
     PENDING,

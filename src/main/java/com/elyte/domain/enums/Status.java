@@ -1,6 +1,6 @@
-package com.elyte.domain;
+package com.elyte.domain.enums;
 import java.io.Serializable;
-import com.elyte.domain.enums.JobState;
+
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Embeddable
-public class JobStatus implements Serializable {
+public class Status implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Enumerated(EnumType.STRING)
-    private JobState jobState;
+    private State state;
 
-    private boolean done=false;
+    private boolean finished;
     
 }

@@ -10,10 +10,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import com.elyte.domain.Job;
-import com.elyte.domain.JobStatus;
 import com.elyte.domain.Task;
 import com.elyte.domain.User;
-import com.elyte.domain.enums.JobState;
+import com.elyte.domain.enums.State;
+import com.elyte.domain.enums.Status;
 import com.elyte.domain.enums.JobType;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.JobRepository;
@@ -50,15 +50,15 @@ public class RabbitMqHandler {
         Job job = new Job();
         job.setJobType(jobType);
         job.setCreated(ApplicationConsts.timeNow());
-        job.setJobStatus(new JobStatus(JobState.PENDING, false));
+        job.setJobStatus(new Status(State.PENDING, false));
         return job;
     }
 
     public Map<String, Object> jobWithOneTask(Job job, String queueName) throws Exception {
         Task task = new Task();
-        JobStatus jobStatus = new JobStatus(JobState.RECEIVED, false);
+        Status jobStatus = new Status(State.RECEIVED, false);
         task.setCreated(ApplicationConsts.timeNow());
-        task.setStatus(jobStatus);
+        task.setTaskStatus(jobStatus);
         job.setJobStatus(jobStatus);
         task.setJob(job);
         return addJobAndTasksToDbAndQueue(job, List.of(task),List.of(new QueueItem(job,task)), queueName);
