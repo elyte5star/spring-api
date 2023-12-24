@@ -6,6 +6,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import com.elyte.domain.enums.JobType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -49,7 +50,7 @@ public class Job implements Serializable{
     @OneToMany(cascade = CascadeType.ALL,fetch=FetchType.EAGER,mappedBy = "job")
     @OrderBy
     private Set<Task> tasks;
-
+    
     @Column(name = "JOB_REQUEST",columnDefinition = "json")
     private String bookingRequest;
 
@@ -57,6 +58,7 @@ public class Job implements Serializable{
     @Column(name = "JOB_TYPE")
     private JobType jobType;
 
+    @Embedded
     @Column(name = "JOB_STATUS")
     private JobStatus jobStatus;
 

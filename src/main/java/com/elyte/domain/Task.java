@@ -3,6 +3,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -44,9 +45,11 @@ public class Task implements Serializable{
     @Column(name = "STARTED",updatable = false)
     private String started;
 
-    @Column(name = "FINISHED",updatable = false)
-    private String finished;
+   
+    @Column(name = "ENDED",updatable = false)
+    private String ended;
 
+    @Embedded
     @Column(name = "STATUS")
     private JobStatus status;
 

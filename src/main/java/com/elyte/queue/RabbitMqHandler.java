@@ -99,6 +99,17 @@ public class RabbitMqHandler {
          }
          throw new ResourceNotFoundException("Job with id : " + jid +" not found!");
     }
+
+    public Task getTask(String tid){
+        Optional<Task> task = taskRepository.findById(tid);
+         if (task.isPresent()){
+            return task.get();
+         }
+         throw new ResourceNotFoundException("Task with id : " + tid +" not found!");
+    }
+
+
+
     public List<Job> getJobsByUserid(String userid){
         Optional<User> user = userRepository.findById(userid);
         if(user.isPresent()){

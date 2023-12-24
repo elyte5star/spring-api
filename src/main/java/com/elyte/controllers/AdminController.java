@@ -180,6 +180,18 @@ public class AdminController {
 
     }
 
+    @GetMapping("/tasks/find-one/{tid}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Operation(summary = "Get a task by tid", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> findTaskById(@PathVariable @Valid String tid)
+            throws ResourceNotFoundException {
+        Task task = rabbitMqHandler.getTask(tid);
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+                ApplicationConsts.SUCCESS, ApplicationConsts.SRC, ApplicationConsts.timeNow(), task);
+        return new ResponseEntity<>(status, HttpStatus.OK);
+
+    }
+
     @GetMapping("/jobs/{userid}/jobs")
     @Operation(summary = "Get jobs of a user by userid", security = @SecurityRequirement(name = "bearerAuth"))
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
