@@ -7,8 +7,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.CascadeType;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
@@ -67,8 +67,8 @@ public class User extends AuditEntity {
     @Column(name = "ENABLED", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean enabled;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "BOOKINGS")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+    @OrderBy
     private List<Booking> bookings;
 
     @Column(name = "TELEPHONE", unique = true)

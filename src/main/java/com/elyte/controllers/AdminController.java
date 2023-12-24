@@ -131,7 +131,7 @@ public class AdminController {
         return productService.updateProduct(product, pid);
     }
 
-    @PostMapping("/products/create-products")
+    @PostMapping("/products/create-product")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Create a product", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CustomResponseStatus> createProduct(@RequestBody @Valid CreateProductRequest product) {

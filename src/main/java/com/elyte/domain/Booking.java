@@ -14,22 +14,26 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Setter
-@Getter
+
+
+@Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "BOOKINGS")
-public class Booking extends AuditEntity {
+public class Booking{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "BOOKING_ID")
     private String oid;
+
+    @Column(name = "CREATED",updatable = false)
+    private String created;
+
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "OWNER_ID")

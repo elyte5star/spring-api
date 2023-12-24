@@ -50,7 +50,7 @@ public class Job implements Serializable{
     @OrderBy
     private Set<Task> tasks;
 
-    @Column(name = "JOB_REQUEST",columnDefinition = "LONGTEXT")
+    @Column(name = "JOB_REQUEST",columnDefinition = "json")
     private String bookingRequest;
 
     @Enumerated(EnumType.STRING)
