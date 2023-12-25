@@ -1,60 +1,76 @@
 package com.elyte.domain;
-import java.util.List;
+import java.io.Serializable;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import com.elyte.domain.enums.JobType;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.elyte.domain.enums.Status;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
+import java.util.List;
 
-
-
-
-@Setter
-@Getter
+@Data
 @Entity
-@AllArgsConstructor()
+@AllArgsConstructor
 @NoArgsConstructor
-@Table(name="JOBS")
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Job extends AuditEntity{
+@Table(name = "JOBS")
+public class Job implements Serializable {
+
+    private static final long serialVersionUID = 1234567L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "JOB_ID")
-    private String job_id;
+    private String jid;
 
-    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "user_id")
-    private User owner;
+    @Column(name = "CREATED", updatable = false)
+    private String created;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "USER_ID")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private User user;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "tasks")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "job")
+    @OrderBy
     private List<Task> tasks;
 
-
     @Column(name = "JOB_REQUEST", columnDefinition = "json")
-    private String jobRequest;
+    private String bookingRequest;
 
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "JOB_TYPE")
-    private Enum<JobType> jobType;
+    private JobType jobType;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "state", column = @Column(name = "STATE")),
+            @AttributeOverride(name = "finished", column = @Column(name = "FINISHED")),
+            @AttributeOverride(name = "successful", column = @Column(name = "SUCCESSFUL"))
 
-    @Column(name = "JOB_STATUS", columnDefinition = "json")
-    private JobStatus jobStatus;
+    })
+    private Status jobStatus;
 
-    
+    @Column(name = "NUMBER_OF_TASKS")
+    private int numberOfTasks;
+
 }

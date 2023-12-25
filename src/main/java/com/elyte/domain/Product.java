@@ -1,4 +1,5 @@
 package com.elyte.domain;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,21 +18,20 @@ import jakarta.persistence.OrderBy;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
 
-
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name="PRODUCTS")
-public class Product extends AuditEntity{
+@Table(name = "PRODUCTS")
+public class Product extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "PRODUCT_ID")
     private String pid;
 
-    @Column(name = "NAME",unique=true)
+    @Column(name = "NAME", unique = true)
     @NotBlank(message = "name is required")
     private String name;
 
@@ -39,7 +39,7 @@ public class Product extends AuditEntity{
     @NotBlank(message = "image name is required")
     private String image;
 
-    @Column(name = "DETAILS",length = 3000)
+    @Column(name = "DETAILS", length = 3000)
     @NotBlank(message = "product description name is required")
     private String details;
 
@@ -55,11 +55,8 @@ public class Product extends AuditEntity{
     @NotNull(message = "quantity is required")
     private Integer stock_quantity;
 
-
-    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER,mappedBy = "product")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "product")
     @OrderBy
     private List<Review> reviews;
-
-    
 
 }

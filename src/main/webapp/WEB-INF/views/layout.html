@@ -1,35 +1,99 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8" />
     <title>E-MARKET</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/style.css" th:href="@{/css/style.css}" />
+    <!-- jQuery library -->
+    <script src="../../js/jquery-3.6.2.min.js"></script>
+    <script src="../../js/mark.js/dist/jquery.mark.min.js" charset="UTF-8"></script>
+    <!-- Sweet Alert library -->
+    <script src="../../js/sweetalert2.all.min.js"></script>
+    <script src="../../js/sweetalert.min.js"></script>
+    <!--   Core JS Files   -->
+    <script src="../../js/game.js"></script>
+    <script src="../../js/scripts.js"></script>
+    <!--     Fonts and icons     -->
+
+    <link rel="stylesheet" href="../../css/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="../../css/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- <link href="/static/assets/paper-dashboard-master/assets/css/paper-dashboard.css?v=2.0.1" rel="stylesheet" />  -->
+
+    <!-- Bootstrap Datatable -->
+    <link rel="stylesheet" type="text/css" href="../../js/DataTables/datatables.min.css" />
+    <script type="text/javascript" src="../../js/DataTables/datatables.min.js"></script>
+    <!-- Chart.js load-->
+    <script src="/../../js/chart.js/dist/chart.umd.js"></script>
 </head>
 
 <body style="background-color: #e9ecef;">
+    <header>
+        <!-- Navigation bar -->
+        <nav>
+            <ul>
+                <li><a href="/"><i class="fa fa-fw fa-home"></i>Home</a></li>
+                <li><a href="javascript:void(0)"><i class="fa fa-lock"></i>Admin module</a></li>
+            </ul>
+        </nav>
+    </header>
+    <h1 id="welcome">Welcome to e-Market</span></h1>
+
+    <!-- Sub content Icons-->
+    <div id="icons" class="icons">
+        <div class="icon-div"><a href="javascript:void(0)"><i class="fa fa-map-marker"></i><span
+                    class="icon-text">Maps</span></a>
+        </div>
+        <div class="icon-div"><a href="javascript:void(0)"><i class="fa fa-gamepad"></i><span
+                    class="icon-text">Games</span></a>
+        </div>
+        <div class="icon-div"><a href="javascript:void(0)"><i class="fa fa-gift"></i><span
+                    class="icon-text">Gift</span></a>
+        </div>
+        <div class="icon-div"><a href="javascript:void(0)"><i class="fa fa-car"></i><span
+                    class="icon-text">Automobile</span></a>
+        </div>
+        <div class=" icon-div"><a href=" javascript:void(0)"><i class="fa fa-bed"></i><span
+                    class="icon-text">Hotels</span></a>
+        </div>
+        <div class="icon-div"><a href="javascript:void(0)"><i class="fa fa-newspaper-o"></i><span
+                    class="icon-text">News</span></a>
+        </div>
+    </div>
     <!-- Main content -->
     <main id="container_" class="container" layout:fragment="content">
-    
-    </main>
-    <!-- start footer -->
-    <table border="0" style="max-width: 600px;">
-        <tr>
-            <td
-                style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
-                <p style="margin: 0;">You received this email because we received a request. If you didnt make a request
-                    you can safely delete this email.</p>
-            </td>
-        </tr>
-        <tr>
-            <td
-                style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
-                <p style="margin: 0;">E-Commerce Hundvåg Island, 4085, Norway</p>
-            </td>
-        </tr>
 
-    </table>
-    
+    </main>
+    <!-- Customer Service Footer -->
+
+    <div class="text-center" >
+        <div class="ibox-title">
+            <h5>Support</h5>
+        </div>
+        <hr>
+        <ul class="list-unstyled mb-0">
+            <li><i class="fa fa-map-marker"></i>
+                <p>Hundvåg Island, 4085, Norway</p>
+            </li>
+
+            <li><i class="fa fa-phone"></i>
+                <p>+ 44 7482 067903</p>
+            </li>
+
+            <li><i class="fa fa-envelope-o"></i><br>
+                <a href="mailto:elyte5star@gmail.com">elyte5star@gmail.com</a>
+            </li>
+            <li><i class="fa fa-github"></i><br>
+                <a href="https://github.com/elyte5star">elyte5star</a>
+            </li>
+        </ul>
+
+    </div>
+
+    <script src="../../css/bootstrap-5.0.2/dist/js/bootstrap.bundle.js" crossorigin="anonymous"></script>
+
 </body>
 
 </html>

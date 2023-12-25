@@ -17,7 +17,6 @@ public class OpenAiConfig {
         private final String moduleName;
         private final String apiVersion;
         private final String BEARER_AUTH = "bearerAuth";
-        private final String BASIC_AUTH = "basicAuth";
         private final String email = "checkuti@gmail.com";
         private final String name = "Utimore Services AS";
         private final String url = "https://github.com/elyte5star";
@@ -40,11 +39,9 @@ public class OpenAiConfig {
         }
 
         private Map<String, SecurityScheme> schemes() {
-                SecurityScheme basicScheme = new SecurityScheme().name(BASIC_AUTH).scheme("basic")
-                                .type(SecurityScheme.Type.HTTP);
                 SecurityScheme bearerScheme = new SecurityScheme().name(BEARER_AUTH).scheme("bearer")
                                 .type(SecurityScheme.Type.HTTP).bearerFormat("JWT");
-                return Map.of(BASIC_AUTH, basicScheme, BEARER_AUTH, bearerScheme);
+                return Map.of(BEARER_AUTH, bearerScheme);
 
         }
 

@@ -73,7 +73,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
         } else {
-            log.warn("[+] UNPROTECTED ROUTE");
+            log.warn("[+] NO JWT HEADER");
         }
 
         filterChain.doFilter(request, response);

@@ -1,4 +1,5 @@
 package com.elyte.domain;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -8,10 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
@@ -23,13 +22,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
 
-
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name="REVIEWS")
+@Table(name = "REVIEWS")
 public class Review extends AuditEntity {
 
     @Id
@@ -40,7 +38,6 @@ public class Review extends AuditEntity {
     @Column(name = "EMAIL")
     @Email(message = "invalid email address")
     private String email;
-
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ITEM_ID")
@@ -58,8 +55,4 @@ public class Review extends AuditEntity {
     @Max(5)
     private Integer rating;
 
-
-    
-
-    
 }
