@@ -50,13 +50,13 @@ public class RabbitMqHandler {
         Job job = new Job();
         job.setJobType(jobType);
         job.setCreated(ApplicationConsts.timeNow());
-        job.setJobStatus(new Status(State.PENDING, false));
+        job.setJobStatus(new Status(State.PENDING, false,false));
         return job;
     }
 
     public Map<String, Object> jobWithOneTask(Job job, String queueName) throws Exception {
         Task task = new Task();
-        Status jobStatus = new Status(State.RECEIVED, false);
+        Status jobStatus = new Status(State.RECEIVED, false,false);
         task.setCreated(ApplicationConsts.timeNow());
         task.setTaskStatus(jobStatus);
         job.setJobStatus(jobStatus);

@@ -71,6 +71,10 @@ public class User extends AuditEntity {
     @OrderBy
     private List<Booking> bookings;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+    @OrderBy
+    private List<UserLocation> locations;
+
     @Column(name = "TELEPHONE", unique = true)
     @Digits(fraction = 0, integer = 10)
     @Size(min = 7)

@@ -12,9 +12,9 @@ import com.elyte.repository.PasswordResetTokenRepository;
 
 @Service
 @Transactional
-public class DeleteTokensTask {
+public class PurgeTokensTask {
 
-     private static final Logger log = LoggerFactory.getLogger(DeleteTokensTask.class);
+     private static final Logger log = LoggerFactory.getLogger(PurgeTokensTask.class);
     @Autowired
     private OtpRepository otpRepository;
 

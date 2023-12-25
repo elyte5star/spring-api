@@ -56,6 +56,7 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.16.0-rc1")
     implementation("com.jwebmp.jackson.datatype:jackson-datatype-jsr310:0.63.0.19")
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+	runtimeOnly("com.mysql:mysql-connector-j")
 	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

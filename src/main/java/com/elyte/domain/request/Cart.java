@@ -1,6 +1,6 @@
 package com.elyte.domain.request;
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class Cart implements Serializable{
     private static final long serialVersionUID = 1234567L;
 
-    private Set<CreateProductRequest> itemsList;
+    private List<CreateProductRequest> itemsList;
 
     private int itemsQuantity;
     

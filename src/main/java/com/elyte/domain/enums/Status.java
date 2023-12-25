@@ -20,5 +20,6 @@ public class Status implements Serializable {
     private State state;
 
     private boolean finished;
-    
+
+    private boolean successful;
 }

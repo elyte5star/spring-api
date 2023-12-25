@@ -1,7 +1,5 @@
 package com.elyte.domain;
-
 import java.io.Serializable;
-import java.util.Set;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import com.elyte.domain.enums.JobType;
@@ -27,6 +25,7 @@ import jakarta.persistence.CascadeType;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Data;
+import java.util.List;
 
 @Data
 @Entity
@@ -53,7 +52,7 @@ public class Job implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "job")
     @OrderBy
-    private Set<Task> tasks;
+    private List<Task> tasks;
 
     @Column(name = "JOB_REQUEST", columnDefinition = "json")
     private String bookingRequest;
@@ -64,8 +63,9 @@ public class Job implements Serializable {
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "state", column = @Column(name = "JOB_STATUS")),
+            @AttributeOverride(name = "state", column = @Column(name = "STATE")),
             @AttributeOverride(name = "finished", column = @Column(name = "FINISHED")),
+            @AttributeOverride(name = "successful", column = @Column(name = "SUCCESSFUL"))
 
     })
     private Status jobStatus;

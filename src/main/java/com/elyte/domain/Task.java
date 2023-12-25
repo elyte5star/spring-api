@@ -45,16 +45,17 @@ public class Task implements Serializable {
     @JsonIgnore
     private Job job;
 
-    @Column(name = "STARTED", updatable = false)
-    private String started;
+    @Column(name = "STARTED_AT", updatable = false)
+    private String startedAt;
 
-    @Column(name = "ENDED", updatable = false)
-    private String ended;
+    @Column(name = "ENDED_AT", updatable = false)
+    private String endedAt;
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "state", column = @Column(name = "TASK_STATUS")),
+            @AttributeOverride(name = "state", column = @Column(name = "STATE")),
             @AttributeOverride(name = "finished", column = @Column(name = "FINISHED")),
+            @AttributeOverride(name = "successful", column = @Column(name = "SUCCESSFUL"))
 
     })
     private Status taskStatus;

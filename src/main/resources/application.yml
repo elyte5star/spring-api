@@ -117,10 +117,10 @@ spring:
   # DATA SOURCE
   #===============================
   datasource:
-    url: jdbc:mariadb://localhost:3306/elyte?createDatabaseIfNotExist=true
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/elyte?createDatabaseIfNotExist=true
     username: userExample
     password: 54321
-    driver-class-name: org.mariadb.jdbc.Driver
+    driver-class-name: com.mysql.jdbc.Driver
 
     #Keep the connection alive if idle for a long time (needed in production)
     tomcat:
@@ -133,7 +133,7 @@ spring:
   jpa:
     show-sql: false
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
       
 ---
 
