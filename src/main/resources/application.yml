@@ -89,19 +89,19 @@ spring:
           name: BOOKING
           durable: true
         queue-mock:
-          name: LOST_ITEM
+          name: LOST
           durable: true
 
       bindings:
         binding-one:
           queue: queue-one
-          routing-key: rkey-one
+          routing-key: search
         binding-two:
           queue: queue-two
-          routing-key: rkey-two
+          routing-key: booking
         binding-mock:
           queue: queue-mock
-          routing-key: rkey-mock
+          routing-key: lostItems
         
 
     
@@ -133,7 +133,7 @@ spring:
   jpa:
     show-sql: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
       
 ---
 

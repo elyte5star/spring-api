@@ -60,4 +60,8 @@ public class Task implements Serializable {
     })
     private Status taskStatus;
 
+
+    @Column(name = "RESULT", columnDefinition = "json")
+    private String result;
+
 }

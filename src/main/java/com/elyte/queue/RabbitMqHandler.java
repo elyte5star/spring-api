@@ -41,8 +41,7 @@ public class RabbitMqHandler {
     @Value("${spring.rabbitmq.exchange}")
     private String exchange;
 
-    @Value("${spring.rabbitmq.auto-config.bindings.binding-two.routing-key}")
-    private String bookingRoutingkey;
+  
 
     private static final Logger log = LoggerFactory.getLogger(RabbitMqHandler.class);
 
@@ -54,25 +53,25 @@ public class RabbitMqHandler {
         return job;
     }
 
-    public Map<String, Object> jobWithOneTask(Job job, String queueName) throws Exception {
+    public Map<String, Object> jobWithOneTask(Job job,String routingkey) throws Exception {
         Task task = new Task();
         Status jobStatus = new Status(State.RECEIVED, false,false);
         task.setCreated(ApplicationConsts.timeNow());
         task.setTaskStatus(jobStatus);
         job.setJobStatus(jobStatus);
         task.setJob(job);
-        return addJobAndTasksToDbAndQueue(job, List.of(task),List.of(new QueueItem(job,task)), queueName);
+        return addJobAndTasksToDbAndQueue(job, List.of(task),List.of(new QueueItem(job,task)),routingkey);
 
     }
 
-    public Map<String, Object> addJobAndTasksToDbAndQueue(Job job, List<Task> tasks,List<QueueItem> queueItems, String queueName)
+    public Map<String, Object> addJobAndTasksToDbAndQueue(Job job, List<Task> tasks,List<QueueItem> queueItems,String routingkey)
             throws Exception {
         try {
            
             job.setNumberOfTasks(tasks.size());
             job = jobRepository.save(job);
             taskRepository.saveAll(tasks);
-            queueItems.forEach((queueItem) -> rabbitTemplate.convertAndSend(exchange, bookingRoutingkey, queueItem));
+            queueItems.forEach((queueItem) -> rabbitTemplate.convertAndSend(exchange,routingkey, queueItem));
             return Map.of("success", true, "message", "Job with id : " + job.getJid() + " was created!");
 
         } catch (Exception e) {
