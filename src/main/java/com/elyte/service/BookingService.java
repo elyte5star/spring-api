@@ -44,6 +44,9 @@ public class BookingService {
     @Autowired
     private RabbitMqHandler rabbitMqHandler;
 
+    @Value("${spring.rabbitmq.auto-config.bindings.binding-two.routing-key}")
+    private String bookingRoutingkey;
+
     @Value("${payment.STRIPE_SECRET_KEY}")
     private String secretKey;
 
@@ -83,9 +86,9 @@ public class BookingService {
                 throw new Exception("Payment not Successful!");
             Job job = rabbitMqHandler.createJob(JobType.BOOKING);
             BookingJob bookingJob= new BookingJob(createBooking.getUserid(), createBooking.getTotalPrice(), createBooking.getCart(), createBooking.getPaymentDetails().getShippingAddress());
-            job.setBookingRequest(ApplicationConsts.convertObjectToGson(bookingJob));
+            job.setJobRequest(ApplicationConsts.convertObjectToGson(bookingJob));
             job.setUser(user.get());
-            Map<String, Object> result = rabbitMqHandler.jobWithOneTask(job, "BOOKING");
+            Map<String, Object> result = rabbitMqHandler.jobWithOneTask(job,bookingRoutingkey);
             if (Boolean.TRUE.equals(result.get("success"))) {
                 CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(),
                         ApplicationConsts.I200_MSG,

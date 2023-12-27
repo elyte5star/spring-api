@@ -163,5 +163,20 @@
     "name": "payment.STRIPE_-pUBLIC_-kEY",
     "type": "java.lang.String",
     "description": "A description for 'payment.STRIPE_-pUBLIC_-kEY'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.bindings.binding-one.exchange",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.bindings.binding-one.exchange'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.bindings.binding-two.exchange",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.bindings.binding-two.exchange'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.bindings.binding-mock.exchange",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.bindings.binding-mock.exchange'"
   }
 ]}
