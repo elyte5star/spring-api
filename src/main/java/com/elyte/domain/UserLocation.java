@@ -24,7 +24,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name="USER_LOCATION")
+@Table(name="USER_LOCATIONS")
 public class UserLocation extends AuditEntity{
 
     @Id
@@ -38,8 +38,8 @@ public class UserLocation extends AuditEntity{
     @JsonIgnore
     private User user;
 
-    @Column(name = "COUNTRY")
-    @NotBlank(message = "Token is required")
+    @Column(name = "COUNTRY_NAME")
+    @NotBlank(message = "Country name is required")
     private String country;
 
 
