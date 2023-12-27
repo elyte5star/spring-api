@@ -86,7 +86,7 @@ public class BookingService {
                 throw new Exception("Payment not Successful!");
             Job job = rabbitMqHandler.createJob(JobType.BOOKING);
             BookingJob bookingJob= new BookingJob(createBooking.getUserid(), createBooking.getTotalPrice(), createBooking.getCart(), createBooking.getPaymentDetails().getShippingAddress());
-            job.setBookingRequest(ApplicationConsts.convertObjectToGson(bookingJob));
+            job.setJobRequest(ApplicationConsts.convertObjectToGson(bookingJob));
             job.setUser(user.get());
             Map<String, Object> result = rabbitMqHandler.jobWithOneTask(job,bookingRoutingkey);
             if (Boolean.TRUE.equals(result.get("success"))) {

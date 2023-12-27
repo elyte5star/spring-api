@@ -55,7 +55,7 @@ public class Job implements Serializable {
     private List<Task> tasks;
 
     @Column(name = "JOB_REQUEST", columnDefinition = "json")
-    private String bookingRequest;
+    private String jobRequest;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "JOB_TYPE")

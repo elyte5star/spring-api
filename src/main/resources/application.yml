@@ -67,6 +67,7 @@ spring:
     port: ${RABBITMQ_NODE_PORT:5672}
     username: ${RABBITMQ_DEFAULT_USER:rabbitUser}
     password: ${RABBITMQ_DEFAULT_PASS:elyteRQ}
+    virtual-host: /
     exchange: elyteExchange
     ssl:
       enabled: false
@@ -75,7 +76,6 @@ spring:
         default-requeue-rejected: false
         retry:
           enabled: true
-        acknowledge-mode: auto
     auto-config:
       info-headers:
         source-application:  Utimore e-Market
@@ -94,12 +94,15 @@ spring:
 
       bindings:
         binding-one:
+          exchange: elyteExchange
           queue: queue-one
           routing-key: search
         binding-two:
+          exchange: elyteExchange
           queue: queue-two
           routing-key: booking
         binding-mock:
+          exchange: elyteExchange
           queue: queue-mock
           routing-key: lostItems
         
