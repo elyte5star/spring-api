@@ -58,7 +58,6 @@ public class RabbitMqHandler {
         Status jobStatus = new Status(State.RECEIVED, false,false);
         task.setCreated(ApplicationConsts.timeNow());
         task.setTaskStatus(jobStatus);
-        job.setJobStatus(jobStatus);
         task.setJob(job);
         return addJobAndTasksToDbAndQueue(job, List.of(task),List.of(new QueueItem(job,task)),routingkey);
 
