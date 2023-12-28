@@ -33,6 +33,8 @@ dependencies {
 	implementation("com.google.code.gson:gson:2.10.1")
 	implementation("com.maxmind.geoip2:geoip2:4.2.0")
 	implementation("org.wiremock:wiremock:3.3.1")
+	implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
+	implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.16")
 	implementation("com.maxmind.db:maxmind-db:3.1.0")
 	implementation("com.jcabi:jcabi-matchers:1.7.0")
 	implementation("org.junit.jupiter:junit-jupiter:5.10.1")
