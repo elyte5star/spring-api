@@ -16,13 +16,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.elyte.domain.Job;
 import com.elyte.domain.Product;
 import com.elyte.domain.request.CreateProductRequest;
 import com.elyte.domain.request.CreateUserRequest;
 import com.elyte.domain.request.ModifyEntityRequest;
 import com.elyte.domain.response.CustomResponseStatus;
+import com.elyte.domain.response.JobResponse;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.queue.RabbitMqHandler;
 import com.elyte.service.ProductService;
@@ -173,9 +172,9 @@ public class AdminController {
     @Operation(summary = "Get a job by jid", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CustomResponseStatus> findJobById(@PathVariable @Valid String jid)
             throws ResourceNotFoundException {
-        Job job = rabbitMqHandler.getJob(jid);
+        JobResponse jobResponse = rabbitMqHandler.getJobResponse(jid);
         CustomResponseStatus status = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS, ApplicationConsts.SRC, ApplicationConsts.timeNow(), job);
+                ApplicationConsts.SUCCESS, ApplicationConsts.SRC, ApplicationConsts.timeNow(), jobResponse);
         return new ResponseEntity<>(status, HttpStatus.OK);
 
     }
@@ -197,9 +196,9 @@ public class AdminController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<CustomResponseStatus> getJobsByuserId(@PathVariable @Valid String userid)
             throws ResourceNotFoundException {
-        List<Job> jobs = rabbitMqHandler.getJobsByUserid( userid);
+        List<JobResponse> jobResponses = rabbitMqHandler.getJobsByUserid(userid);
         CustomResponseStatus status = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS, ApplicationConsts.SRC, ApplicationConsts.timeNow(), jobs);
+                ApplicationConsts.SUCCESS, ApplicationConsts.SRC, ApplicationConsts.timeNow(), jobResponses);
         return new ResponseEntity<>(status, HttpStatus.OK);
 
     }

@@ -17,6 +17,7 @@ import com.stripe.exception.StripeException;
 //import com.stripe.model.Charge;
 import com.elyte.domain.Booking;
 import com.elyte.domain.Job;
+import com.elyte.domain.Task;
 import com.elyte.domain.User;
 import com.elyte.domain.Payment.BillingAddress;
 import com.elyte.domain.Payment.CardDetails;
@@ -24,12 +25,18 @@ import com.elyte.domain.enums.JobType;
 import com.elyte.domain.request.BookingJob;
 import com.elyte.domain.request.CreateBooking;
 import com.elyte.domain.response.CustomResponseStatus;
+import com.elyte.domain.response.JobAndTasksResult;
+import com.elyte.domain.response.JobResponse;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.queue.RabbitMqHandler;
 import com.elyte.repository.BookingRepository;
 import com.elyte.repository.UserRepository;
 import com.elyte.utils.ApplicationConsts;
+import com.google.gson.Gson;
+
 import jakarta.annotation.PostConstruct;
+import jakarta.validation.Valid;
+
 import java.util.Map;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -85,10 +92,11 @@ public class BookingService {
             if (!paymentConfirmation)
                 throw new Exception("Payment not Successful!");
             Job job = rabbitMqHandler.createJob(JobType.BOOKING);
-            BookingJob bookingJob= new BookingJob(createBooking.getUserid(), createBooking.getTotalPrice(), createBooking.getCart(), createBooking.getPaymentDetails().getShippingAddress());
+            BookingJob bookingJob = new BookingJob(createBooking.getUserid(), createBooking.getTotalPrice(),
+                    createBooking.getCart(), createBooking.getPaymentDetails().getShippingAddress());
             job.setJobRequest(ApplicationConsts.convertObjectToGson(bookingJob));
             job.setUser(user.get());
-            Map<String, Object> result = rabbitMqHandler.jobWithOneTask(job,bookingRoutingkey);
+            Map<String, Object> result = rabbitMqHandler.jobWithOneTask(job, bookingRoutingkey);
             if (Boolean.TRUE.equals(result.get("success"))) {
                 CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(),
                         ApplicationConsts.I200_MSG,
@@ -125,6 +133,36 @@ public class BookingService {
         }
 
         throw new Exception("Amount not specified");
+
+    }
+
+    public ResponseEntity<CustomResponseStatus> bookingResultByJid(@Valid String jid) {
+        Job job = rabbitMqHandler.getJob(jid);
+        if (job.getJobType() != JobType.BOOKING)
+            throw new ResourceNotFoundException("Wrong job type");
+        JobAndTasksResult results = rabbitMqHandler.checkJobAndTasks(job);
+        boolean resultIsAvailable = rabbitMqHandler.resultAvailable(results.getJob());
+        if (resultIsAvailable) {
+            JobResponse jobResponse = rabbitMqHandler.createJobResponse(job, results.getLastTaskEndedAt());
+            Map<String, String> bookingResult = createBookingResult(results.getTasks());
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+                    ApplicationConsts.SUCCESS,
+                    ApplicationConsts.SRC, ApplicationConsts.timeNow(),
+                    Map.of("job", jobResponse, "tasks", bookingResult));
+            return new ResponseEntity<>(resp, HttpStatus.OK);
+
+        }
+        throw new ResourceNotFoundException("Result from job is not available.");
+    }
+
+    public Map<String, String> createBookingResult(List<Task> tasks) {
+        Map<String, String> taskResults = new HashMap<String, String>();
+        Gson gson = new Gson();
+        for (Task task : tasks) {
+            taskResults.put("BOOKING ID", gson.fromJson(task.getResult(), String.class));
+
+        }
+        return taskResults;
 
     }
 }
