@@ -34,8 +34,15 @@ public class BookingController {
 
     @GetMapping("/{userid}/bookings")
     @Operation(summary = "Get user bookings of by userid", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> getAllReviewsByProductId(@PathVariable  @Valid String userid) throws ResourceNotFoundException {
+    public ResponseEntity<CustomResponseStatus> getAllBookingsByUserId(@PathVariable  @Valid String userid) throws ResourceNotFoundException {
         return bookingService.bookingsByUserid(userid);
+
+    }
+
+    @GetMapping("/result/{jid}")
+    @Operation(summary = "Get  booking result by jid", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> getBookingResultByJib(@PathVariable  @Valid String jid) throws ResourceNotFoundException {
+        return bookingService.bookingResultByJid(jid);
 
     }
 

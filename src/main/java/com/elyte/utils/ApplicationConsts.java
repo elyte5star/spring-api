@@ -2,16 +2,15 @@ package com.elyte.utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.Duration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-
-
 public class ApplicationConsts {
 
-    public static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
     // common messages
     public static final String SRC = "0";
@@ -85,14 +84,19 @@ public class ApplicationConsts {
         return mapper.writeValueAsString(object);
     }
 
-     public static String convertObjectToGson(Object object) throws JsonProcessingException {
+    public static String convertObjectToGson(Object object) throws JsonProcessingException {
         if (object == null) {
             return null;
         }
-        Gson gson  = new GsonBuilder().create();
+        Gson gson = new GsonBuilder().create();
         return gson.toJson(object);
     }
 
-    
+    public static long diff(String start, String end) {
+        LocalDateTime dateTime1 = LocalDateTime.parse(start, dtf);
+        LocalDateTime dateTime2 = LocalDateTime.parse(end, dtf);
+        Duration duration = Duration.between(dateTime1, dateTime2);
+        return Math.abs(duration.toSeconds());
+    }
 
 }
