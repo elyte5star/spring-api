@@ -14,18 +14,21 @@ import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.context.request.RequestContextListener;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
+import java.util.List;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.data.domain.PageRequest;
 
 /**
  * Spring MVC and Thymeleaf configuration.
@@ -55,6 +58,20 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
+
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers){
+        PageableHandlerMethodArgumentResolver phmar = new PageableHandlerMethodArgumentResolver();
+        // Set the default size to 5
+        phmar.setFallbackPageable(PageRequest.of(0, 5));
+        argumentResolvers.add(phmar);
+
+    }
+
+
+
+
 
     @Override
     public void setEnvironment(final Environment environment) {

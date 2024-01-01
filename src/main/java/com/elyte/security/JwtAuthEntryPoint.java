@@ -32,7 +32,7 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint, Serializable
 		CustomResponseStatus status = new CustomResponseStatus(HttpServletResponse.SC_UNAUTHORIZED,
 				authException.getMessage(), ApplicationConsts.FAILURE, authException.getClass().getName(),
 				ApplicationConsts.timeNow(), ApplicationConsts.ARC_MSG);
-		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		response.setContentType(MediaType.ALL_VALUE);
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		OutputStream responseStream = response.getOutputStream();
 		ObjectMapper mapper = new ObjectMapper();

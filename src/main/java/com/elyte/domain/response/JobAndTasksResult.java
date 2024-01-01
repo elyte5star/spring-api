@@ -16,7 +16,7 @@ public class JobAndTasksResult {
 
     private List<Task> tasks;
 
-    private String lastTaskEndedAt="1970-12-29 20:01:48.401295";
+    private String lastTaskEndedAt;
 
     
 }
