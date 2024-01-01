@@ -2,6 +2,7 @@ package com.elyte.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
 import com.elyte.domain.request.CreateProductRequest;
-
+import org.springframework.data.domain.Page;
 
 
 
@@ -27,11 +28,19 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    public ResponseEntity<CustomResponseStatus> getAllProducts() {
-        Iterable<Product> allProducts = productRepository.findAll();
+    public ResponseEntity<CustomResponseStatus> getAllProducts(Pageable pageable) {
+        Page<Product> allProducts = productRepository.findAll(pageable);
         CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
                 ApplicationConsts.SUCCESS,
                 ApplicationConsts.SRC, ApplicationConsts.timeNow(), allProducts);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+    }
+
+     public ResponseEntity<CustomResponseStatus> findProductsByPrice(double price,Pageable pageable) {
+        List<Product> productsByprice = productRepository.findAllByPrice(price,pageable);
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
+                ApplicationConsts.SUCCESS,
+                ApplicationConsts.SRC, ApplicationConsts.timeNow(), productsByprice );
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 

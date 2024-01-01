@@ -9,12 +9,14 @@ server:
 ---
 management:
   endpoints:
+    health:
+      show-details: always
     enabled-by-default: true
     web:
       exposure:
-        include: [ "openapi", "swagger-ui" ]
+        include: [ "openapi", "swagger-ui" ,"env", "info", "health"]
   server:
-    port: 9001
+    port: 8001
 
 ---
 

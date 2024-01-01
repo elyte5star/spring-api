@@ -1,5 +1,6 @@
 
 package com.elyte.controllers;
+
 import com.elyte.domain.request.CreateReviewRequest;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.service.ProductService;
@@ -15,9 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import com.elyte.domain.response.CustomResponseStatus;
-
-
-
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/products")
@@ -31,30 +30,40 @@ public class ProductsController {
 
     @GetMapping("")
     @Operation(summary = "Get all products")
-    public ResponseEntity<CustomResponseStatus> getAllProducts() {
-        return productService.getAllProducts();
+    public ResponseEntity<CustomResponseStatus> getAllProducts(Pageable pageable) {
+        return productService.getAllProducts(pageable);
+
     }
 
-    
+    @GetMapping("/price/{price}")
+    @Operation(summary = "Get all products by price")
+    public ResponseEntity<CustomResponseStatus> findProductsByPrice(@PathVariable @Valid double price,
+            Pageable pageable) {
+        return productService.findProductsByPrice(price, pageable);
+
+    }
+
     @PostMapping("/create/review")
     @Operation(summary = "Create a product review")
-    public ResponseEntity<CustomResponseStatus> createProductReview(@RequestBody @Valid CreateReviewRequest review ) {
+    public ResponseEntity<CustomResponseStatus> createProductReview(@RequestBody @Valid CreateReviewRequest review) {
         return reviewService.createReview(review);
 
     }
+
     @GetMapping("/{pid}/reviews")
     @Operation(summary = "Get reviews of a product by pid")
-    public ResponseEntity<CustomResponseStatus> getAllReviewsByProductId(@PathVariable  @Valid String pid) throws ResourceNotFoundException {
+    public ResponseEntity<CustomResponseStatus> getAllReviewsByProductId(@PathVariable @Valid String pid)
+            throws ResourceNotFoundException {
         return reviewService.ReviewsByProductId(pid);
 
     }
 
     @GetMapping("/{pid}")
     @Operation(summary = "Get a product by pid")
-    public ResponseEntity<CustomResponseStatus> findProductById(@PathVariable  @Valid String pid) throws ResourceNotFoundException {
+    public ResponseEntity<CustomResponseStatus> findProductById(@PathVariable @Valid String pid)
+            throws ResourceNotFoundException {
         return productService.ProductById(pid);
 
     }
-
 
 }

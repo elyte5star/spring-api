@@ -57,6 +57,7 @@ public class JwtAuthSecurityConfig {
             "/swagger-ui/**",
             "/products/**",
             "/docs/**",
+             "/actuator/**"
 
     };
 
