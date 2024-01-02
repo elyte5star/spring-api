@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 
 @Component
-public class JwtAuthEntryPoint implements AuthenticationEntryPoint, Serializable {
+public class JwtAuthEntryPoint extends ApplicationConsts implements AuthenticationEntryPoint, Serializable {
 
 	private static final long serialVersionUID = -7858869558953243875L;
 
@@ -30,8 +30,8 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint, Serializable
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) throws IOException {
 		CustomResponseStatus status = new CustomResponseStatus(HttpServletResponse.SC_UNAUTHORIZED,
-				authException.getMessage(), ApplicationConsts.FAILURE, authException.getClass().getName(),
-				ApplicationConsts.timeNow(), ApplicationConsts.ARC_MSG);
+				authException.getMessage(), this.FAILURE, authException.getClass().getName(),
+				this.timeNow(), this.ARC_MSG);
 		response.setContentType(MediaType.ALL_VALUE);
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		OutputStream responseStream = response.getOutputStream();

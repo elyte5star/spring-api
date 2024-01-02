@@ -17,7 +17,7 @@ import com.elyte.domain.request.EmailAlert;
 
 @Service
 @Transactional
-public class PassowrdResetService {
+public class PassowrdResetService extends ApplicationConsts{
 
     private static final int EXPIRATION = 60 * 24;
 
@@ -65,7 +65,7 @@ public class PassowrdResetService {
         String encryptedToken =  EncryptionUtil.encrypt(token);
         String url = contextPath + "/users/reset/confirm-token?token=" + encryptedToken;
         emailAlertService.sendSimpleHtmlMail(mailObject, url, (EXPIRATION/60), request.getLocale(),
-                ApplicationConsts.RESET_USER_PASSWORD);
+                this.RESET_USER_PASSWORD);
         return encryptedToken;
 
     }

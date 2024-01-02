@@ -30,7 +30,6 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-amqp")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
-	implementation("com.google.code.gson:gson:2.10.1")
 	implementation("com.maxmind.geoip2:geoip2:4.2.0")
 	implementation("org.wiremock:wiremock:3.3.1")
 	implementation("org.javatuples:javatuples:1.2")
@@ -56,9 +55,7 @@ dependencies {
 	compileOnly("org.projectlombok:lombok")
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.16.0-rc1")
     implementation("com.jwebmp.jackson.datatype:jackson-datatype-jsr310:0.63.0.19")
-	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 	runtimeOnly("com.mysql:mysql-connector-j")
-	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.amqp:spring-rabbit-test")
@@ -80,3 +77,5 @@ tasks.asciidoctor {
     project.property("snippetsDir")?.let { inputs.dir(it) }
     dependsOn(tasks.test)
 }
+
+

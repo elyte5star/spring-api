@@ -19,7 +19,7 @@ import jakarta.mail.MessagingException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class OtpService {
+public class OtpService extends ApplicationConsts{
 
     @Autowired
     private OtpRepository otpRepository;
@@ -42,7 +42,7 @@ public class OtpService {
         otp = otpRepository.save(otp);
         EmailAlert mailObject = new EmailAlert(user.getEmail(), user.getUsername(), "Confirm your account");
         emailAlertService.sendSimpleHtmlMail(mailObject, otp.getOtpString(), OTP_VALIDITY, locale,
-                    ApplicationConsts.VERIFY_USER_EMAIL_TEMPLATE_NAME);
+                    this.VERIFY_USER_EMAIL_TEMPLATE_NAME);
         return otp;
     }
 

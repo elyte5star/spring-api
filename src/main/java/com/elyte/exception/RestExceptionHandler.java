@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.context.request.WebRequest;
 
 @RestControllerAdvice
-public class RestExceptionHandler implements ErrorController {
+public class RestExceptionHandler extends ApplicationConsts implements ErrorController {
 
     private static final Logger log = LoggerFactory.getLogger(RestExceptionHandler.class);
 
@@ -44,31 +44,31 @@ public class RestExceptionHandler implements ErrorController {
             log.debug("Error thrown -- statusCode {}", code);
             switch (code) {
                 case 404:
-                    CustomResponseStatus status = new CustomResponseStatus(code, ApplicationConsts.E404_MSG,
-                            ApplicationConsts.FAILURE,
+                    CustomResponseStatus status = new CustomResponseStatus(code, this.E404_MSG,
+                            this.FAILURE,
                             request.getRequestURL().toString(),
-                            ApplicationConsts.timeNow(), null);
+                            this.timeNow(), null);
 
                     return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
                 case 500:
-                    CustomResponseStatus status1 = new CustomResponseStatus(code, ApplicationConsts.E500_MSG,
-                            ApplicationConsts.FAILURE,
+                    CustomResponseStatus status1 = new CustomResponseStatus(code, this.E500_MSG,
+                            this.FAILURE,
                             request.getRequestURL().toString(),
-                            ApplicationConsts.timeNow(), null);
+                            this.timeNow(), null);
                     return new ResponseEntity<>(status1, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-        CustomResponseStatus status = new CustomResponseStatus(code, ApplicationConsts.I999_MSG,
-                ApplicationConsts.SUCCESS, request.getRequestURL().toString(), ApplicationConsts.timeNow(), null);
+        CustomResponseStatus status = new CustomResponseStatus(code, this.I999_MSG,
+                this.SUCCESS, request.getRequestURL().toString(), this.timeNow(), null);
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.OK);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleUserNotFoundException(ResourceNotFoundException e, HttpServletRequest request) {
         CustomResponseStatus status = new CustomResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage(),
-                ApplicationConsts.FAILURE,
+                this.FAILURE,
                 e.getClass().getName(),
-                ApplicationConsts.timeNow(), ApplicationConsts.E404_MSG);
+                this.timeNow(), this.E404_MSG);
 
         log.error("[+] ResourceNotFoundException--{}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.NOT_FOUND);
@@ -83,8 +83,8 @@ public class RestExceptionHandler implements ErrorController {
         });
         CustomResponseStatus status = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(),
                 "Input validation failed",
-                ApplicationConsts.FAILURE,
-                e.getClass().getName(), ApplicationConsts.timeNow(), Map.of("errors", mp));
+                this.FAILURE,
+                e.getClass().getName(), this.timeNow(), Map.of("errors", mp));
         log.error("[+] MethodArgumentNotValidException--{}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
@@ -92,9 +92,9 @@ public class RestExceptionHandler implements ErrorController {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleBadCredentialsException(Exception e) {
         CustomResponseStatus status = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
-                ApplicationConsts.FAILURE,
+                this.FAILURE,
                 e.getClass().getName(),
-                ApplicationConsts.timeNow(), ApplicationConsts.E401_MSG);
+                this.timeNow(), this.E401_MSG);
 
         log.error("[+] BadCredentialsException--{}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
@@ -103,9 +103,9 @@ public class RestExceptionHandler implements ErrorController {
     @ExceptionHandler(LockedException.class)
     public ResponseEntity<?> handleLockedException(Exception e) {
         CustomResponseStatus status = new CustomResponseStatus(HttpStatus.LOCKED.value(), e.getMessage(),
-                ApplicationConsts.FAILURE,
+                this.FAILURE,
                 e.getClass().getName(),
-                ApplicationConsts.timeNow(), ApplicationConsts.E423_MSG);
+                this.timeNow(), this.E423_MSG);
         log.error("[+] LockedException--{}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.LOCKED);
     }
@@ -113,9 +113,9 @@ public class RestExceptionHandler implements ErrorController {
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<?> handleNullPointer(Exception e) {
         CustomResponseStatus status = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
-                ApplicationConsts.FAILURE,
+                this.FAILURE,
                 e.getClass().getName(),
-                ApplicationConsts.timeNow(), ApplicationConsts.I999_MSG);
+                this.timeNow(), this.I999_MSG);
 
         log.error("[+] NullPointerException--{}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
@@ -124,9 +124,9 @@ public class RestExceptionHandler implements ErrorController {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<?> handleNoHandlerFound(Exception e) {
         CustomResponseStatus status = new CustomResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage(),
-                ApplicationConsts.FAILURE,
+                this.FAILURE,
                 e.getClass().getName(),
-                ApplicationConsts.timeNow(), ApplicationConsts.E404_MSG);
+                this.timeNow(), this.E404_MSG);
 
         log.error("[+] NoHandlerFoundException--{}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.NOT_FOUND);
@@ -135,9 +135,9 @@ public class RestExceptionHandler implements ErrorController {
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<?> handleDisabledException(Exception e) {
         CustomResponseStatus status = new CustomResponseStatus(HttpStatus.LOCKED.value(), e.getMessage(),
-                ApplicationConsts.FAILURE,
+                this.FAILURE,
                 e.getClass().getName(),
-                ApplicationConsts.timeNow(), ApplicationConsts.E423_MSG);
+                this.timeNow(), this.E423_MSG);
         log.error("[+] DisabledException--{}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.LOCKED);
     }
@@ -146,9 +146,9 @@ public class RestExceptionHandler implements ErrorController {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> handleDataIntegrityViolationException(Exception e) {
         CustomResponseStatus status = new CustomResponseStatus(HttpStatus.CONFLICT.value(), e.getMessage(),
-                ApplicationConsts.FAILURE,
+                this.FAILURE,
                 e.getClass().getName(),
-                ApplicationConsts.timeNow(), ApplicationConsts.E205_MSG);
+                this.timeNow(), this.E205_MSG);
 
         log.error("[+] DataIntegrityViolationException--{}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.CONFLICT);
@@ -159,7 +159,7 @@ public class RestExceptionHandler implements ErrorController {
             HttpServletResponse httpServletResponse,
             AccessDeniedException accessDeniedException) throws IOException {
         CustomResponseStatus status = new CustomResponseStatus(HttpServletResponse.SC_FORBIDDEN, "NOT_PERMITTED",
-                ApplicationConsts.FAILURE, accessDeniedException.getClass().getName(), ApplicationConsts.timeNow(),
+                this.FAILURE, accessDeniedException.getClass().getName(), this.timeNow(),
                 accessDeniedException.getMessage());
 
         httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
@@ -181,13 +181,13 @@ public class RestExceptionHandler implements ErrorController {
         } else if (cause instanceof JsonMappingException) {
             status.setMessage(cause.toString());
         } else {
-            status.setMessage(ApplicationConsts.E400_MSG);
+            status.setMessage(this.E400_MSG);
 
         }
         status.setCode(HttpStatus.BAD_REQUEST.value());
         status.setPath(e.getClass().getName());
-        status.setTimeStamp(ApplicationConsts.timeNow());
-        status.setSuccess(ApplicationConsts.FAILURE);
+        status.setTimeStamp(this.timeNow());
+        status.setSuccess(this.FAILURE);
         log.error("[+] HttpMessageNotReadableException --{}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
@@ -196,8 +196,8 @@ public class RestExceptionHandler implements ErrorController {
     public ResponseEntity<?> handleMaxSizeException(MaxUploadSizeExceededException exc, HttpServletRequest request,
             HttpServletResponse response) {
         CustomResponseStatus customStatus = new CustomResponseStatus(exc.getStatusCode().value(), "File too large!",
-                ApplicationConsts.FAILURE, exc.getClass().getName(), ApplicationConsts.timeNow(),
-                ApplicationConsts.E413_MSG);
+                this.FAILURE, exc.getClass().getName(), this.timeNow(),
+                this.E413_MSG);
         log.error("[+] MaxUploadSizeExceededException --{}", exc.getMessage());
         return new ResponseEntity<>(customStatus, new HttpHeaders(), exc.getStatusCode());
     }
@@ -206,8 +206,8 @@ public class RestExceptionHandler implements ErrorController {
     public ResponseEntity<?> handleMail(final RuntimeException ex, final WebRequest request) {
         log.error("[+] 500 Status Code- MailError", ex.getMessage());
         CustomResponseStatus customStatus = new CustomResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "message.email.config.error", ApplicationConsts.FAILURE, ex.getClass().getName(),
-                ApplicationConsts.timeNow(),
+                "message.email.config.error", this.FAILURE, ex.getClass().getName(),
+                this.timeNow(),
                 "MailError");
         return new ResponseEntity<>(customStatus, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -218,8 +218,8 @@ public class RestExceptionHandler implements ErrorController {
     public ResponseEntity<?> handleFallback(HttpServletRequest request, Exception e) {
         log.error("[+] Fallback Exception.getMessage--{}", e.getMessage());
         CustomResponseStatus customStatus = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
-                ApplicationConsts.FAILURE, e.getClass().getName(), ApplicationConsts.timeNow(),
-                ApplicationConsts.I999_MSG);
+                this.FAILURE, e.getClass().getName(), this.timeNow(),
+                this.I999_MSG);
         return new ResponseEntity<>(customStatus, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
@@ -227,8 +227,8 @@ public class RestExceptionHandler implements ErrorController {
     public ResponseEntity<?> handleUnusualLocationException(HttpServletRequest request, Exception e) {
         log.error("[+] Unusual location--{}", e.getMessage());
         CustomResponseStatus customStatus = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
-                ApplicationConsts.FAILURE, e.getClass().getName(), ApplicationConsts.timeNow(),
-                ApplicationConsts.I999_MSG);
+                this.FAILURE, e.getClass().getName(), this.timeNow(),
+                this.I999_MSG);
         return new ResponseEntity<>(customStatus, new HttpHeaders(), HttpStatus.BAD_REQUEST);
 
     }

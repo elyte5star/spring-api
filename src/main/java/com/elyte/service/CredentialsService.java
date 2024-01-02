@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CredentialsService implements UserDetailsService {
+public class CredentialsService extends ApplicationConsts implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -50,7 +50,7 @@ public class CredentialsService implements UserDetailsService {
         }
 
         user.setUserid(user.getUserid());
-        user.setLastLoginDate(ApplicationConsts.timeNow());
+        user.setLastLoginDate(this.timeNow());
         userRepository.save(user);
 
         UserPrincipal customUserDetail = new UserPrincipal();

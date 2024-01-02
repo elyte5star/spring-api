@@ -22,7 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 
 @Service
-public class EmailAlertService {
+public class EmailAlertService  extends ApplicationConsts{
 
     @Autowired
     private JavaMailSender mailSender;
@@ -59,7 +59,7 @@ public class EmailAlertService {
         message.setTo(mailObject.getRecipientEmail());
 
         // Create the plain TEXT body using Thymeleaf
-        final String textContent = this.textTemplateEngine.process(ApplicationConsts.EMAIL_TEXT_TEMPLATE_NAME, ctx);
+        final String textContent = this.textTemplateEngine.process(this.EMAIL_TEXT_TEMPLATE_NAME, ctx);
         message.setText(textContent);
 
         // Send email
@@ -110,7 +110,7 @@ public class EmailAlertService {
 
             // Create the HTML body using Thymeleaf
             final String htmlContent = this.htmlTemplateEngine
-                    .process(ApplicationConsts.EMAIL_WITHATTACHMENT_TEMPLATE_NAME, ctx);
+                    .process(this.EMAIL_WITHATTACHMENT_TEMPLATE_NAME, ctx);
             helper.setText(htmlContent, true /* isHtml */);
 
             // Add the attachment
