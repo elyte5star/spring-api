@@ -15,12 +15,12 @@ import java.io.Serializable;
 import java.io.IOException;
 import java.io.OutputStream;
 import com.elyte.domain.response.CustomResponseStatus;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 
 @Component
-public class JwtAuthEntryPoint extends ApplicationConsts implements AuthenticationEntryPoint, Serializable {
+public class JwtAuthEntryPoint extends UtilityFunctions implements AuthenticationEntryPoint, Serializable {
 
 	private static final long serialVersionUID = -7858869558953243875L;
 

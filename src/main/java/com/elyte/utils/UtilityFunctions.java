@@ -2,17 +2,34 @@ package com.elyte.utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.UUID;
 import org.slf4j.Logger;
+import java.security.SecureRandom;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.Data;
+
 import org.slf4j.LoggerFactory;
 
-public class ApplicationConsts {
+
+@Data
+public class UtilityFunctions {
 
     public static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
-    private static final Logger log = LoggerFactory.getLogger(ApplicationConsts.class);
+    public DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    static SecureRandom rnd = new SecureRandom();
+
+    private static final Logger log = LoggerFactory.getLogger(UtilityFunctions.class);
 
     // common messages
     public final String SRC = "0";
@@ -74,7 +91,7 @@ public class ApplicationConsts {
 
     public ObjectMapper mapper;
 
-    public ApplicationConsts() {
+    public UtilityFunctions() {
 
         this.mapper = new ObjectMapper();
 
@@ -103,5 +120,24 @@ public class ApplicationConsts {
         Duration duration = Duration.between(dateTime1, dateTime2);
         return Math.abs(duration.toSeconds());
     }
+
+    public static String generateString() { 
+        return UUID.randomUUID().toString();
+    }
+
+    public Date calculateExpiryDate(int EXPIRATION_MINUTES) {
+        final Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(new Date().getTime());
+        cal.add(Calendar.MINUTE, EXPIRATION_MINUTES);
+        return new Date(cal.getTime().getTime());
+    }
+
+    
+    public String randomString(int len){
+        StringBuilder sb = new StringBuilder(len);
+        for(int i = 0; i < len; i++)
+           sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        return sb.toString();
+     }
 
 }

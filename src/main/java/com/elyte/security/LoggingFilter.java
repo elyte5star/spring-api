@@ -1,4 +1,4 @@
-package com.elyte.utils;
+package com.elyte.security;
 
 import java.io.IOException;
 import org.slf4j.Logger;
@@ -18,9 +18,9 @@ public class LoggingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        log.debug("[LOG: REQ] | {} | {}", request.getRequestURI(), request.getMethod());
+        log.info("[LOG: REQ] | {} | {}", request.getRequestURI(), request.getMethod());
         filterChain.doFilter(request, response);
-        log.debug("[LOG: RES] | {}", response.getStatus());
+        log.info("[LOG: RES] | {}", response.getStatus());
     }
 
 }

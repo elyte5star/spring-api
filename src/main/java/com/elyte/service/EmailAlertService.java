@@ -11,7 +11,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import com.elyte.domain.request.EmailAlert;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.thymeleaf.TemplateEngine;
@@ -22,7 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 
 @Service
-public class EmailAlertService  extends ApplicationConsts{
+public class EmailAlertService  extends UtilityFunctions{
 
     @Autowired
     private JavaMailSender mailSender;

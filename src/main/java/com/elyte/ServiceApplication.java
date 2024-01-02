@@ -14,7 +14,7 @@ public class ServiceApplication {
 		SpringApplication.run(ServiceApplication.class, args);
 	}
 
-	// AuthenticationEventPublisher
+	// AuthenticationEventPublisher for loggedIn users
 	@Bean
 	AuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
 		return new DefaultAuthenticationEventPublisher(applicationEventPublisher);

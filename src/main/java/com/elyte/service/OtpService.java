@@ -7,19 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-
 import com.elyte.domain.Otp;
 import com.elyte.domain.User;
 import com.elyte.domain.request.EmailAlert;
-import com.elyte.utils.ApplicationConsts;
-import com.elyte.utils.RandomStringGen;
-
+import com.elyte.utils.UtilityFunctions;
 import jakarta.mail.MessagingException;
-
 import org.springframework.stereotype.Service;
 
 @Service
-public class OtpService extends ApplicationConsts{
+public class OtpService extends UtilityFunctions{
 
     @Autowired
     private OtpRepository otpRepository;
@@ -33,12 +29,12 @@ public class OtpService extends ApplicationConsts{
     public static final int OTP_VALIDITY = 5; // 5 minutes
 
     public Otp generateOtp(Locale locale,User user) throws MessagingException {
-        String randomString = RandomStringGen.randomString(6);
+        String randomString = this.randomString(6);
         Otp otp = new Otp();
         otp.setEmail(user.getEmail());
         otp.setOtpString(randomString);
         otp.setUser(user);
-        otp.setExpiryDate(RandomStringGen.calculateExpiryDate(OTP_VALIDITY));
+        otp.setExpiryDate(this.calculateExpiryDate(OTP_VALIDITY));
         otp = otpRepository.save(otp);
         EmailAlert mailObject = new EmailAlert(user.getEmail(), user.getUsername(), "Confirm your account");
         emailAlertService.sendSimpleHtmlMail(mailObject, otp.getOtpString(), OTP_VALIDITY, locale,

@@ -11,13 +11,13 @@ import com.elyte.repository.ReviewRepository;
 
 import java.util.List;
 import java.util.Optional;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ReviewService extends ApplicationConsts {
+public class ReviewService extends UtilityFunctions {
 
     @Autowired
     private ReviewRepository reviewRepository;

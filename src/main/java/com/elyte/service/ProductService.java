@@ -12,7 +12,7 @@ import com.elyte.domain.Product;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.ProductRepository;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import java.util.Optional;
 import java.net.URI;
 import java.util.List;
@@ -21,7 +21,7 @@ import com.elyte.domain.request.CreateProductRequest;
 import org.springframework.data.domain.Page;
 
 @Service
-public class ProductService extends ApplicationConsts {
+public class ProductService extends UtilityFunctions {
 
     @Autowired
     private ProductRepository productRepository;

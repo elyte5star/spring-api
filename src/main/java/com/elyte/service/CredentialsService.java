@@ -9,14 +9,14 @@ import com.elyte.domain.User;
 import com.elyte.repository.UserRepository;
 import com.elyte.security.LoginAttemptService;
 import com.elyte.security.UserPrincipal;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import java.util.HashSet;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CredentialsService extends ApplicationConsts implements UserDetailsService {
+public class CredentialsService extends UtilityFunctions implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;

@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +28,7 @@ import com.elyte.queue.RabbitMqHandler;
 import com.elyte.service.ProductService;
 import com.elyte.service.ReviewService;
 import com.elyte.service.UserService;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import com.elyte.domain.Task;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -36,7 +37,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/admin")
-public class AdminController extends ApplicationConsts{
+public class AdminController extends UtilityFunctions{
 
     @Autowired
     private UserService userService;
@@ -99,11 +100,11 @@ public class AdminController extends ApplicationConsts{
 
     }
 
-    @GetMapping("/users/get-all")
+    @GetMapping("/users/getAll")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Get all users", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> getAllUsers() {
-        return userService.getUsers();
+    public ResponseEntity<CustomResponseStatus> getAllUsers(Pageable pageable) {
+        return userService.getUsers(pageable);
     }
 
     @GetMapping("/reviews/all-reviews")

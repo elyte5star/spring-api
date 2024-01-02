@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import com.elyte.domain.response.CustomResponseStatus;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import org.springframework.dao.DataIntegrityViolationException;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.context.request.WebRequest;
 
 @RestControllerAdvice
-public class RestExceptionHandler extends ApplicationConsts implements ErrorController {
+public class RestExceptionHandler extends UtilityFunctions implements ErrorController {
 
     private static final Logger log = LoggerFactory.getLogger(RestExceptionHandler.class);
 

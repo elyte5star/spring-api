@@ -31,7 +31,7 @@ import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.queue.RabbitMqHandler;
 import com.elyte.repository.BookingRepository;
 import com.elyte.repository.UserRepository;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
-public class BookingService extends ApplicationConsts{
+public class BookingService extends UtilityFunctions{
 
     @Autowired
     private BookingRepository bookingRepository;

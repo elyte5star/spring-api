@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @Service
 public class LoginAttemptService {
 
-    public static final int MAX_ATTEMPT = 5;
+    public static final int MAX_ATTEMPT = 10;
 
     @Autowired
     private UserRepository userRepository;

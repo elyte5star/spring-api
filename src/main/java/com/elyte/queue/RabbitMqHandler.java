@@ -23,12 +23,12 @@ import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.JobRepository;
 import com.elyte.repository.TaskRepository;
 import com.elyte.repository.UserRepository;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 
 import org.springframework.stereotype.Service;
 
 @Service
-public class RabbitMqHandler extends ApplicationConsts{
+public class RabbitMqHandler extends UtilityFunctions{
 
     @Autowired
     private JobRepository jobRepository;

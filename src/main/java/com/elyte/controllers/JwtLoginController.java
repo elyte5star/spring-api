@@ -7,7 +7,7 @@ import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.response.TokenResponse;
 import com.elyte.security.UserPrincipal;
 import com.elyte.security.JwtTokenUtil;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import com.elyte.utils.EncryptionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Locale;
@@ -24,7 +24,7 @@ import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/auth")
-public class JwtLoginController extends ApplicationConsts{
+public class JwtLoginController extends UtilityFunctions{
 
         @Autowired
         private AuthenticationManager authenticationManager;

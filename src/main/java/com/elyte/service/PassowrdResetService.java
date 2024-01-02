@@ -9,15 +9,14 @@ import org.springframework.stereotype.Service;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import com.elyte.utils.EncryptionUtil;
-import com.elyte.utils.RandomStringGen;
 import com.elyte.domain.request.EmailAlert;
 
 
 @Service
 @Transactional
-public class PassowrdResetService extends ApplicationConsts{
+public class PassowrdResetService extends UtilityFunctions{
 
     private static final int EXPIRATION = 60 * 24;
 
@@ -54,11 +53,11 @@ public class PassowrdResetService extends ApplicationConsts{
     public String createPasswordResetTokenForUser(HttpServletRequest request, String email) throws MessagingException {
         User user = userRepository.findByEmail(email);
         if (user == null) return "NotFound";
-        String token = RandomStringGen.randomString(16);
+        String token = this.randomString(16);
         PasswordResetToken myToken = new PasswordResetToken();
         myToken.setToken(token);
         myToken.setUser(user);
-        myToken.setExpiryDate(RandomStringGen.calculateExpiryDate(EXPIRATION));
+        myToken.setExpiryDate(this.calculateExpiryDate(EXPIRATION));
         passwordTokenRepository.save(myToken);
         EmailAlert mailObject =new EmailAlert(user.getEmail(), user.getUsername(), "Reset your password");
         String contextPath = getAppUrl(request);        

@@ -18,18 +18,20 @@ import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.NewLocationTokenRepository;
 import com.elyte.repository.UserLocationRepository;
 import com.elyte.repository.UserRepository;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
 import com.elyte.domain.request.ValidateOtpRequest;
 import java.util.Optional;
 import com.elyte.utils.CheckNullEmptyBlank;
-import com.elyte.utils.RandomStringGen;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.elyte.utils.CheckIfUserExist;
 import com.maxmind.geoip2.DatabaseReader;
 import java.net.InetAddress;
@@ -39,7 +41,7 @@ import java.util.Map;
 import org.springframework.core.env.Environment;
 
 @Service
-public class UserService extends ApplicationConsts {
+public class UserService extends UtilityFunctions {
 
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
@@ -71,8 +73,8 @@ public class UserService extends ApplicationConsts {
     @Autowired
     private Environment env;
 
-    public ResponseEntity<CustomResponseStatus> getUsers() {
-        Iterable<User> allUsersInDb = userRepository.findAll();
+    public ResponseEntity<CustomResponseStatus> getUsers(Pageable pageable) {
+        Page<User> allUsersInDb = userRepository.findAll(pageable);
         CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
                 this.SUCCESS,
                 this.SRC, this.timeNow(), allUsersInDb);
@@ -246,7 +248,7 @@ public class UserService extends ApplicationConsts {
         location.setCountry(country);
         location.setUser(user);
         location = userLocationRepository.save(location);
-        final String token = RandomStringGen.randomString(32);
+        final String token = this.randomString(32);
         final NewLocationToken newLocationToken = new NewLocationToken();
         newLocationToken.setToken(token);
         newLocationToken.setUserLocation(location);
