@@ -52,6 +52,7 @@ public class ProductService extends UtilityFunctions {
             newProduct.setImage(product.getImage());
             newProduct.setName(product.getName());
             newProduct.setPrice(product.getPrice());
+            newProduct.setDescription(product.getDescription());
             newProduct.setStock_quantity(product.getStock_quantity());
             productRepository.save(newProduct);
             HttpHeaders responseHeaders = new HttpHeaders();
@@ -119,6 +120,7 @@ public class ProductService extends UtilityFunctions {
                 newProduct.setImage(productRequest.getImage());
                 newProduct.setName(productRequest.getName());
                 newProduct.setPrice(productRequest.getPrice());
+                newProduct.setDescription(productRequest.getDescription());
                 newProduct.setStock_quantity(productRequest.getStock_quantity());
                 productRepository.save(newProduct);
                 productsPids.add(newProduct.getPid());

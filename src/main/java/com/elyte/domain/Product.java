@@ -40,8 +40,13 @@ public class Product extends AuditEntity {
     private String image;
 
     @Column(name = "DETAILS", length = 3000)
-    @NotBlank(message = "product description name is required")
+    @NotBlank(message = "product details name is required")
     private String details;
+
+
+    @Column(name = "DESCRIPTION", length = 3000)
+    @NotBlank(message = "product description name is required")
+    private String description;
 
     @Column(name = "CATEGORY")
     @NotBlank(message = "category name is required")
