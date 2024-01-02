@@ -12,7 +12,7 @@ import com.elyte.domain.Product;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.ProductRepository;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import java.util.Optional;
 import java.net.URI;
 import java.util.List;
@@ -20,27 +20,25 @@ import java.util.ArrayList;
 import com.elyte.domain.request.CreateProductRequest;
 import org.springframework.data.domain.Page;
 
-
-
 @Service
-public class ProductService {
+public class ProductService extends UtilityFunctions {
 
     @Autowired
     private ProductRepository productRepository;
 
     public ResponseEntity<CustomResponseStatus> getAllProducts(Pageable pageable) {
         Page<Product> allProducts = productRepository.findAll(pageable);
-        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, ApplicationConsts.timeNow(), allProducts);
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS,
+                this.SRC, this.timeNow(), allProducts);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
-     public ResponseEntity<CustomResponseStatus> findProductsByPrice(double price,Pageable pageable) {
-        List<Product> productsByprice = productRepository.findAllByPrice(price,pageable);
-        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, ApplicationConsts.timeNow(), productsByprice );
+    public ResponseEntity<CustomResponseStatus> findProductsByPrice(double price, Pageable pageable) {
+        List<Product> productsByprice = productRepository.findAllByPrice(price, pageable);
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS,
+                this.SRC, this.timeNow(), productsByprice);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
@@ -54,6 +52,7 @@ public class ProductService {
             newProduct.setImage(product.getImage());
             newProduct.setName(product.getName());
             newProduct.setPrice(product.getPrice());
+            newProduct.setDescription(product.getDescription());
             newProduct.setStock_quantity(product.getStock_quantity());
             productRepository.save(newProduct);
             HttpHeaders responseHeaders = new HttpHeaders();
@@ -61,9 +60,9 @@ public class ProductService {
                     .buildAndExpand(newProduct.getPid()).toUri();
             responseHeaders.setLocation(newUserUri);
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(),
-                    ApplicationConsts.I200_MSG,
-                    ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), newProduct.getPid());
+                    this.I200_MSG,
+                    this.SUCCESS,
+                    this.SRC, this.timeNow(), newProduct.getPid());
             return new ResponseEntity<>(resp, responseHeaders, HttpStatus.CREATED);
         }
 
@@ -77,9 +76,9 @@ public class ProductService {
 
             throw new ResourceNotFoundException("Product with id :" + pid + " not found!");
         }
-        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, ApplicationConsts.timeNow(), product.get());
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS,
+                this.SRC, this.timeNow(), product.get());
         return new ResponseEntity<>(resp, HttpStatus.OK);
 
     }
@@ -92,9 +91,9 @@ public class ProductService {
 
             productRepository.deleteById(pid);
             CustomResponseStatus status = new CustomResponseStatus(HttpStatus.NO_CONTENT.value(),
-                    ApplicationConsts.I200_MSG,
-                    ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), null);
+                    this.I200_MSG,
+                    this.SUCCESS,
+                    this.SRC, this.timeNow(), null);
             return new ResponseEntity<>(status, HttpStatus.OK);
 
         }
@@ -107,12 +106,13 @@ public class ProductService {
         if (!createProducts.isEmpty()) {
 
             List<String> productsPids = new ArrayList<>();
-            
+
             for (CreateProductRequest productRequest : createProducts) {
 
-                 boolean prodExist = productRepository.existsByName(productRequest.getName());
+                boolean prodExist = productRepository.existsByName(productRequest.getName());
 
-                if(prodExist) continue;
+                if (prodExist)
+                    continue;
 
                 Product newProduct = new Product();
                 newProduct.setCategory(productRequest.getCategory());
@@ -120,15 +120,16 @@ public class ProductService {
                 newProduct.setImage(productRequest.getImage());
                 newProduct.setName(productRequest.getName());
                 newProduct.setPrice(productRequest.getPrice());
+                newProduct.setDescription(productRequest.getDescription());
                 newProduct.setStock_quantity(productRequest.getStock_quantity());
                 productRepository.save(newProduct);
                 productsPids.add(newProduct.getPid());
 
             }
 
-            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                    ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), productsPids);
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                    this.SUCCESS,
+                    this.SRC, this.timeNow(), productsPids);
             return new ResponseEntity<>(resp, HttpStatus.OK);
         }
 
@@ -142,12 +143,10 @@ public class ProductService {
             throw new ResourceNotFoundException("Product with id :" + pid + " not found!");
         }
         product = productRepository.save(product);
-        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, ApplicationConsts.timeNow(), product);
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS,
+                this.SRC, this.timeNow(), product);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
-
-    
 
 }

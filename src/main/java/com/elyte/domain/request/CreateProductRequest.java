@@ -23,8 +23,11 @@ public class CreateProductRequest implements Serializable{
     @NotBlank(message = "image name is required")
     private String image;
 
-    @NotBlank(message = "product description name is required")
+    @NotBlank(message = "product details name is required")
     private String details;
+
+    @NotBlank(message = "product description name is required")
+    private String description;
 
     @NotBlank(message = "category name is required")
     private String category;

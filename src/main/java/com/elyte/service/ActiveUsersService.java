@@ -7,16 +7,14 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.CacheLoader;
-import com.elyte.utils.RandomStringGen;
+import com.elyte.utils.UtilityFunctions;
 import com.elyte.utils.CheckNullEmptyBlank;
 import com.elyte.security.JwtTokenUtil;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 @Service
-public class ActiveUsersService {
+public class ActiveUsersService extends UtilityFunctions{
 
     private LoadingCache<String, String> loggedUsersCache;
 
@@ -41,9 +39,8 @@ public class ActiveUsersService {
 
         }
 
-        Date expirDate = RandomStringGen.calculateExpiryDate(JwtTokenUtil.JWT_TOKEN_VALIDITY);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        loggedInUntil = dateFormat.format(expirDate);
+        Date expirDate = this.calculateExpiryDate(JwtTokenUtil.JWT_TOKEN_VALIDITY);
+        loggedInUntil = this.dateFormat.format(expirDate);
         loggedUsersCache.put(username, loggedInUntil);
 
     }

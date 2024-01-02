@@ -3,10 +3,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import com.elyte.domain.User;
 import java.util.List;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 
 
-public interface UserRepository extends CrudRepository<User, String> {
+
+public interface UserRepository extends PagingAndSortingRepository<User, String>,CrudRepository<User, String> {
     
     User findByUsername(String username);
 

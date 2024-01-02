@@ -11,13 +11,13 @@ import com.elyte.repository.ReviewRepository;
 
 import java.util.List;
 import java.util.Optional;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ReviewService {
+public class ReviewService extends UtilityFunctions {
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -38,9 +38,9 @@ public class ReviewService {
             newReview.setProduct(product.get());
             reviewRepository.save(newReview);
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(),
-                    ApplicationConsts.I200_MSG,
-                    ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), newReview.getRid());
+                    this.I200_MSG,
+                    this.SUCCESS,
+                    this.SRC, this.timeNow(), newReview.getRid());
             return new ResponseEntity<>(resp, HttpStatus.CREATED);
         }
         throw new ResourceNotFoundException("Product with id :" + review.getPid() + " not found!");
@@ -49,9 +49,9 @@ public class ReviewService {
 
     public ResponseEntity<CustomResponseStatus> getAllReviews() {
         Iterable<Review> allProductsReviews = reviewRepository.findAll();
-        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, ApplicationConsts.timeNow(), allProductsReviews);
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS,
+                this.SRC, this.timeNow(), allProductsReviews);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
@@ -59,9 +59,9 @@ public class ReviewService {
         Optional<Product> product = productRepository.findById(pid);
         if (product.isPresent()) {
             List<Review> reviews = reviewRepository.findByProductPid(pid);
-            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                    ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), reviews);
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                    this.SUCCESS,
+                    this.SRC, this.timeNow(), reviews);
             return new ResponseEntity<>(resp, HttpStatus.OK);
 
         }

@@ -31,19 +31,21 @@ import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.queue.RabbitMqHandler;
 import com.elyte.repository.BookingRepository;
 import com.elyte.repository.UserRepository;
-import com.elyte.utils.ApplicationConsts;
-import com.google.gson.Gson;
+import com.elyte.utils.UtilityFunctions;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 
 import java.util.Map;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
 @Service
-public class BookingService {
+public class BookingService extends UtilityFunctions{
 
     @Autowired
     private BookingRepository bookingRepository;
@@ -73,9 +75,9 @@ public class BookingService {
         Optional<User> user = userRepository.findById(userid);
         if (user.isPresent()) {
             List<Booking> bookings = bookingRepository.findByUserUserid(userid);
-            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                    ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), bookings);
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                    this.SUCCESS,
+                    this.SRC, this.timeNow(), bookings);
             return new ResponseEntity<>(resp, HttpStatus.OK);
 
         }
@@ -94,19 +96,19 @@ public class BookingService {
             Job job = rabbitMqHandler.createJob(JobType.BOOKING);
             BookingJob bookingJob = new BookingJob(createBooking.getUserid(), createBooking.getTotalPrice(),
                     createBooking.getCart(), createBooking.getPaymentDetails().getShippingAddress());
-            job.setJobRequest(ApplicationConsts.convertObjectToGson(bookingJob));
+            job.setJobRequest(this.convertObjectToJson(bookingJob));
             job.setUser(user.get());
             Map<String, Object> result = rabbitMqHandler.jobWithOneTask(job, bookingRoutingkey);
             if (Boolean.TRUE.equals(result.get("success"))) {
                 CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(),
-                        ApplicationConsts.I200_MSG,
-                        ApplicationConsts.SUCCESS,
-                        ApplicationConsts.SRC, ApplicationConsts.timeNow(), result.get("message"));
+                        this.I200_MSG,
+                        this.SUCCESS,
+                        this.SRC, this.timeNow(), result.get("message"));
                 return new ResponseEntity<>(resp, HttpStatus.CREATED);
             }
             CustomResponseStatus status = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(),
-                    (String) result.get("message"), ApplicationConsts.FAILURE, ApplicationConsts.SRC,
-                    ApplicationConsts.timeNow(), null);
+                    (String) result.get("message"), this.FAILURE, this.SRC,
+                    this.timeNow(), null);
             return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
         throw new ResourceNotFoundException("[+] REQUEST FROM UNKNOWN USER WITH ID :" + createBooking.getUserid());
@@ -136,7 +138,7 @@ public class BookingService {
 
     }
 
-    public ResponseEntity<CustomResponseStatus> bookingResultByJid(@Valid String jid) {
+    public ResponseEntity<CustomResponseStatus> bookingResultByJid(@Valid String jid) throws JsonParseException, JsonMappingException, IOException {
         Job job = rabbitMqHandler.getJob(jid);
         if (job.getJobType() != JobType.BOOKING)
             throw new ResourceNotFoundException("Wrong job type");
@@ -145,9 +147,9 @@ public class BookingService {
         if (resultIsAvailable) {
             JobResponse jobResponse = rabbitMqHandler.createJobResponse(job, results.getLastTaskEndedAt());
             Map<String, String> bookingResult = createBookingResult(results.getTasks());
-            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                    ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(),
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                    this.SUCCESS,
+                    this.SRC, this.timeNow(),
                     Map.of("job", jobResponse, "tasks", bookingResult));
             return new ResponseEntity<>(resp, HttpStatus.OK);
 
@@ -155,11 +157,10 @@ public class BookingService {
         throw new ResourceNotFoundException("Result from job is not available.");
     }
 
-    public Map<String, String> createBookingResult(List<Task> tasks) {
+    public Map<String, String> createBookingResult(List<Task> tasks) throws JsonParseException, JsonMappingException, IOException {
         Map<String, String> taskResults = new HashMap<String, String>();
-        Gson gson = new Gson();
         for (Task task : tasks) {
-            taskResults.put("BOOKING ID", gson.fromJson(task.getResult(), String.class));
+            taskResults.put("BOOKING ID", this.mapper.readValue(task.getResult(), String.class));
 
         }
         return taskResults;

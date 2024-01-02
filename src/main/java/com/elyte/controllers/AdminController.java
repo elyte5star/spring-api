@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +28,7 @@ import com.elyte.queue.RabbitMqHandler;
 import com.elyte.service.ProductService;
 import com.elyte.service.ReviewService;
 import com.elyte.service.UserService;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import com.elyte.domain.Task;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -36,7 +37,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/admin")
-public class AdminController {
+public class AdminController extends UtilityFunctions{
 
     @Autowired
     private UserService userService;
@@ -99,11 +100,11 @@ public class AdminController {
 
     }
 
-    @GetMapping("/users/get-all")
+    @GetMapping("/users/getAll")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Get all users", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> getAllUsers() {
-        return userService.getUsers();
+    public ResponseEntity<CustomResponseStatus> getAllUsers(Pageable pageable) {
+        return userService.getUsers(pageable);
     }
 
     @GetMapping("/reviews/all-reviews")
@@ -161,8 +162,8 @@ public class AdminController {
     public ResponseEntity<CustomResponseStatus> getTasksByJobId(@PathVariable @Valid String jid)
             throws ResourceNotFoundException {
         List<Task> tasks = rabbitMqHandler.getTasksByJobId(jid);
-        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS, ApplicationConsts.SRC, ApplicationConsts.timeNow(), tasks);
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS, this.SRC, this.timeNow(), tasks);
         return new ResponseEntity<>(status, HttpStatus.OK);
 
     }
@@ -173,8 +174,8 @@ public class AdminController {
     public ResponseEntity<CustomResponseStatus> findJobById(@PathVariable @Valid String jid)
             throws ResourceNotFoundException {
         JobResponse jobResponse = rabbitMqHandler.getJobResponse(jid);
-        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS, ApplicationConsts.SRC, ApplicationConsts.timeNow(), jobResponse);
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS, this.SRC, this.timeNow(), jobResponse);
         return new ResponseEntity<>(status, HttpStatus.OK);
 
     }
@@ -185,8 +186,8 @@ public class AdminController {
     public ResponseEntity<CustomResponseStatus> findTaskById(@PathVariable @Valid String tid)
             throws ResourceNotFoundException {
         Task task = rabbitMqHandler.getTask(tid);
-        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS, ApplicationConsts.SRC, ApplicationConsts.timeNow(), task);
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS, this.SRC, this.timeNow(), task);
         return new ResponseEntity<>(status, HttpStatus.OK);
 
     }
@@ -197,8 +198,8 @@ public class AdminController {
     public ResponseEntity<CustomResponseStatus> getJobsByuserId(@PathVariable @Valid String userid)
             throws ResourceNotFoundException {
         List<JobResponse> jobResponses = rabbitMqHandler.getJobsByUserid(userid);
-        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS, ApplicationConsts.SRC, ApplicationConsts.timeNow(), jobResponses);
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS, this.SRC, this.timeNow(), jobResponses);
         return new ResponseEntity<>(status, HttpStatus.OK);
 
     }

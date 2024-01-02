@@ -18,18 +18,20 @@ import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.NewLocationTokenRepository;
 import com.elyte.repository.UserLocationRepository;
 import com.elyte.repository.UserRepository;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
 import com.elyte.domain.request.ValidateOtpRequest;
 import java.util.Optional;
 import com.elyte.utils.CheckNullEmptyBlank;
-import com.elyte.utils.RandomStringGen;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.elyte.utils.CheckIfUserExist;
 import com.maxmind.geoip2.DatabaseReader;
 import java.net.InetAddress;
@@ -39,7 +41,7 @@ import java.util.Map;
 import org.springframework.core.env.Environment;
 
 @Service
-public class UserService {
+public class UserService extends UtilityFunctions {
 
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
@@ -71,11 +73,11 @@ public class UserService {
     @Autowired
     private Environment env;
 
-    public ResponseEntity<CustomResponseStatus> getUsers() {
-        Iterable<User> allUsersInDb = userRepository.findAll();
-        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, ApplicationConsts.timeNow(), allUsersInDb);
+    public ResponseEntity<CustomResponseStatus> getUsers(Pageable pageable) {
+        Page<User> allUsersInDb = userRepository.findAll(pageable);
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS,
+                this.SRC, this.timeNow(), allUsersInDb);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
@@ -96,15 +98,14 @@ public class UserService {
 
     }
 
-   
     public ResponseEntity<CustomResponseStatus> userById(String userid) throws ResourceNotFoundException {
         User user = userRepository.findByUserid(userid);
         if (user == null) {
             throw new ResourceNotFoundException("User with id :" + userid + " not found!");
         }
-        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, ApplicationConsts.timeNow(), user);
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS,
+                this.SRC, this.timeNow(), user);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
@@ -143,9 +144,9 @@ public class UserService {
         if (usersList.isEmpty()) {
             userInDb = userRepository.save(userInDb);
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.NO_CONTENT.value(),
-                    ApplicationConsts.I204_MSG,
-                    ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), userInDb);
+                    this.I204_MSG,
+                    this.SUCCESS,
+                    this.SRC, this.timeNow(), userInDb);
             return new ResponseEntity<>(resp, HttpStatus.OK);
         }
         throw new DataIntegrityViolationException("A USER WITH THE DETAILS EXIST");
@@ -158,16 +159,16 @@ public class UserService {
             try {
                 userRepository.deleteById(userid);
                 CustomResponseStatus status = new CustomResponseStatus(HttpStatus.NO_CONTENT.value(),
-                        ApplicationConsts.I200_MSG,
-                        ApplicationConsts.SUCCESS,
-                        ApplicationConsts.SRC, ApplicationConsts.timeNow(), null);
+                        this.I200_MSG,
+                        this.SUCCESS,
+                        this.SRC, this.timeNow(), null);
                 return new ResponseEntity<>(status, HttpStatus.OK);
 
             } catch (Exception e) {
                 CustomResponseStatus status = new CustomResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        ApplicationConsts.E500_MSG,
-                        ApplicationConsts.FAILURE,
-                        e.getClass().getName(), ApplicationConsts.timeNow(), null);
+                        this.E500_MSG,
+                        this.FAILURE,
+                        e.getClass().getName(), this.timeNow(), null);
                 return new ResponseEntity<>(status, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
@@ -182,9 +183,9 @@ public class UserService {
         if ("NotFound".equals(result)) {
             throw new ResourceNotFoundException("User with email :" + email + " not found!");
         }
-        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, ApplicationConsts.timeNow(), result);
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS,
+                this.SRC, this.timeNow(), result);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
@@ -192,15 +193,15 @@ public class UserService {
             throws ResourceNotFoundException {
         final String result = passowrdResetService.validatePasswordResetToken(encryptedToken);
         if (result == null) {
-            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                    ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), "Reset Token Validated!");
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                    this.SUCCESS,
+                    this.SRC, this.timeNow(), "Reset Token Validated!");
             return new ResponseEntity<>(resp, HttpStatus.OK);
 
         } else if ("expired".equals(result)) {
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.FORBIDDEN.value(),
-                    ApplicationConsts.E403_SMTP_MSG,
-                    ApplicationConsts.FAILURE, ApplicationConsts.SRC, ApplicationConsts.timeNow(), null);
+                    this.E403_SMTP_MSG,
+                    this.FAILURE, this.SRC, this.timeNow(), null);
             return new ResponseEntity<>(resp, HttpStatus.FORBIDDEN);
 
         } else {
@@ -247,7 +248,7 @@ public class UserService {
         location.setCountry(country);
         location.setUser(user);
         location = userLocationRepository.save(location);
-        final String token = RandomStringGen.randomString(32);
+        final String token = this.randomString(32);
         final NewLocationToken newLocationToken = new NewLocationToken();
         newLocationToken.setToken(token);
         newLocationToken.setUserLocation(location);
@@ -260,9 +261,9 @@ public class UserService {
         if (result == null) {
             throw new ResourceNotFoundException("Invalid Login Location!");
         }
-        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG_LOC,
-                ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, ApplicationConsts.timeNow(), result);
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG_LOC,
+                this.SUCCESS,
+                this.SRC, this.timeNow(), result);
         return new ResponseEntity<>(resp, HttpStatus.OK);
 
     }
@@ -287,9 +288,9 @@ public class UserService {
             throw new ResourceNotFoundException("User with username :" + username + " not found!");
         }
         Otp otp = otpService.generateOtp(locale, user);
-        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, ApplicationConsts.timeNow(),
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(), this.I200_MSG,
+                this.SUCCESS,
+                this.SRC, this.timeNow(),
                 Map.of("userid", user.getUserid(), "otp", otp.getOtpString()));
         return new ResponseEntity<>(resp, HttpStatus.CREATED);
 
@@ -299,24 +300,24 @@ public class UserService {
         String status = otpService.verifyOtp(otp.getEmail(), otp.getOtpString());
         if ("valid".equals(status)) {
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.ACCEPTED.value(),
-                    ApplicationConsts.I200_MSG,
-                    ApplicationConsts.SUCCESS,
-                    ApplicationConsts.SRC, ApplicationConsts.timeNow(), "Account verified!");
+                    this.I200_MSG,
+                    this.SUCCESS,
+                    this.SRC, this.timeNow(), "Account verified!");
             return new ResponseEntity<>(resp, HttpStatus.ACCEPTED);
         } else if ("expired".equals(status)) {
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.FORBIDDEN.value(),
-                    ApplicationConsts.E403_SMTP_MSG,
-                    ApplicationConsts.FAILURE, ApplicationConsts.SRC, ApplicationConsts.timeNow(), null);
+                    this.E403_SMTP_MSG,
+                    this.FAILURE, this.SRC, this.timeNow(), null);
             return new ResponseEntity<>(resp, HttpStatus.FORBIDDEN);
         } else if ("invalid".equals(status)) {
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.UNAUTHORIZED.value(),
-                    ApplicationConsts.E401_SMTP_MSG,
-                    ApplicationConsts.FAILURE, ApplicationConsts.SRC, ApplicationConsts.timeNow(), null);
+                    this.E401_SMTP_MSG,
+                    this.FAILURE, this.SRC, this.timeNow(), null);
             return new ResponseEntity<>(resp, HttpStatus.UNAUTHORIZED);
         } else {
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.GONE.value(),
-                    ApplicationConsts.E410_SMTP_MSG,
-                    ApplicationConsts.FAILURE, ApplicationConsts.SRC, ApplicationConsts.timeNow(),
+                    this.E410_SMTP_MSG,
+                    this.FAILURE, this.SRC, this.timeNow(),
                     "User already verified!");
             return new ResponseEntity<>(resp, HttpStatus.GONE);
         }
@@ -324,9 +325,9 @@ public class UserService {
     }
 
     public ResponseEntity<CustomResponseStatus> getLoggedUsers() {
-        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, ApplicationConsts.timeNow(), activeUsers.getActiveUsers());
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS,
+                this.SRC, this.timeNow(), activeUsers.getActiveUsers());
         return new ResponseEntity<>(resp, HttpStatus.OK);
 
     }
@@ -336,9 +337,9 @@ public class UserService {
         if (user == null) {
             throw new ResourceNotFoundException("User with username : " + username + " not found!");
         }
-        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), ApplicationConsts.I200_MSG,
-                ApplicationConsts.SUCCESS,
-                ApplicationConsts.SRC, ApplicationConsts.timeNow(), activeUsers.isUserActive(username)?"User online":"User is offline");
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS,
+                this.SRC, this.timeNow(), activeUsers.isUserActive(username) ? "User online" : "User is offline");
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 

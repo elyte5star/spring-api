@@ -23,12 +23,12 @@ import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.JobRepository;
 import com.elyte.repository.TaskRepository;
 import com.elyte.repository.UserRepository;
-import com.elyte.utils.ApplicationConsts;
+import com.elyte.utils.UtilityFunctions;
 
 import org.springframework.stereotype.Service;
 
 @Service
-public class RabbitMqHandler {
+public class RabbitMqHandler extends UtilityFunctions{
 
     @Autowired
     private JobRepository jobRepository;
@@ -50,7 +50,7 @@ public class RabbitMqHandler {
     public Job createJob(JobType jobType) throws Exception {
         Job job = new Job();
         job.setJobType(jobType);
-        job.setCreated(ApplicationConsts.timeNow());
+        job.setCreated(this.timeNow());
         job.setJobStatus(new Status(State.PENDING, false, false));
         return job;
     }
@@ -58,7 +58,7 @@ public class RabbitMqHandler {
     public Map<String, Object> jobWithOneTask(Job job, String routingkey) throws Exception {
         Task task = new Task();
         Status jobStatus = new Status(State.RECEIVED, false, false);
-        task.setCreated(ApplicationConsts.timeNow());
+        task.setCreated(this.timeNow());
         task.setTaskStatus(jobStatus);
         task.setJob(job);
         return addJobAndTasksToDbAndQueue(job, List.of(task), List.of(new QueueItem(job, task)), routingkey);
@@ -188,7 +188,7 @@ public class RabbitMqHandler {
 
     public JobResponse createJobResponse(Job job, String endedAt) {
         return new JobResponse(job.getUser().getUserid(), job.getCreated(), endedAt,
-                ApplicationConsts.diff(job.getCreated(), endedAt), job.getJid(), job.getJobStatus());
+                this.diff(job.getCreated(), endedAt), job.getJid(), job.getJobStatus());
     }
 
 }
