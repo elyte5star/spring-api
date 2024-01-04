@@ -13,7 +13,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.elyte.domain.Product;
 import com.elyte.domain.User;
 import com.elyte.domain.request.CreateProductRequest;
@@ -66,7 +65,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 			user.setPassword(new BCryptPasswordEncoder().encode("string"));
 			user.setTelephone("40978057");
 			user.setEmail("elyte5star@gmail.com");
-			user.setLastLoginDate("0");
 			user.setAdmin(true);
 			user.setEnabled(true);
 			user.setAccountNonLocked(true);

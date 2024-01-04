@@ -91,6 +91,7 @@ public class JwtAuthSecurityConfig {
         return new DatabaseReader.Builder(resource).build();
     }
 
+    
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {

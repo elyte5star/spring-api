@@ -6,6 +6,7 @@ import java.util.Properties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
@@ -52,6 +55,12 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
     public static final String EMAIL_TEMPLATE_ENCODING = "UTF-8";
 
     private Environment environment;
+
+    // AuthenticationEventPublisher for succesful and failed loggins
+	@Bean
+	AuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+		return new DefaultAuthenticationEventPublisher(applicationEventPublisher);
+	}
 
 
     @Override

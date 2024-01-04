@@ -35,9 +35,6 @@ public class User extends AuditEntity {
     @Column(name = "USER_ID")
     private String userid;
 
-    @Column(name = "LAST_LOGIN_DATE")
-    private String lastLoginDate;
-
     @Column(name = "USERNAME", unique = true)
     @NotBlank(message = "username is required")
     @Size(min = 5)
@@ -66,6 +63,9 @@ public class User extends AuditEntity {
 
     @Column(name = "ENABLED", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean enabled;
+
+    @Column(name = "TWO_FACTOR", columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean isUsing2FA;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
     @OrderBy

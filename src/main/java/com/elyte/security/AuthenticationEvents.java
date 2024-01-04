@@ -1,7 +1,9 @@
 package com.elyte.security;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
@@ -10,13 +12,12 @@ import org.springframework.security.authentication.event.AuthenticationFailureDi
 import org.springframework.security.authentication.event.AuthenticationFailureLockedEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.stereotype.Component;
-
 import com.elyte.domain.User;
 import com.elyte.repository.UserRepository;
 import com.elyte.service.ActiveUsersService;
-
+import com.elyte.service.DeviceService;
 import jakarta.servlet.http.HttpServletRequest;
-
+import org.slf4j.LoggerFactory;
 /*
 We inform the LoginAttemptService of the IP address from where the unsuccessful attempt originated. 
  Here, we get the IP address from the HttpServletRequest bean,
@@ -32,9 +33,15 @@ We inform the LoginAttemptService of the IP address from where the unsuccessful 
 
 @Component
 public class AuthenticationEvents {
-
+    private static final Logger log = LoggerFactory.getLogger(AuthenticationEvents.class);
     @Autowired
     private HttpServletRequest request;
+
+    @Autowired
+    private Environment env;
+
+    @Autowired
+    private DeviceService deviceService;
 
     @Autowired
     private UserRepository userRepository;
@@ -55,6 +62,7 @@ public class AuthenticationEvents {
         } else {
             loginAttemptService.resetFailedAttemptsCache();
         }
+        loginNotification(userDetails, request);
     }
 
     @EventListener
@@ -84,7 +92,7 @@ public class AuthenticationEvents {
 
         } else if (events instanceof AuthenticationFailureLockedEvent) {
 
-            throw new LockedException("Your account has been locked due to 5 failed attempts."
+            throw new LockedException("Your account has been locked due to 10 failed attempts."
                     + " It will be unlocked after 24 hours.");
         }
 
@@ -105,4 +113,21 @@ public class AuthenticationEvents {
         return xfHeader.split(",")[0];
 
     }
+
+    private void loginNotification(UserPrincipal userDetails, HttpServletRequest request) {
+        try {
+            if (isGeoIpLibEnabled()) {
+                deviceService.verifyDevice(userDetails.getUser(), request);
+            }
+        } catch (Exception e) {
+            log.error("[x] An error occurred while verifying device or location", e);
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private boolean isGeoIpLibEnabled() {
+        return Boolean.parseBoolean(env.getProperty("geo.ip.lib.enabled"));
+    }
+
 }

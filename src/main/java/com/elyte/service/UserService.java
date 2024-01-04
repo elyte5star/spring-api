@@ -89,7 +89,6 @@ public class UserService extends UtilityFunctions {
             newUser.setPassword(new BCryptPasswordEncoder().encode(createUserRequest.getPassword()));
             newUser.setTelephone(createUserRequest.getTelephone());
             newUser.setEmail(createUserRequest.getEmail());
-            newUser.setLastLoginDate("0");
             newUser = userRepository.save(newUser);
             return sendOtp(newUser.getUsername(), locale);
         }
