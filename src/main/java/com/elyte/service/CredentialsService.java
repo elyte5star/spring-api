@@ -50,7 +50,6 @@ public class CredentialsService extends UtilityFunctions implements UserDetailsS
         }
 
         user.setUserid(user.getUserid());
-        user.setLastLoginDate(this.timeNow());
         userRepository.save(user);
 
         UserPrincipal customUserDetail = new UserPrincipal();

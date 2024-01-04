@@ -34,6 +34,7 @@ dependencies {
 	implementation("org.wiremock:wiremock:3.3.1")
 	implementation("org.javatuples:javatuples:1.2")
 	implementation("com.maxmind.db:maxmind-db:3.1.0")
+	implementation("com.github.ua-parser:uap-java:1.6.1")
 	implementation("com.jcabi:jcabi-matchers:1.7.0")
 	implementation("org.junit.jupiter:junit-jupiter:5.10.1")
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
