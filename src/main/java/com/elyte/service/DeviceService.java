@@ -69,6 +69,8 @@ public class DeviceService extends UtilityFunctions {
         } else {
             clientIp = request.getRemoteAddr();
         }
+        // return "128.101.101.101"; // for testing Richfield,United States
+        // return "41.238.0.198"; // for testing Giza, Egypt
 
         return clientIp;
     }
@@ -79,7 +81,7 @@ public class DeviceService extends UtilityFunctions {
 
     private String getIpLocation(String ip) throws IOException, GeoIp2Exception {
         String location = UNKNOWN;
-        InetAddress ipAddress = InetAddress.getByName("128.101.101.101");
+        InetAddress ipAddress = InetAddress.getByName(ip);
 
         CityResponse cityResponse = databaseReader.city(ipAddress);
         if (Objects.nonNull(cityResponse) &&

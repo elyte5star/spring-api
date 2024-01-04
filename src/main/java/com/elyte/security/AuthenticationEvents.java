@@ -62,7 +62,7 @@ public class AuthenticationEvents {
         } else {
             loginAttemptService.resetFailedAttemptsCache();
         }
-        loginNotification(userDetails, request);
+        //loginNotification(userDetails, request);
     }
 
     @EventListener
