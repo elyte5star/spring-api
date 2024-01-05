@@ -81,7 +81,7 @@ public class UserService extends UtilityFunctions {
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
-    public ResponseEntity<CustomResponseStatus> addUser(CreateUserRequest createUserRequest, Locale locale)
+    public ResponseEntity<CustomResponseStatus> createUser(CreateUserRequest createUserRequest, Locale locale)
             throws DataIntegrityViolationException, MessagingException {
         if (!CheckIfUserExist.isExisting(createUserRequest, userRepository)) {
             User newUser = new User();

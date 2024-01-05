@@ -51,7 +51,7 @@ public class UserController {
     @Operation(summary = "Create a user")
     public ResponseEntity<CustomResponseStatus> createUser(@RequestBody @Valid CreateUserRequest createUserRequest,
             final Locale locale) throws DataIntegrityViolationException, MessagingException {
-        return userService.addUser(createUserRequest, locale);
+        return userService.createUser(createUserRequest, locale);
     }
 
     @DeleteMapping("/{userid}")
