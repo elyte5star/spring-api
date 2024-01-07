@@ -13,13 +13,18 @@ import java.time.Duration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 @Data
 public class UtilityFunctions {
+
+    @Autowired
+    private HttpServletRequest request;
 
     public static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
@@ -57,11 +62,15 @@ public class UtilityFunctions {
             +
             "\n\nRegards,\nTeam ELYTE.\n\n\nThis is system generated mail. Please do not reply to this.";
 
-    public final String VERIFY_USER_EMAIL_TEMPLATE_NAME = "html/verify-user";
+    public final String VERIFY_USER_EMAIL_TEMPLATE = "html/verify-user";
+
+    public final String ACCOUNT_CONFIRMATION_TEMPLATE = "html/verify-user";
+
+    public final String UNUSUAL_LOCATION_LOGIN_TEMPLATE = "html/unusual-location";
 
     public final String RESET_USER_PASSWORD = "html/reset-password";
 
-    public final String EMAIL_WITHATTACHMENT_TEMPLATE_NAME = "html/email-withattachment";
+    public final String EMAIL_WITHATTACHMENT_TEMPLATE = "html/email-withattachment";
 
     public final String EMAIL_TEXT_TEMPLATE_NAME = "text/email-text";
 
@@ -100,6 +109,15 @@ public class UtilityFunctions {
     public String timeNow() {
         LocalDateTime current = LocalDateTime.now();
         return current.format(dtf);
+
+    }
+
+    public String getClientIP() {
+        final String xfHeader = request.getHeader("X-Forwarded-For");
+        if (xfHeader == null || xfHeader.isEmpty() || !xfHeader.contains(request.getRemoteAddr())) {
+            return request.getRemoteAddr();
+        }
+        return xfHeader.split(",")[0];
 
     }
 

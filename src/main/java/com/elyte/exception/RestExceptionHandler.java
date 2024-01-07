@@ -21,6 +21,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.utils.UtilityFunctions;
 import org.springframework.dao.DataIntegrityViolationException;
+
+import jakarta.mail.MessagingException;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -200,6 +202,16 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
                 this.E413_MSG);
         log.error("[+] MaxUploadSizeExceededException --{}", exc.getMessage());
         return new ResponseEntity<>(customStatus, new HttpHeaders(), exc.getStatusCode());
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<?> handleMessagingException(MessagingException exc, HttpServletRequest request,
+            HttpServletResponse response) {
+        CustomResponseStatus customStatus = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(), exc.getMessage(),
+                this.FAILURE, exc.getClass().getName(), this.timeNow(),
+                null);
+        log.error("[x] MessagingExceptionException ", exc.getMessage());
+        return new ResponseEntity<>(customStatus, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({ MailAuthenticationException.class })

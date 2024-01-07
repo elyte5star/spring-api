@@ -1,15 +1,15 @@
 package com.elyte.domain.request;
 import lombok.NoArgsConstructor;
-
 import java.io.Serializable;
-
+import java.util.Map;
+import com.elyte.domain.enums.EmailType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 
-@AllArgsConstructor()
+@AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class EmailAlert  implements Serializable{
@@ -25,6 +25,8 @@ public class EmailAlert  implements Serializable{
     @NotBlank(message = "subject is required")
     private String subject;
 
+    private EmailType emailType;
     
+    private Map<String,Object> data;
     
 }

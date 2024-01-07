@@ -88,7 +88,7 @@ public class AdminController extends UtilityFunctions{
     @Operation(summary = "Create a user", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CustomResponseStatus> createUser(@RequestBody @Valid CreateUserRequest createUserRequest,
             final Locale locale) throws DataIntegrityViolationException, MessagingException {
-        return userService.addUser(createUserRequest, locale);
+        return userService.createUser(createUserRequest, locale);
     }
 
     @DeleteMapping("/users/delete/{userid}")
