@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.elyte.domain.User;
 import com.elyte.repository.UserRepository;
-import com.elyte.service.CredentialsService;
+
 import java.io.IOException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;

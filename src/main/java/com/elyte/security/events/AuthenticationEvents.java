@@ -1,4 +1,4 @@
-package com.elyte.security;
+package com.elyte.security.events;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +14,12 @@ import org.springframework.security.authentication.event.AuthenticationSuccessEv
 import org.springframework.stereotype.Component;
 import com.elyte.domain.User;
 import com.elyte.repository.UserRepository;
+import com.elyte.security.LoginAttemptService;
+import com.elyte.security.UserPrincipal;
 import com.elyte.service.ActiveUsersService;
 import com.elyte.service.DeviceService;
+import com.elyte.utils.UtilityFunctions;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.LoggerFactory;
 /*
@@ -32,7 +36,7 @@ We inform the LoginAttemptService of the IP address from where the unsuccessful 
 */
 
 @Component
-public class AuthenticationEvents {
+public class AuthenticationEvents extends UtilityFunctions{
     private static final Logger log = LoggerFactory.getLogger(AuthenticationEvents.class);
     @Autowired
     private HttpServletRequest request;
@@ -87,7 +91,7 @@ public class AuthenticationEvents {
                 }
 
             } else {
-                loginAttemptService.increaseUnknownUserFailedAttemptsByIP(getClientIP());
+                loginAttemptService.increaseUnknownUserFailedAttemptsByIP(this.getClientIP());
             }
 
         } else if (events instanceof AuthenticationFailureLockedEvent) {
@@ -105,14 +109,7 @@ public class AuthenticationEvents {
         // ...Other failure events....
     }
 
-    private String getClientIP() {
-        final String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null || xfHeader.isEmpty() || !xfHeader.contains(request.getRemoteAddr())) {
-            return request.getRemoteAddr();
-        }
-        return xfHeader.split(",")[0];
-
-    }
+    
 
     private void loginNotification(UserPrincipal userDetails, HttpServletRequest request) {
         try {

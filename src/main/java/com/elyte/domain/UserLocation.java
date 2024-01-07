@@ -16,11 +16,9 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -46,6 +44,16 @@ public class UserLocation extends AuditEntity{
     @Column(name = "ENABLED", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean enabled;
 
+    public UserLocation(String country, User user) {
+        super();
+        this.country = country;
+        this.user = user;
+        this.enabled = false;
+    }
+
+    public UserLocation() {
+        this.enabled = false;
+    }
 
     
 }

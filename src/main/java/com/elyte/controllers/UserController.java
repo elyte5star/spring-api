@@ -1,5 +1,4 @@
 package com.elyte.controllers;
-
 import com.elyte.domain.request.CreateUserRequest;
 import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
+import com.elyte.domain.request.PasswordUpdate;
 import com.elyte.domain.request.ValidateOtpRequest;
 
 @RestController
@@ -66,7 +66,7 @@ public class UserController {
     @Operation(summary = "Send registration confirmation OTP")
     public ResponseEntity<CustomResponseStatus> sendOtp(@RequestParam("username") @RequestBody @Valid String username,
             final Locale locale)
-            throws MessagingException, ResourceNotFoundException {
+            throws ResourceNotFoundException {
         return userService.sendOtp(username, locale);
 
     }
@@ -76,6 +76,13 @@ public class UserController {
     public ResponseEntity<CustomResponseStatus> otpValidator(@RequestBody @Valid ValidateOtpRequest otp)
             throws Exception {
         return userService.validateOtp(otp);
+
+    }
+
+    @PostMapping(value = "/updatePassword")
+    @Operation(summary = "Change user password", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> changeUserpassword(@RequestBody @Valid PasswordUpdate passwordUpdate) {
+        return userService.handlePassWordChange(passwordUpdate);
 
     }
 
@@ -103,5 +110,4 @@ public class UserController {
 
     }
 
-    
 }

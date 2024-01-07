@@ -4,9 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.elyte.domain.NewLocationToken;
@@ -14,13 +15,17 @@ import com.elyte.domain.Otp;
 import com.elyte.domain.User;
 import com.elyte.domain.UserLocation;
 import com.elyte.domain.request.CreateUserRequest;
+import com.elyte.exception.InvalidOldPasswordException;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.NewLocationTokenRepository;
 import com.elyte.repository.UserLocationRepository;
 import com.elyte.repository.UserRepository;
+import com.elyte.security.UserPrincipal;
+import com.elyte.security.events.RegistrationCompleteEvent;
 import com.elyte.utils.UtilityFunctions;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
+import com.elyte.domain.request.PasswordUpdate;
 import com.elyte.domain.request.ValidateOtpRequest;
 import java.util.Optional;
 import com.elyte.utils.CheckNullEmptyBlank;
@@ -35,6 +40,7 @@ import org.springframework.data.domain.Pageable;
 import com.elyte.utils.CheckIfUserExist;
 import com.maxmind.geoip2.DatabaseReader;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -45,6 +51,7 @@ public class UserService extends UtilityFunctions {
 
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
+    private String[] localHostAddresses = { "0:0:0:0:0:0:0:1", "127.0.1.1", "127.0.0.1" };
     @Autowired
     private UserRepository userRepository;
 
@@ -52,14 +59,17 @@ public class UserService extends UtilityFunctions {
     private UserLocationRepository userLocationRepository;
 
     @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
     private ActiveUsersService activeUsers;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Autowired
     @Qualifier("GeoIPCountry")
     private DatabaseReader databaseReader;
-
-    @Value("${attachment.invoice}")
-    private String attachmentPath;
 
     @Autowired
     private PassowrdResetService passowrdResetService;
@@ -90,7 +100,12 @@ public class UserService extends UtilityFunctions {
             newUser.setTelephone(createUserRequest.getTelephone());
             newUser.setEmail(createUserRequest.getEmail());
             newUser = userRepository.save(newUser);
-            return sendOtp(newUser.getUsername(), locale);
+            eventPublisher.publishEvent(new RegistrationCompleteEvent(newUser, locale, getAppUrl(request)));
+            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(), this.I200_MSG,
+                    this.SUCCESS,
+                    this.SRC, this.timeNow(),
+                    Map.of("userid", newUser.getUserid()));
+            return new ResponseEntity<>(resp, HttpStatus.CREATED);
         }
 
         throw new DataIntegrityViolationException("A USER WITH THE DETAILS EXIST ALREADY");
@@ -210,9 +225,31 @@ public class UserService extends UtilityFunctions {
 
     }
 
-    public void changeUserPassword(final User user, final String password) {
+    private String getAppUrl(HttpServletRequest request) {
+        return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+    }
+
+    private void changeUserPassword(final User user, final String password) {
         user.setPassword(new BCryptPasswordEncoder().encode(password));
         userRepository.save(user);
+    }
+
+    public ResponseEntity<CustomResponseStatus> handlePassWordChange(PasswordUpdate passwordUpdate) {
+        final User user = this.findByUsername(
+                ((UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
+        if (!this.checkValidOldPassword(user, passwordUpdate.getOldPassword()))
+            throw new InvalidOldPasswordException();
+        this.changeUserPassword(user, passwordUpdate.getNewPassword());
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.NO_CONTENT.value(),
+                this.I204_MSG,
+                this.SUCCESS,
+                this.SRC, this.timeNow(), null);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+    }
+
+    public boolean checkValidOldPassword(final User user, final String oldPasswordString) {
+        return new BCryptPasswordEncoder().matches(oldPasswordString, user.getPassword());
+
     }
 
     private boolean isGeoIpLibEnabled() {
@@ -270,7 +307,6 @@ public class UserService extends UtilityFunctions {
     public String isValidNewLocationToken(String token) {
         final NewLocationToken locationToken = newLocationTokenRepository.findByToken(token);
         if (locationToken != null) {
-
             UserLocation userLocation = locationToken.getUserLocation();
             userLocation.setEnabled(true);
             userLocation = userLocationRepository.save(userLocation);
@@ -281,12 +317,12 @@ public class UserService extends UtilityFunctions {
 
     }
 
-    public ResponseEntity<CustomResponseStatus> sendOtp(String username, Locale locale) throws MessagingException {
+    public ResponseEntity<CustomResponseStatus> sendOtp(String username, Locale locale){
         User user = userRepository.findByUsername(username);
         if (user == null) {
             throw new ResourceNotFoundException("User with username :" + username + " not found!");
         }
-        Otp otp = otpService.generateOtp(locale, user);
+        Otp otp = otpService.generateOtp(user,getAppUrl(request),locale);
         CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(), this.I200_MSG,
                 this.SUCCESS,
                 this.SRC, this.timeNow(),
@@ -340,6 +376,38 @@ public class UserService extends UtilityFunctions {
                 this.SUCCESS,
                 this.SRC, this.timeNow(), activeUsers.isUserActive(username) ? "User online" : "User is offline");
         return new ResponseEntity<>(resp, HttpStatus.OK);
+    }
+
+    public void addUserLocation(User user, String ip) {
+        boolean contains = Arrays.stream(localHostAddresses).anyMatch(ip::equals);
+        if (!isGeoIpLibEnabled()) {
+            return;
+            // For local development test, remove this check b4 production.
+        } else if (contains) {
+            UserLocation location = new UserLocation("Norway", user);
+            location.setEnabled(true);
+            userLocationRepository.save(location);
+            return;
+        } else {
+            try {
+                final InetAddress ipAddress = InetAddress.getByName(ip);
+                final String country = databaseReader.country(ipAddress)
+                        .getCountry()
+                        .getName();
+                UserLocation location = new UserLocation(country, user);
+                location.setEnabled(true);
+                userLocationRepository.save(location);
+            } catch (final Exception e) {
+                log.error("[x] An error occurred while verifying login country", e);
+                throw new RuntimeException(e);
+            }
+
+        }
+
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
 }

@@ -1,14 +1,13 @@
-package com.elyte.service;
+package com.elyte.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import com.elyte.domain.User;
 import com.elyte.repository.UserRepository;
-import com.elyte.security.LoginAttemptService;
-import com.elyte.security.UserPrincipal;
 import com.elyte.utils.UtilityFunctions;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,11 +28,9 @@ public class CredentialsService extends UtilityFunctions implements UserDetailsS
     public UserPrincipal loadUserByUsername(String username) throws UsernameNotFoundException {
 
         if (loginAttemptService.isIpBlocked()) {
-
-            throw new RuntimeException("Your IP has been locked due to 5 failed attempts."
+            throw new LockedException("Your IP has been locked due to 5 failed attempts."
                     + " It will be unlocked after 24 hours.");
         }
-
         User user = userRepository.findByUsername(username);
 
         if (user == null) {
@@ -51,7 +48,6 @@ public class CredentialsService extends UtilityFunctions implements UserDetailsS
 
         user.setUserid(user.getUserid());
         userRepository.save(user);
-
         UserPrincipal customUserDetail = new UserPrincipal();
         customUserDetail.setAuthorities(authorities);
         customUserDetail.setUser(user);

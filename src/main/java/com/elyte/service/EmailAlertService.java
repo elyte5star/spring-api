@@ -7,6 +7,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -17,24 +18,23 @@ import jakarta.mail.internet.MimeMessage;
 import org.thymeleaf.TemplateEngine;
 import java.io.File;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
+
 
 @Service
-public class EmailAlertService  extends UtilityFunctions{
+public class EmailAlertService extends UtilityFunctions {
 
     @Autowired
     private JavaMailSender mailSender;
 
+    @Value("${attachment.invoice}")
+    private String attachmentPath;
 
     @Autowired
     private TemplateEngine textTemplateEngine;
 
-
     @Autowired
     private TemplateEngine htmlTemplateEngine;
-
 
     private static final Logger log = LoggerFactory.getLogger(EmailAlertService.class);
 
@@ -43,7 +43,7 @@ public class EmailAlertService  extends UtilityFunctions{
     /*
      * Send plain TEXT mail
      */
-    public void sendTextMail(EmailAlert mailObject, final Locale locale)
+    public void sendTextMail(EmailAlert mailObject, final Locale locale, String template)
             throws MessagingException {
 
         // Prepare the evaluation context
@@ -55,7 +55,7 @@ public class EmailAlertService  extends UtilityFunctions{
         final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
         final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
         message.setSubject("Example plain TEXT email");
-        message.setFrom("thymeleaf@example.com");
+        message.setFrom(NOREPLY_ADDRESS);
         message.setTo(mailObject.getRecipientEmail());
 
         // Create the plain TEXT body using Thymeleaf
@@ -65,10 +65,11 @@ public class EmailAlertService  extends UtilityFunctions{
         // Send email
         this.mailSender.send(mimeMessage);
     }
-     /*
+
+    /*
      * Send String mail
      */
-    public void sendStringMail(EmailAlert mailObject, String messages,final Locale locale) {
+    public void sendStringMail(EmailAlert mailObject, final Locale locale) {
 
         if (this.mailSender == null)
             return;
@@ -78,7 +79,7 @@ public class EmailAlertService  extends UtilityFunctions{
             message.setFrom(NOREPLY_ADDRESS);
             message.setTo(mailObject.getRecipientEmail());
             message.setSubject(mailObject.getSubject());
-            message.setText(messages);    
+            message.setText((String) mailObject.getData().get("text"));
             this.mailSender.send(message);
             log.debug("[+] Mail sent successfully.");
 
@@ -89,7 +90,7 @@ public class EmailAlertService  extends UtilityFunctions{
 
     }
 
-    public void sendMessageWithAttachment(EmailAlert mailObject, String pathToAttachment,
+    private void sendMessageWithAttachment(EmailAlert mailObject, String pathToAttachment,
             final String attachmentContentType, final Locale locale) {
         if (this.mailSender == null)
             return;
@@ -109,8 +110,8 @@ public class EmailAlertService  extends UtilityFunctions{
             helper.setSubject(mailObject.getSubject());
 
             // Create the HTML body using Thymeleaf
-            final String htmlContent = this.htmlTemplateEngine
-                    .process(this.EMAIL_WITHATTACHMENT_TEMPLATE_NAME, ctx);
+            final String htmlContent = htmlTemplateEngine
+                    .process(this.EMAIL_WITHATTACHMENT_TEMPLATE, ctx);
             helper.setText(htmlContent, true /* isHtml */);
 
             // Add the attachment
@@ -127,22 +128,15 @@ public class EmailAlertService  extends UtilityFunctions{
     /*
      * Send HTML mail (simple)
      */
-    public void sendSimpleHtmlMail(EmailAlert mailObject, String otp, int duration, final Locale locale,String template)
+    private void sendSimpleHtmlMail(EmailAlert mailObject, final Locale locale,String template)
             throws MessagingException {
         if (this.mailSender == null)
             return;
-
         // Prepare the evaluation context
         final Context thymeleafContext = new Context(locale);
-
-        Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put("username", mailObject.getRecipientUsername());
-        templateModel.put("otp", otp);
-        templateModel.put("duration", duration);
-        templateModel.put("home", "http://localhost:8001");
-        thymeleafContext.setVariables(templateModel);
+        thymeleafContext.setVariables(mailObject.getData());
         // Create the HTML body using Thymeleaf
-        final String htmlBody = this.htmlTemplateEngine.process(template,thymeleafContext);
+        final String htmlBody = this.htmlTemplateEngine.process(template, thymeleafContext);
 
         sendHtmlMessage(mailObject.getSubject(), mailObject.getRecipientEmail(), htmlBody);
     }
@@ -166,6 +160,36 @@ public class EmailAlertService  extends UtilityFunctions{
             e.printStackTrace();
 
         }
+    }
+
+    public void sendEmailAlert(EmailAlert mailObject, final Locale locale) {
+        try {
+            switch (mailObject.getEmailType()) {
+                case RESET_USER_PASSWORD:
+                    sendSimpleHtmlMail(mailObject,locale,this.RESET_USER_PASSWORD);
+                    break;
+                case NEW_USER_OTP_VERIFICATION:
+                    sendSimpleHtmlMail(mailObject,locale,this.VERIFY_USER_EMAIL_TEMPLATE);
+                    break;
+                case NEW_DEVICE_LOGIN:
+                     sendStringMail(mailObject,locale);
+                    break;
+                case NEW_USER_ACCOUNT_CONFIRMATION:
+                    sendSimpleHtmlMail(mailObject,locale,this.ACCOUNT_CONFIRMATION_TEMPLATE);
+                    break;
+                case UNUSUAL_LOCATION_LOGIN:
+                    sendSimpleHtmlMail(mailObject,locale,this.UNUSUAL_LOCATION_LOGIN_TEMPLATE);
+                    break;
+                 case WITH_ATTACHMENT:
+                    sendMessageWithAttachment(mailObject,attachmentPath,"",locale);
+                    break;
+                default:
+                    throw new MessagingException("UNKNOWN EMAIL ALERT TYPE!");
+            }
+        } catch (MessagingException e) {
+            log.error("[x] Error while sending mail---{}", e.getMessage());
+        }
+
     }
 
 }

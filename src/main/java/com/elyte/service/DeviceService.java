@@ -13,12 +13,15 @@ import java.net.InetAddress;
 import java.util.Objects;
 import com.elyte.domain.DeviceInfo;
 import com.elyte.domain.User;
+import com.elyte.domain.enums.EmailType;
 import com.elyte.domain.request.EmailAlert;
 import com.elyte.repository.DeviceInfoRepository;
 import com.elyte.utils.UtilityFunctions;
 import com.google.common.base.Strings;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.io.IOException;
 
 @Component
@@ -38,6 +41,8 @@ public class DeviceService extends UtilityFunctions {
     @Autowired
     @Qualifier("GeoIPCity")
     private DatabaseReader databaseReader;
+
+    private String[] localHostAddresses = { "0:0:0:0:0:0:0:1", "127.0.1.1", "127.0.0.1" };
 
     public void verifyDevice(User user, HttpServletRequest request) throws IOException, GeoIp2Exception {
         String ip = extractIp(request);
@@ -81,13 +86,14 @@ public class DeviceService extends UtilityFunctions {
 
     private String getIpLocation(String ip) throws IOException, GeoIp2Exception {
         String location = UNKNOWN;
+        boolean contains = Arrays.stream(localHostAddresses).anyMatch(ip::equals);
+        if (contains)
+            return "localhost";
         InetAddress ipAddress = InetAddress.getByName(ip);
-
         CityResponse cityResponse = databaseReader.city(ipAddress);
         if (Objects.nonNull(cityResponse) &&
                 Objects.nonNull(cityResponse.getCity()) &&
                 !Strings.isNullOrEmpty(cityResponse.getCity().getName())) {
-
             location = cityResponse.getCity().getName();
         }
 
@@ -118,14 +124,18 @@ public class DeviceService extends UtilityFunctions {
 
         }
         return null;
-
     }
 
     private void unKnownDeviceLoginNotification(User user, String deviceDetails, String location, String ip,
             String email, Locale locale) {
-        String text = "Location: " + location + " Device details: " + deviceDetails + " Ip Address: " + ip;
-        EmailAlert mailObject = new EmailAlert(user.getEmail(), user.getUsername(), "New Login Notification");
-        emailAlertService.sendStringMail(mailObject, text, locale);
+        String text = "Location: " + location + ", Device details: " + deviceDetails + ", Ip Address: " + ip;
+        EmailAlert emailAlert = new EmailAlert();
+        emailAlert.setEmailType(EmailType.NEW_DEVICE_LOGIN);
+        emailAlert.setRecipientEmail(user.getEmail());
+        emailAlert.setRecipientUsername(user.getUsername());
+        emailAlert.setSubject("New Device Login Notification");
+        emailAlert.setData(Map.of("text", text));
+        emailAlertService.sendEmailAlert(emailAlert, locale);
 
     }
 
