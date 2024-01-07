@@ -102,7 +102,7 @@ public class JwtAuthSecurityConfig {
     @Bean
     PasswordEncoder passwordEncoder() {
         log.debug("PasswordEncoder invoked.");
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(16);
     }
 
     @Bean

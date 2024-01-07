@@ -2,6 +2,7 @@ package com.elyte.utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
@@ -25,6 +26,8 @@ public class UtilityFunctions {
 
     @Autowired
     private HttpServletRequest request;
+
+    private String[] localHostAddresses = { "0:0:0:0:0:0:0:1", "127.0.1.1", "127.0.0.1" };
 
     public static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
@@ -148,6 +151,13 @@ public class UtilityFunctions {
         cal.setTimeInMillis(new Date().getTime());
         cal.add(Calendar.MINUTE, EXPIRATION_MINUTES);
         return new Date(cal.getTime().getTime());
+    }
+
+     // For local development test, remove this check b4 production.
+    public boolean checkIfLocalHost(String ip){
+         boolean contains = Arrays.stream(localHostAddresses).anyMatch(ip::equals);
+         return contains;
+
     }
 
     

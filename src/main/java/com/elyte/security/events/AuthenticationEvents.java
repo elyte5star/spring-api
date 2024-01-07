@@ -19,7 +19,7 @@ import com.elyte.security.UserPrincipal;
 import com.elyte.service.ActiveUsersService;
 import com.elyte.service.DeviceService;
 import com.elyte.utils.UtilityFunctions;
-
+import com.elyte.security.location.StrangeLocationChecker;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.LoggerFactory;
 /*
@@ -47,6 +47,7 @@ public class AuthenticationEvents extends UtilityFunctions{
     @Autowired
     private DeviceService deviceService;
 
+   
     @Autowired
     private UserRepository userRepository;
 
@@ -55,6 +56,9 @@ public class AuthenticationEvents extends UtilityFunctions{
 
     @Autowired
     private LoginAttemptService loginAttemptService;
+
+    @Autowired
+    private StrangeLocationChecker strangeLocationChecker;
 
     @EventListener
     public void onSuccess(AuthenticationSuccessEvent event) {
@@ -67,6 +71,8 @@ public class AuthenticationEvents extends UtilityFunctions{
             loginAttemptService.resetFailedAttemptsCache();
         }
         loginNotification(userDetails, request);
+        strangeLocationChecker.checkDifferentLocation(userDetails);
+       
     }
 
     @EventListener
