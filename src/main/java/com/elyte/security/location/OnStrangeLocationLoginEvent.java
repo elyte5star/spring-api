@@ -2,10 +2,11 @@ package com.elyte.security.location;
 import java.util.Locale;
 import org.springframework.context.ApplicationEvent;
 import com.elyte.domain.NewLocationToken;
+import lombok.Getter;
 
 
 //STRANGE LOGIN EVENT(DIFFERENT LOCATION)
-
+@Getter
 public class OnStrangeLocationLoginEvent  extends ApplicationEvent{
 
     private final Locale locale;
@@ -24,32 +25,5 @@ public class OnStrangeLocationLoginEvent  extends ApplicationEvent{
         this.appUrl=appurl;
         this.email=email;
     }
-
-
-    public Locale getLocale() {
-        return locale;
-    }
-
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public NewLocationToken getNewLocationToken() {
-        return newLocationToken;
-    }
-
-    public String getAppUrl() {
-        return appUrl;
-    }
-
 
 }

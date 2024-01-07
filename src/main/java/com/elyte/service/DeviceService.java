@@ -18,7 +18,6 @@ import com.elyte.domain.request.EmailAlert;
 import com.elyte.repository.DeviceInfoRepository;
 import com.elyte.utils.UtilityFunctions;
 import com.google.common.base.Strings;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -42,14 +41,12 @@ public class DeviceService extends UtilityFunctions {
     @Qualifier("GeoIPCity")
     private DatabaseReader databaseReader;
 
-    private String[] localHostAddresses = { "0:0:0:0:0:0:0:1", "127.0.1.1", "127.0.0.1" };
-
     public void verifyDevice(User user, HttpServletRequest request) throws IOException, GeoIp2Exception {
         String ip = extractIp(request);
         String location = getIpLocation(ip);
         String deviceDetails = getDeviceInfo(request.getHeader("user-agent"));
-        DeviceInfo exitDeviceInfo = findKnownDevice(user.getUserid(), deviceDetails, location);
-        if (Objects.isNull(exitDeviceInfo)) {
+        DeviceInfo existDeviceInfo = findKnownDevice(user.getUserid(), deviceDetails, location);
+        if (Objects.isNull(existDeviceInfo)) {
             unKnownDeviceLoginNotification(user, deviceDetails, location, ip, user.getEmail(), request.getLocale());
             DeviceInfo deviceInfo = new DeviceInfo();
             deviceInfo.setUser(user);
@@ -59,8 +56,8 @@ public class DeviceService extends UtilityFunctions {
             deviceInfoRepository.save(deviceInfo);
 
         } else {
-            exitDeviceInfo.setLastLoginDate(this.timeNow());
-            deviceInfoRepository.save(exitDeviceInfo);
+            existDeviceInfo.setLastLoginDate(this.timeNow());
+            deviceInfoRepository.save(existDeviceInfo);
 
         }
 
@@ -85,10 +82,9 @@ public class DeviceService extends UtilityFunctions {
     }
 
     private String getIpLocation(String ip) throws IOException, GeoIp2Exception {
-        String location = UNKNOWN;
-        boolean contains = Arrays.stream(localHostAddresses).anyMatch(ip::equals);
-        if (contains)
-            return "localhost";
+        String location = "LocalHost";
+        if (this.checkIfLocalHost(ip))
+            return location;
         InetAddress ipAddress = InetAddress.getByName(ip);
         CityResponse cityResponse = databaseReader.city(ipAddress);
         if (Objects.nonNull(cityResponse) &&
@@ -102,14 +98,11 @@ public class DeviceService extends UtilityFunctions {
 
     private String getDeviceInfo(String userAgent) {
         String deviceDetails = UNKNOWN;
-
         Client client = parser.parse(userAgent);
-
         if (Objects.nonNull(client)) {
             deviceDetails = client.userAgent.family + " " + client.userAgent.major + "." + client.userAgent.minor +
                     " - " + client.os.family + " " + client.os.major + "." + client.os.minor;
         }
-
         return deviceDetails;
     }
 

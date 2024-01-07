@@ -40,7 +40,6 @@ import org.springframework.data.domain.Pageable;
 import com.elyte.utils.CheckIfUserExist;
 import com.maxmind.geoip2.DatabaseReader;
 import java.net.InetAddress;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -51,7 +50,6 @@ public class UserService extends UtilityFunctions {
 
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
-    private String[] localHostAddresses = { "0:0:0:0:0:0:0:1", "127.0.1.1", "127.0.0.1" };
     @Autowired
     private UserRepository userRepository;
 
@@ -100,6 +98,7 @@ public class UserService extends UtilityFunctions {
             newUser.setTelephone(createUserRequest.getTelephone());
             newUser.setEmail(createUserRequest.getEmail());
             newUser = userRepository.save(newUser);
+            this.addUserLocation(newUser, this.getClientIP());
             eventPublisher.publishEvent(new RegistrationCompleteEvent(newUser, locale, getAppUrl(request)));
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(), this.I200_MSG,
                     this.SUCCESS,
@@ -256,13 +255,16 @@ public class UserService extends UtilityFunctions {
         return Boolean.parseBoolean(env.getProperty("geo.ip.lib.enabled"));
     }
 
-    public NewLocationToken newLocationLogin(String username, String ip) {
+    public NewLocationToken isNewLocationLogin(String username, String ip) {
+        String country = "LocalHost";
         if (!isGeoIpLibEnabled()) {
             return null;
         }
         try {
-            final InetAddress ipAddress = InetAddress.getByName(ip);
-            final String country = databaseReader.country(ipAddress).getCountry().getName();
+            if (!this.checkIfLocalHost(ip)) {
+                final InetAddress ipAddress = InetAddress.getByName(ip);
+                country = databaseReader.country(ipAddress).getCountry().getName();
+            }
             log.warn(country + "====****");
             final User user = userRepository.findByUsername(username);
             final UserLocation userLocation = userLocationRepository.findByCountryAndUser(country, user);
@@ -317,12 +319,12 @@ public class UserService extends UtilityFunctions {
 
     }
 
-    public ResponseEntity<CustomResponseStatus> sendOtp(String username, Locale locale){
+    public ResponseEntity<CustomResponseStatus> sendOtp(String username, Locale locale) {
         User user = userRepository.findByUsername(username);
         if (user == null) {
             throw new ResourceNotFoundException("User with username :" + username + " not found!");
         }
-        Otp otp = otpService.generateOtp(user,getAppUrl(request),locale);
+        Otp otp = otpService.generateOtp(user, getAppUrl(request), locale);
         CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(), this.I200_MSG,
                 this.SUCCESS,
                 this.SRC, this.timeNow(),
@@ -379,29 +381,20 @@ public class UserService extends UtilityFunctions {
     }
 
     public void addUserLocation(User user, String ip) {
-        boolean contains = Arrays.stream(localHostAddresses).anyMatch(ip::equals);
-        if (!isGeoIpLibEnabled()) {
+        String country = "LocalHost";
+        if (!isGeoIpLibEnabled())
             return;
-            // For local development test, remove this check b4 production.
-        } else if (contains) {
-            UserLocation location = new UserLocation("Norway", user);
+        try {
+            if (!this.checkIfLocalHost(ip)) {
+                final InetAddress ipAddress = InetAddress.getByName(ip);
+                country = databaseReader.country(ipAddress).getCountry().getName();
+            }
+            UserLocation location = new UserLocation(country, user);
             location.setEnabled(true);
             userLocationRepository.save(location);
-            return;
-        } else {
-            try {
-                final InetAddress ipAddress = InetAddress.getByName(ip);
-                final String country = databaseReader.country(ipAddress)
-                        .getCountry()
-                        .getName();
-                UserLocation location = new UserLocation(country, user);
-                location.setEnabled(true);
-                userLocationRepository.save(location);
-            } catch (final Exception e) {
-                log.error("[x] An error occurred while verifying login country", e);
-                throw new RuntimeException(e);
-            }
-
+        } catch (final Exception e) {
+            log.error("[x] An error occurred while verifying login country", e);
+            throw new RuntimeException(e);
         }
 
     }
