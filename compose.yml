@@ -68,9 +68,8 @@ services:
     image: worker
     container_name: WorkerCont
     build:
-      context: ../QueueWorker
+      context: ../Worker
       dockerfile: ./worker.dockerfile
-    restart: on-failure
     env_file:
       - api.env
     networks:

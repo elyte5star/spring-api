@@ -22,7 +22,7 @@ management:
 
 logging:
   pattern:
-    console: '%clr(%d{dd-MM-yyyy HH:mm:ss.SSS}){yellow} %clr([%level]){blue}  %c{1.} [%t] %m%n'
+    console: '%clr(%d{dd-MM-yyyy HH:mm:ss.SSS}){white} %clr([%level]){yellow}  %c{1.} [%t] %m%n'
   level:
     root: INFO
     org:
