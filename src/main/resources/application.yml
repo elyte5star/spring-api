@@ -1,0 +1,173 @@
+server:
+  port: 8001
+  name: elyte
+  error:
+    whitelabel:
+      enabled: false
+    path: /error
+
+---
+management:
+  endpoints:
+    health:
+      show-details: always
+    enabled-by-default: true
+    web:
+      exposure:
+        include: [ "openapi", "swagger-ui" ,"env", "info", "health"]
+  server:
+    port: 8001
+
+---
+
+logging:
+  pattern:
+    console: '%clr(%d{dd-MM-yyyy HH:mm:ss.SSS}){yellow} %clr([%level]){blue}  %c{1.} [%t] %m%n'
+  level:
+    root: INFO
+    org:
+      springframework: INFO
+      security: TRACE
+       
+      
+---
+
+springdoc:
+  show-actuator: true
+  use-management-port: false
+  swagger-ui:
+    enabled: true
+    operationsSorter: method
+    path: /docs
+    disable-swagger-default-url: true
+    validatorUrl: null
+    syntaxHighlight:
+      activated: true
+  api-docs:
+    enabled: true
+   
+---
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: '10MB'
+      max-request-size: '10MB'
+      resolve-lazily: true
+
+  output:
+    ansi:
+      enabled: always
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+
+
+  # Message Broker
+  rabbitmq:
+    host: ${rabbitQ:localhost}
+    port: 5672
+    username: rabbitUser
+    password: elyteRQ
+    virtual-host: /
+    exchange: elyteExchange
+    ssl:
+      enabled: false
+    listener:
+      simple:
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+    auto-config:
+      info-headers:
+        source-application:  Utimore e-Market
+        department: Utimore-services/booking
+      queues:
+        queue-one:
+          name: SEARCH
+          dead-letter-enabled: false
+          durable: true
+        queue-two:
+          name: BOOKING
+          durable: true
+        queue-mock:
+          name: LOST
+          durable: true
+
+      bindings:
+        binding-one:
+          exchange: elyteExchange
+          queue: queue-one
+          routing-key: search
+        binding-two:
+          exchange: elyteExchange
+          queue: queue-two
+          routing-key: booking
+        binding-mock:
+          exchange: elyteExchange
+          queue: queue-mock
+          routing-key: lostItems
+        
+
+    
+
+  # Maximum time static resources should be cached
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          max-age: 12h
+
+  #===============================
+  # DATA SOURCE
+  #===============================
+  datasource:
+    url: jdbc:mysql://${db:localhost}:3306/elyte?createDatabaseIfNotExist=true
+    username: userExample
+    password: 54321
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    #Keep the connection alive if idle for a long time (needed in production)
+    tomcat:
+      testOnBorrow: true
+      validationQuery: SELECT 1
+
+    # ===============================
+    # = JPA / HIBERNATE
+    # ===============================
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+        
+---
+
+api:
+  module-name: 'Interactive Documentation for e-Market'
+  version: '1.0.1'
+  jwt:
+    secret: 7a3c54660456ff1137b652e498624dfa09a0ec12b4fc49d38b85465da15027a1
+  cipher:
+    secret: 8a3b7aee84b1856e0f786d7e938ce8908a551779c6b6ceecf92e726e97ef98df
+    salt: 7409412499eaa142810374d343ae17f988a99809be4bf42fb79b474d7a198c79
+
+---
+attachment:
+  invoice: 'path_to_file'
+
+---
+geo:
+  ip:
+    lib:
+      enabled: false
+---
+
+
+#6 o'clock of every day
+purge:
+  cron:
+    expression: '0 0 6 * * *'
+
+payment:
+  STRIPE_SECRET_KEY: <KEY>
+  STRIPE_PUBLIC_KEY: <KEY>

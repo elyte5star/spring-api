@@ -1,0 +1,11 @@
+package com.elyte.domain.enums;
+
+public enum  EmailType {
+    RESET_USER_PASSWORD,
+    NEW_USER_OTP_VERIFICATION,
+    NEW_DEVICE_LOGIN,
+    NEW_USER_ACCOUNT_CONFIRMATION,
+    WITH_ATTACHMENT,
+    UNUSUAL_LOCATION_LOGIN;
+    
+}

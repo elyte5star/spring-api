@@ -1,0 +1,65 @@
+version: '3.8'
+networks:
+  net:
+
+volumes:
+  persistence:
+services:
+  db:
+    image: mysql:latest
+    container_name: MySQLCont
+    restart: no
+    env_file:
+      - api.env
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./persistence:/var/lib/mysql
+    networks:
+      - net
+  api:
+    container_name: spring-api
+    image: spring-api
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: ./api.dockerfile
+    env_file:
+      - api.env
+    networks:
+      - net
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+    links:
+      - db
+
+  frontend:
+    container_name: VueJS
+    image: vue-app
+    restart: on-failure
+    build:
+      context: ../e-commerce
+      dockerfile: ./frontend.dockerfile
+    networks:
+      - net
+    env_file:
+      - ../e-commerce/.env
+    ports:
+      - 9000:8001
+    depends_on:
+      - api
+
+  rabbitQ:
+    hostname: RabbitQ
+    image: rabbitmq:3-management
+    restart: no
+    container_name: rabbit
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - net
+    env_file:
+      - api.env

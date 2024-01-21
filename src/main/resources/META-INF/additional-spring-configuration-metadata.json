@@ -1,0 +1,222 @@
+{"properties": [
+  {
+    "name": "api.module-name",
+    "type": "java.lang.String",
+    "description": "A description for 'api.module-name'"
+  },
+  {
+    "name": "api.version",
+    "type": "java.lang.String",
+    "description": "A description for 'api.version'"
+  },
+  {
+    "name": "api.jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'api.jwt.secret'"
+  },
+  {
+    "name": "api.cipher.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'api.cipher.secret'"
+  },
+  {
+    "name": "api.cipher.salt",
+    "type": "java.lang.String",
+    "description": "A description for 'api.cipher.salt'"
+  },
+  {
+    "name": "server.name",
+    "type": "java.lang.String",
+    "description": "A description for 'server.name'"
+  },
+  {
+    "name": "spring.web.resources.add-mapping",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.web.resources.add-mapping'"
+  },
+  {
+    "name": "spring.mail.templates.path",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.mail.templates.path'"
+  },
+  {
+    "name": "attachment.invoice",
+    "type": "java.lang.String",
+    "description": "A description for 'attachment.invoice'"
+  },
+  {
+    "name": "geo.ip.lib.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'geo.ip.lib.enabled'"
+  },
+  {
+    "name": "purge.cron.expression",
+    "type": "java.lang.String",
+    "description": "A description for 'purge.cron.expression'"
+  },
+  {
+    "name": "purge.cron.expression",
+    "type": "java.lang.String",
+    "description": "A description for 'purge.cron.expression'"
+  },
+  {
+    "name": "spring.rabbitmq.listener.default-requeue-rejected",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.listener.default-requeue-rejected'"
+  },
+  {
+    "name": "spring.rabbitmq.listener.retry.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.listener.retry.enabled'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.info-headers.source-application",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.info-headers.source-application'"
+  },
+  {
+    "name": "spring.rabbitmq.exchange",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.exchange'"
+  },
+  {
+    "name": "spring.rabbitmq.exchange",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.exchange'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.info-headers.department",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.info-headers.department'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.queues.queue-one.name",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.queues.queue-one.name'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.queues.queue-one.dead-letter-enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.queues.queue-one.dead-letter-enabled'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.queues.queue-one.durable",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.queues.queue-one.durable'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.queues.queue-two.name",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.queues.queue-two.name'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.queues.queue-mock.name",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.queues.queue-mock.name'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.bindings.binding-one.queue",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.bindings.binding-one.queue'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.queues.queue-two.durable",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.queues.queue-two.durable'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.queues.queue-mock.durable",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.queues.queue-mock.durable'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.bindings.binding-one.routing-key",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.bindings.binding-one.routing-key'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.bindings.binding-two.queue",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.bindings.binding-two.queue'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.bindings.binding-mock.queue",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.bindings.binding-mock.queue'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.bindings.binding-two.routing-key",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.bindings.binding-two.routing-key'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.bindings.binding-mock.routing-key",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.bindings.binding-mock.routing-key'"
+  },
+  {
+    "name": "payment.STRIPE_-sECRET_-kEY",
+    "type": "java.lang.String",
+    "description": "A description for 'payment.STRIPE_-sECRET_-kEY'"
+  },
+  {
+    "name": "payment.STRIPE_-pUBLIC_-kEY",
+    "type": "java.lang.String",
+    "description": "A description for 'payment.STRIPE_-pUBLIC_-kEY'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.bindings.binding-one.exchange",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.bindings.binding-one.exchange'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.bindings.binding-two.exchange",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.bindings.binding-two.exchange'"
+  },
+  {
+    "name": "spring.rabbitmq.auto-config.bindings.binding-mock.exchange",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.rabbitmq.auto-config.bindings.binding-mock.exchange'"
+  },
+  {
+    "name": "management.endpoints.health.show-details",
+    "type": "java.lang.String",
+    "description": "A description for 'management.endpoints.health.show-details'"
+  },
+  {
+    "name": "api.module-name",
+    "type": "java.lang.String",
+    "description": "A description for 'api.module-name'"
+  },
+  {
+    "name": "attachment.invoice",
+    "type": "java.lang.String",
+    "description": "A description for 'attachment.invoice'"
+  },
+  {
+    "name": "api.module-name",
+    "type": "java.lang.String",
+    "description": "A description for 'api.module-name'"
+  },
+  {
+    "name": "purge.cron.expression",
+    "type": "java.lang.String",
+    "description": "A description for 'purge.cron.expression'"
+  },
+  {
+    "name": "payment.STRIPE_-sECRET_-kEY",
+    "type": "java.lang.String",
+    "description": "A description for 'payment.STRIPE_-sECRET_-kEY'"
+  },
+  {
+    "name": "payment.STRIPE_-pUBLIC_-kEY",
+    "type": "java.lang.String",
+    "description": "A description for 'payment.STRIPE_-pUBLIC_-kEY'"
+  },
+  {
+    "name": "spring.jpa.hibernate.dialect",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.jpa.hibernate.dialect'"
+  }
+]}
