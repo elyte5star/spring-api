@@ -13,6 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>elyte</name>
 	<description>Web API</description>
+	 <url>https://github.com/elyte5star/springWebAPI</url>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

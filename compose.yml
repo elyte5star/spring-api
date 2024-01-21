@@ -36,7 +36,7 @@ services:
       - db
 
   frontend:
-    container_name: VueJS
+    container_name: VueJSCont
     image: vue-app
     restart: on-failure
     build:
@@ -54,8 +54,8 @@ services:
   rabbitQ:
     hostname: RabbitQ
     image: rabbitmq:3-management
-    restart: no
-    container_name: rabbit
+    container_name: RabbitQCont
+    restart: on-failure
     ports:
       - 5672:5672
       - 15672:15672
@@ -63,3 +63,18 @@ services:
       - net
     env_file:
       - api.env
+      
+  worker:
+    image: worker
+    container_name: WorkerCont
+    build:
+      context: ../QueueWorker
+      dockerfile: ./worker.dockerfile
+    restart: on-failure
+    env_file:
+      - api.env
+    networks:
+      - net
+    links:
+      - db
+      - rabbitQ
