@@ -8,9 +8,11 @@ services:
   db:
     image: mysql:latest
     container_name: MySQLCont
-    restart: no
-    env_file:
-      - api.env
+    environment:
+      - "MYSQL_USER=userExample"
+      - "MYSQL_DATABASE=elyte"
+      - "MYSQL_ROOT_PASSWORD=54321"
+      - "MYSQL_PASSWORD=54321"
     ports:
       - "3306:3306"
     volumes:
@@ -61,8 +63,9 @@ services:
       - 15672:15672
     networks:
       - net
-    env_file:
-      - api.env
+    environment:
+      - "RABBITMQ_DEFAULT_USER=rabbitUser"
+      - "RABBITMQ_DEFAULT_PASS=elyteRQ"
       
   worker:
     image: worker

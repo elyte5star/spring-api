@@ -42,8 +42,6 @@ public class RabbitMQConfig {
     @Value("${spring.rabbitmq.auto-config.bindings.binding-mock.routing-key}")
     private String lostItemsRoutingkey;
 
-
-
     @Bean
     Queue bookingQueue() {
         return new Queue(bookingQueue, true);
