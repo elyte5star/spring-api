@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-alpine
+FROM --platform=linux/amd64 eclipse-temurin:17-jdk-alpine
 LABEL maintainer="Ogaga Uti <checkuti@gmail.com>"
 LABEL version="0.0.1"
 LABEL description="Spring Boot application for E-commerce"
