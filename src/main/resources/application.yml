@@ -138,6 +138,7 @@ spring:
   jpa:
     show-sql: false
     hibernate:
+      dialect: MySQLDialect
       ddl-auto: update
         
 ---

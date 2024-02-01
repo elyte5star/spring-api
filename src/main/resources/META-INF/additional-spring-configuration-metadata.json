@@ -218,5 +218,10 @@
     "name": "spring.jpa.hibernate.dialect",
     "type": "java.lang.String",
     "description": "A description for 'spring.jpa.hibernate.dialect'"
+  },
+  {
+    "name": "server.name",
+    "type": "java.lang.String",
+    "description": "A description for 'server.name'"
   }
 ]}
