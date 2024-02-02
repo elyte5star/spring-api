@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.elyte.utils.EncryptionUtil;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,6 +29,7 @@ public class JwtTokenUtil implements Serializable {
 
     private static final Logger log = LoggerFactory.getLogger(JwtTokenUtil.class);
 
+    @Serial
     private static final long serialVersionUID = 7383112237L;
 
     public static final int JWT_TOKEN_VALIDITY = 60; // 60 minutes

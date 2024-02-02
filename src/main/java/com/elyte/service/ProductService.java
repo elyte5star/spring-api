@@ -72,8 +72,7 @@ public class ProductService extends UtilityFunctions {
     public ResponseEntity<CustomResponseStatus> ProductById(String pid) throws ResourceNotFoundException {
         Optional<Product> product = productRepository.findById(pid);
 
-        if (!product.isPresent()) {
-
+        if (product.isEmpty()) {
             throw new ResourceNotFoundException("Product with id :" + pid + " not found!");
         }
         CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
@@ -139,7 +138,7 @@ public class ProductService extends UtilityFunctions {
     public ResponseEntity<CustomResponseStatus> updateProduct(Product product, String pid)
             throws ResourceNotFoundException {
         Optional<Product> productData = productRepository.findById(pid);
-        if (!productData.isPresent()) {
+        if (productData.isEmpty()) {
             throw new ResourceNotFoundException("Product with id :" + pid + " not found!");
         }
         product = productRepository.save(product);

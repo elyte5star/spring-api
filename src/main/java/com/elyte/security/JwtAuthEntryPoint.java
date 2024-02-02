@@ -11,6 +11,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 import java.io.IOException;
@@ -23,6 +25,7 @@ import org.springframework.http.MediaType;
 @Component
 public class JwtAuthEntryPoint extends UtilityFunctions implements AuthenticationEntryPoint, Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -7858869558953243875L;
 
 	private static final Logger log = LoggerFactory.getLogger(JwtAuthEntryPoint.class);
@@ -41,7 +44,7 @@ public class JwtAuthEntryPoint extends UtilityFunctions implements Authenticatio
 		for (String key : map.keySet()) {
 			response.addHeader(key, map.get(key));
 		}
-		log.error("[X] Unauthorized error: ", authException.getMessage());
+		log.error("[X] Unauthorized error: " + authException.getLocalizedMessage());
 		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
 
 	}

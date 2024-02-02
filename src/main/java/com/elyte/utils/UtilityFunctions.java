@@ -129,7 +129,7 @@ public class UtilityFunctions {
         try {
             result = this.mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            log.error("[x] JsonProcessingException Exception ", e.getLocalizedMessage());
+            log.error("[x] JsonProcessingException Exception "+ e.getLocalizedMessage());
 
         }
         return result;
@@ -155,8 +155,7 @@ public class UtilityFunctions {
 
      // For local development test, remove this check b4 production.
     public boolean checkIfLocalHost(String ip){
-         boolean contains = Arrays.stream(localHostAddresses).anyMatch(ip::equals);
-         return contains;
+        return Arrays.asList(localHostAddresses).contains(ip);
 
     }
 

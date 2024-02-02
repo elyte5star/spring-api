@@ -84,8 +84,7 @@ public class EmailAlertService extends UtilityFunctions {
             log.debug("[+] Mail sent successfully.");
 
         } catch (MailException e) {
-            e.printStackTrace();
-            log.error("[+] Error while sending mail---{}", e.getMessage());
+            log.error("[+] Error while sending mail---{}", e.getLocalizedMessage());
         }
 
     }
@@ -154,11 +153,7 @@ public class EmailAlertService extends UtilityFunctions {
             this.mailSender.send(message);
 
         } catch (MessagingException e) {
-
-            log.error("[+] Error while sending mail---{}", e.getMessage());
-
-            e.printStackTrace();
-
+            log.error("[+] Error while sending mail---{}", e.getLocalizedMessage());
         }
     }
 
@@ -187,7 +182,7 @@ public class EmailAlertService extends UtilityFunctions {
                     throw new MessagingException("UNKNOWN EMAIL ALERT TYPE!");
             }
         } catch (MessagingException e) {
-            log.error("[x] Error while sending mail---{}", e.getMessage());
+            log.error("[x] Error while sending mail---{}", e.getLocalizedMessage());
         }
 
     }

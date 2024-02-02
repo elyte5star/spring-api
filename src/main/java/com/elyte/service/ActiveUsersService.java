@@ -47,7 +47,7 @@ public class ActiveUsersService extends UtilityFunctions{
 
     public boolean isUserActive(String username) {
             String date = loggedUsersCache.getIfPresent(username);
-            return (!CheckNullEmptyBlank.check(date));
+            return (CheckNullEmptyBlank.check(date));
     }
 
     public ConcurrentMap<String, String> getActiveUsers() {

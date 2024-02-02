@@ -131,23 +131,23 @@ public class UserService extends UtilityFunctions {
             throw new ResourceNotFoundException("User with id :" + userid + " not found!");
         }
 
-        if (!CheckNullEmptyBlank.check(user.getEmail()) & !(user.getEmail().equals(userInDb.getEmail()))) {
+        if (CheckNullEmptyBlank.check(user.getEmail()) & !(user.getEmail().equals(userInDb.getEmail()))) {
             userInDb.setEmail(user.getEmail());
 
         }
-        if (!CheckNullEmptyBlank.check(user.getUsername())
+        if (CheckNullEmptyBlank.check(user.getUsername())
                 & !(user.getUsername().equals(userInDb.getUsername()))) {
 
             userInDb.setUsername(user.getUsername());
 
         }
-        if (!CheckNullEmptyBlank.check(user.getTelephone())
+        if (CheckNullEmptyBlank.check(user.getTelephone())
                 & !(user.getTelephone().equals(userInDb.getTelephone()))) {
 
             userInDb.setTelephone(user.getTelephone());
 
         }
-        if (!CheckNullEmptyBlank.check(user.getPassword())) {
+        if (CheckNullEmptyBlank.check(user.getPassword())) {
 
             userInDb.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 

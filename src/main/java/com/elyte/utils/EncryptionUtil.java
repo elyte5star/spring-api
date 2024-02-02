@@ -37,7 +37,7 @@ public class EncryptionUtil {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
             return Base64.getEncoder().encodeToString(cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
-            log.error("Error while encrypting: {}", e.getMessage());
+            log.error("Error while encrypting: {}", e.getLocalizedMessage());
         }
         return null;
 
@@ -56,7 +56,7 @@ public class EncryptionUtil {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
         } catch (Exception e) {
-            log.error("Error while decrypting: {}", e.getMessage());
+            log.error("Error while decrypting: {}", e.getLocalizedMessage());
         }
         return null;
 
