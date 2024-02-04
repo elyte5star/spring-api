@@ -1,4 +1,5 @@
 package com.elyte.domain.request;
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class CreateBooking implements Serializable{
 
+    @Serial
     private static final long serialVersionUID = 1234567L;
 
     @NotNull(message = "userid is required")

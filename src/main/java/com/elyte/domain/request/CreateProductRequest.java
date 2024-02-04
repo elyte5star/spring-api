@@ -2,6 +2,8 @@ package com.elyte.domain.request;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+
+import java.io.Serial;
 import java.io.Serializable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,6 +17,7 @@ import jakarta.validation.constraints.NotNull;
 @Data
 public class CreateProductRequest implements Serializable{
 
+    @Serial
     private static final long serialVersionUID = 1234567L;
 
     @NotBlank(message = "name is required")

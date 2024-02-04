@@ -1,5 +1,6 @@
 package com.elyte.domain.request;
 
+import java.io.Serial;
 import java.io.Serializable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class ValidateOtpRequest  implements Serializable{
 
+    @Serial
     private static final long serialVersionUID = 1234567L;
 
     @Email(message = "invalid email address")

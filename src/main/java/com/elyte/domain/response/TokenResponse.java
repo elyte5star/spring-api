@@ -2,6 +2,8 @@ package com.elyte.domain.response;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+
+import java.io.Serial;
 import java.io.Serializable;
 
 @AllArgsConstructor()
@@ -9,6 +11,7 @@ import java.io.Serializable;
 @Data
 public class TokenResponse implements Serializable{
 
+    @Serial
     private static final long serialVersionUID = -8191879091924046844L;
     
     private String access_token;

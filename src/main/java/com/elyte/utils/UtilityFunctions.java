@@ -15,13 +15,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
-@Data
+@Setter
+@Getter
 public class UtilityFunctions {
 
     @Autowired

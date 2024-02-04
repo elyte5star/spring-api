@@ -57,7 +57,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
         } else {
-            log.warn("[+] NO JWT HEADER");
+            log.debug("[+] NO JWT HEADER");
         }
 
         filterChain.doFilter(request, response);

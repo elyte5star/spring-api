@@ -67,8 +67,6 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 		// Create Adminuser
 		User adminUser = createUserIfNotFound("elyte");
 
-		
-
 		createProducts(adminUser.getUsername());
 
 		alreadySetup = true;

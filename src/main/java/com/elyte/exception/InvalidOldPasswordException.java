@@ -1,7 +1,10 @@
 package com.elyte.exception;
 
+import java.io.Serial;
+
 public class InvalidOldPasswordException  extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 5861310537366287163L;
 
     public InvalidOldPasswordException() {

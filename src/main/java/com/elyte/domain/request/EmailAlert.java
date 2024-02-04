@@ -1,5 +1,7 @@
 package com.elyte.domain.request;
 import lombok.NoArgsConstructor;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 import com.elyte.domain.enums.EmailType;
@@ -14,6 +16,7 @@ import lombok.Data;
 @Data
 public class EmailAlert  implements Serializable{
     
+    @Serial
     private static final long serialVersionUID = 1234567L;
 
     @Email(message = "invalid email address")

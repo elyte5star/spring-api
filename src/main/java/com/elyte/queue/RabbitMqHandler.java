@@ -155,6 +155,7 @@ public class RabbitMqHandler extends UtilityFunctions{
             endedAt.add(task.getEndedAt());
             successful.add(task.getTaskStatus().isSuccessful());
         }
+       
         Collections.sort(endedAt);
         Status currentStatus = new Status(State.FINISHED, true, true);
         if (states.contains(State.TIMEOUT)) {
@@ -174,6 +175,7 @@ public class RabbitMqHandler extends UtilityFunctions{
 
         job.setJobStatus(currentStatus);
         job = jobRepository.save(job);
+        
         return new JobAndTasksResult(job, tasks, endedAt.get(endedAt.size() - 1));
 
     }

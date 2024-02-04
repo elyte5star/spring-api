@@ -1,5 +1,7 @@
 package com.elyte.queue;
 import lombok.NoArgsConstructor;
+
+import java.io.Serial;
 import java.io.Serializable;
 import com.elyte.domain.Job;
 import com.elyte.domain.Task;
@@ -14,6 +16,7 @@ import lombok.Data;
 @Data
 public class QueueItem implements Serializable{
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @JsonProperty("Job")

@@ -27,6 +27,7 @@ import com.elyte.domain.request.CreateBooking;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.response.JobAndTasksResult;
 import com.elyte.domain.response.JobResponse;
+import com.elyte.domain.response.WorkResult;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.queue.RabbitMqHandler;
 import com.elyte.repository.BookingRepository;
@@ -34,15 +35,14 @@ import com.elyte.repository.UserRepository;
 import com.elyte.utils.UtilityFunctions;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
-
 import java.util.Map;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 
 @Service
 public class BookingService extends UtilityFunctions{
@@ -146,24 +146,23 @@ public class BookingService extends UtilityFunctions{
         boolean resultIsAvailable = rabbitMqHandler.resultAvailable(results.getJob());
         if (resultIsAvailable) {
             JobResponse jobResponse = rabbitMqHandler.createJobResponse(job, results.getLastTaskEndedAt());
-            Map<String, String> bookingResult = createBookingResult(results.getTasks());
+            List<WorkResult> bookingResult = createBookingResult(results.getTasks());
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
                     this.SUCCESS,
                     this.SRC, this.timeNow(),
-                    Map.of("job", jobResponse, "tasks", bookingResult));
+                    Map.of("job-result", jobResponse, "tasks", bookingResult));
             return new ResponseEntity<>(resp, HttpStatus.OK);
 
         }
         throw new ResourceNotFoundException("Result from job is not available.");
     }
 
-    public Map<String, String> createBookingResult(List<Task> tasks) throws JsonParseException, JsonMappingException, IOException {
-        Map<String, String> taskResults = new HashMap<String, String>();
+    public List<WorkResult> createBookingResult(List<Task> tasks) throws JsonParseException, JsonMappingException, IOException {
+        List<WorkResult> taskResults = new ArrayList<WorkResult>();
         for (Task task : tasks) {
-            taskResults.put("BOOKING ID", this.mapper.readValue(task.getResult(), String.class));
-
+            String result = this.mapper.readValue(task.getResult(), String.class);
+            taskResults.add(new WorkResult(task.getTid(),task.getTaskStatus().isSuccessful(),result));
         }
         return taskResults;
-
     }
 }

@@ -1,4 +1,5 @@
 package com.elyte.domain;
+import java.io.Serial;
 import java.io.Serializable;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -24,16 +25,19 @@ import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.Data;
+import lombok.Setter;
+import lombok.Getter;
 import java.util.List;
 
-@Data
+@Setter
+@Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "JOBS")
 public class Job implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1234567L;
 
     @Id
@@ -73,4 +77,17 @@ public class Job implements Serializable {
     @Column(name = "NUMBER_OF_TASKS")
     private int numberOfTasks;
 
+    @Override
+    public String toString() {
+        return "Job{" +
+                "jid='" + jid + '\'' +
+                ", created='" + created + '\'' +
+                ", user=" + user +
+                ", tasks=" + tasks +
+                ", jobRequest='" + jobRequest + '\'' +
+                ", jobType=" + jobType +
+                ", jobStatus=" + jobStatus +
+                ", numberOfTasks=" + numberOfTasks +
+                '}';
+    }
 }

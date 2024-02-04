@@ -1,4 +1,5 @@
 package com.elyte.domain.request;
+import java.io.Serial;
 import java.io.Serializable;
 
 import jakarta.validation.constraints.Email;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateReviewRequest implements Serializable{
 
+    @Serial
     private static final long serialVersionUID = 1234567L;
 
     @NotNull(message = "product id is required")

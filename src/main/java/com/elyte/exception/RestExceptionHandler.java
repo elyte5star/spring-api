@@ -76,7 +76,7 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
                 e.getClass().getName(),
                 this.timeNow(), this.E404_MSG);
 
-        log.error("[+] ResourceNotFoundException--{}", e.getMessage());
+        log.error("[+] ResourceNotFoundException: {}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.NOT_FOUND);
 
     }
@@ -91,7 +91,7 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
                 "Input validation failed",
                 this.FAILURE,
                 e.getClass().getName(), this.timeNow(), Map.of("errors", mp));
-        log.error("[+] MethodArgumentNotValidException--{}", e.getMessage());
+        log.error("[+] MethodArgumentNotValidException: {}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
@@ -102,7 +102,7 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
                 e.getClass().getName(),
                 this.timeNow(), this.E401_MSG);
 
-        log.error("[+] BadCredentialsException--{}", e.getMessage());
+        log.error("[+] BadCredentialsException: {}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
@@ -112,7 +112,7 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
                 this.FAILURE,
                 e.getClass().getName(),
                 this.timeNow(), this.E423_MSG);
-        log.error("[+] LockedException--{}", e.getMessage());
+        log.error("[+] LockedException: {}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.LOCKED);
     }
 
@@ -134,7 +134,7 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
                 e.getClass().getName(),
                 this.timeNow(), this.E404_MSG);
 
-        log.error("[+] NoHandlerFoundException--{}", e.getMessage());
+        log.error("[+] NoHandlerFoundException: {}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
@@ -144,7 +144,7 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
                 this.FAILURE,
                 e.getClass().getName(),
                 this.timeNow(), this.E423_MSG);
-        log.error("[+] DisabledException--{}", e.getMessage());
+        log.error("[+] DisabledException: {}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.LOCKED);
     }
 
@@ -156,7 +156,7 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
                 e.getClass().getName(),
                 this.timeNow(), this.E205_MSG);
 
-        log.error("[+] DataIntegrityViolationException--{}", e.getMessage());
+        log.error("[+] DataIntegrityViolationException: {}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.CONFLICT);
     }
 
@@ -214,7 +214,7 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
         CustomResponseStatus customStatus = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(), exc.getMessage(),
                 this.FAILURE, exc.getClass().getName(), this.timeNow(),
                 null);
-        log.error("[x] MessagingException ", exc.getMessage());
+        log.error("[x] MessagingException :{}", exc.getMessage());
         return new ResponseEntity<>(customStatus, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
@@ -224,13 +224,13 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
         CustomResponseStatus customStatus = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(), exc.getMessage(),
                 this.FAILURE, exc.getClass().getName(), this.timeNow(),
                 null);
-        log.error("[x] JwtException ", exc.getMessage());
+        log.error("[x] JwtException {}:", exc.getMessage());
         return new ResponseEntity<>(customStatus, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({ MailAuthenticationException.class })
     public ResponseEntity<?> handleMail(final RuntimeException ex, final WebRequest request) {
-        log.error("[+] 500 Status Code- MailError", ex.getMessage());
+        log.error("[+] 500 Status Code- MailError :{}", ex.getMessage());
         CustomResponseStatus customStatus = new CustomResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "message.email.config.error", this.FAILURE, ex.getClass().getName(),
                 this.timeNow(),

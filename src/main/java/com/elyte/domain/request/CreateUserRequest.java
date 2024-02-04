@@ -3,6 +3,8 @@ package com.elyte.domain.request;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+
+import java.io.Serial;
 import java.io.Serializable;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
@@ -15,6 +17,7 @@ import jakarta.validation.constraints.NotBlank;
 @Data
 public class CreateUserRequest implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1234567L;
 
     @NotBlank(message = "username is required")

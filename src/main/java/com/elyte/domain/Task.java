@@ -1,8 +1,9 @@
 package com.elyte.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -15,20 +16,22 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
+import java.io.Serial;
 import java.io.Serializable;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
 import com.elyte.domain.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "TASKS")
 public class Task implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1234567L;
 
     @Id
