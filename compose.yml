@@ -71,7 +71,7 @@ services:
     image: worker
     container_name: WorkerCont
     build:
-      context: ../Worker
+      context: ../Work
       dockerfile: ./worker.dockerfile
     env_file:
       - api.env
