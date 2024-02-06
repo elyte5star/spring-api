@@ -1,4 +1,5 @@
 package com.elyte.configuration;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
@@ -20,6 +21,7 @@ import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -39,8 +41,7 @@ import org.springframework.data.domain.PageRequest;
 @Configuration
 @EnableWebMvc
 @PropertySource("classpath:mail/emailconfig.properties")
-public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAware,EnvironmentAware {
-
+public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAware, EnvironmentAware {
 
     private static final String JAVA_MAIL_FILE = "classpath:mail/javamail.properties";
 
@@ -57,27 +58,29 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
     private Environment environment;
 
     // AuthenticationEventPublisher for succesful and failed loggins
-	@Bean
-	AuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-		return new DefaultAuthenticationEventPublisher(applicationEventPublisher);
-	}
-
+    @Bean
+    AuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        return new DefaultAuthenticationEventPublisher(applicationEventPublisher);
+    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/*").allowedOrigins("http://localhost:9000","http://localhost:3000");
+    }
 
     @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers){
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         PageableHandlerMethodArgumentResolver phmar = new PageableHandlerMethodArgumentResolver();
-        // Set the default size to 5
-        phmar.setFallbackPageable(PageRequest.of(0, 5));
+        // Set the default size to 12
+        phmar.setFallbackPageable(PageRequest.of(0, 12));
         argumentResolvers.add(phmar);
 
     }
-
 
     @Override
     public void setEnvironment(final Environment environment) {
@@ -86,9 +89,9 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
 
     @Bean
     @ConditionalOnMissingBean(RequestContextListener.class)
-	RequestContextListener requestContextListener() {
-		return new RequestContextListener();
-	}
+    RequestContextListener requestContextListener() {
+        return new RequestContextListener();
+    }
 
     /*
      * SPRING + JAVAMAIL: JavaMailSender instance, configured via .properties files.
@@ -114,15 +117,13 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
 
     }
 
-
-
     /* ******************************************************************* */
-    /*  GENERAL CONFIGURATION ARTIFACTS                                    */
-    /*  Static Resources, i18n Messages, Formatters (Conversion Service)   */
+    /* GENERAL CONFIGURATION ARTIFACTS */
+    /* Static Resources, i18n Messages, Formatters (Conversion Service) */
     /* ******************************************************************* */
 
     /*
-     *  Dispatcher configuration for serving static resources
+     * Dispatcher configuration for serving static resources
      */
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
@@ -130,10 +131,9 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
         registry.addResourceHandler("/images/**").addResourceLocations("/images/");
         registry.addResourceHandler("/css/**").addResourceLocations("/css/");
         registry.addResourceHandler("/js/**").addResourceLocations("/js/");
-        
+
     }
 
-   
     /*
      * Multipart resolver (needed for uploading attachments from web form)
      */
@@ -142,15 +142,13 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
         return new StandardServletMultipartResolver();
     }
 
-    
-
     /* **************************************************************** */
-    /*  THYMELEAF-SPECIFIC ARTIFACTS                                    */
-    /*  TemplateResolver <- TemplateEngine <- ViewResolver              */
+    /* THYMELEAF-SPECIFIC ARTIFACTS */
+    /* TemplateResolver <- TemplateEngine <- ViewResolver */
     /* **************************************************************** */
 
     @Bean
-    SpringResourceTemplateResolver templateResolver(){
+    SpringResourceTemplateResolver templateResolver() {
         // SpringResourceTemplateResolver automatically integrates with Spring's own
         // resource resolution infrastructure, which is highly recommended.
         final SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
@@ -167,27 +165,27 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
 
     // @Bean
     // ResourceBundleMessageSource emailMessageSource() {
-    //     final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-    //     messageSource.setBasename("mail/MailMessages");
-    //     return messageSource;
+    // final ResourceBundleMessageSource messageSource = new
+    // ResourceBundleMessageSource();
+    // messageSource.setBasename("mail/MailMessages");
+    // return messageSource;
     // }
 
     @Bean
-    SpringTemplateEngine templateEngine(){
+    SpringTemplateEngine templateEngine() {
 
         // SpringTemplateEngine automatically applies SpringStandardDialect and
         // enables Spring's own MessageSource message resolution mechanisms.
         final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-
 
         // Resolver for TEXT emails
         templateEngine.addTemplateResolver(textTemplateResolver());
         // Resolver for HTML emails (except the editable one)
         templateEngine.addTemplateResolver(htmlTemplateResolver());
         // Resolver for HTML editable emails (which will be treated as a String)
-    
+
         // Message source, internationalization specific to emails
-        //templateEngine.setTemplateEngineMessageSource(messageSource());
+        // templateEngine.setTemplateEngineMessageSource(messageSource());
 
         templateEngine.addTemplateResolver(templateResolver());
         // Enabling the SpringEL compiler with Spring 4.2.4 or newer can
@@ -197,20 +195,18 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
         // for safer backwards compatibility.
         templateEngine.setEnableSpringELCompiler(true);
 
-        //For template inheritance
+        // For template inheritance
         templateEngine.addDialect(new LayoutDialect());
         return templateEngine;
     }
 
     @Bean
-    ThymeleafViewResolver viewResolver(){
+    ThymeleafViewResolver viewResolver() {
         final ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
         viewResolver.setTemplateEngine(templateEngine());
         return viewResolver;
     }
 
-
-    
     private ClassLoaderTemplateResolver textTemplateResolver() {
         final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setOrder(Integer.valueOf(1));
@@ -223,7 +219,6 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
         return templateResolver;
     }
 
-    
     private ClassLoaderTemplateResolver htmlTemplateResolver() {
         final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setOrder(Integer.valueOf(2));
@@ -235,6 +230,5 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
         templateResolver.setCacheable(false);
         return templateResolver;
     }
-
 
 }
