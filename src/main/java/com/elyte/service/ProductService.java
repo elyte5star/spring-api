@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.elyte.domain.Product;
 import com.elyte.domain.response.CustomResponseStatus;
+import com.elyte.domain.response.ProductResponse;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.ProductRepository;
 import com.elyte.utils.UtilityFunctions;
@@ -70,14 +71,17 @@ public class ProductService extends UtilityFunctions {
     }
 
     public ResponseEntity<CustomResponseStatus> ProductById(String pid) throws ResourceNotFoundException {
-        Optional<Product> product = productRepository.findById(pid);
-
-        if (product.isEmpty()) {
+        Optional<Product> prod = productRepository.findById(pid);
+        if (prod.isEmpty()) {
             throw new ResourceNotFoundException("Product with id :" + pid + " not found!");
         }
+        Product product = prod.get();
+        ProductResponse productResponse = new ProductResponse(product.getPid(), product.getName(),
+                product.getDescription(), product.getCategory(), product.getPrice(), product.getStock_quantity(),
+                product.getReviews(), product.getImage(), product.getDetails());
         CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
                 this.SUCCESS,
-                this.SRC, this.timeNow(), product.get());
+                this.SRC, this.timeNow(), productResponse);
         return new ResponseEntity<>(resp, HttpStatus.OK);
 
     }
