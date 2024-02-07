@@ -22,7 +22,7 @@ public abstract class AuditEntity {
 
     @CreatedDate
     @Column(name = "CREATED_AT", columnDefinition = "timestamp default '1970-04-10 20:47:05.967394'", updatable = false)
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @LastModifiedBy
     @Column(name = "LAST_MODIFIED_BY", length = 50)
