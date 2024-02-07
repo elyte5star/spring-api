@@ -17,6 +17,7 @@ import com.elyte.utils.UtilityFunctions;
 import java.util.Optional;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import com.elyte.domain.request.CreateProductRequest;
 import org.springframework.data.domain.Page;
@@ -28,10 +29,21 @@ public class ProductService extends UtilityFunctions {
     private ProductRepository productRepository;
 
     public ResponseEntity<CustomResponseStatus> getAllProducts(Pageable pageable) {
-        Page<Product> allProducts = productRepository.findAll(pageable);
+        Page<Product> result = productRepository.findAll(pageable);
+        List<ProductResponse> products = new ArrayList<>();
+        for (Product product : result.getContent()) {
+            products.add(new ProductResponse(product.getPid(), product.getName(),
+                    product.getDescription(), product.getCategory(), product.getPrice(), product.getStock_quantity(),
+                    product.getReviews(), product.getImage(), product.getDetails()));
+        }
         CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
                 this.SUCCESS,
-                this.SRC, this.timeNow(), allProducts);
+                this.SRC, this.timeNow(),
+                Map.of("products", products, "pageable", result.getPageable(), "sort", result.getSort(),
+                        "totalElements", result.getTotalElements(),
+                        "totalPages", result.getTotalPages(), "numberOfElements", result.getNumberOfElements(), "size",
+                        result.getSize(), "first", result.isFirst(), "last", result.isLast(),
+                        "empty", result.isEmpty()));
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
