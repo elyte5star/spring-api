@@ -42,12 +42,12 @@ services:
     image: vue-app
     restart: on-failure
     build:
-      context: ../e-commerce
+      context: ../vue
       dockerfile: ./frontend.dockerfile
     networks:
       - net
     env_file:
-      - ../e-commerce/.env
+      - ../vue/.env
     ports:
       - 9000:8001
     depends_on:
