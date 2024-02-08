@@ -49,6 +49,11 @@ public class Review extends AuditEntity {
     @NotBlank(message = "comment name is required")
     private String comment;
 
+    @Column(name = "REVIEW_NAME", length = 5000)
+    @NotBlank(message = "Name is required")
+    private String reviewerName;
+
+
     @Column(name = "RATING")
     @NotNull(message = "rating is required")
     @Min(1)

@@ -36,6 +36,7 @@ public class ReviewService extends UtilityFunctions {
             newReview.setEmail(review.getEmail());
             newReview.setRating(review.getRating());
             newReview.setProduct(product.get());
+            newReview.setReviewerName(review.getReviewerName());
             reviewRepository.save(newReview);
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(),
                     this.I200_MSG,

@@ -28,6 +28,9 @@ public class CreateReviewRequest implements Serializable{
     @NotBlank(message = "comment name is required")
     private String comment;
 
+    @NotBlank(message = "comment name is required")
+    private String reviewerName;
+
     @NotNull(message = "rating is required")
     @Min(1)
     @Max(5)

@@ -106,5 +106,113 @@
 		"image": "12.png",
 		"category": "pale",
 		"stock_quantity": 3
+	},
+	{
+		"name": "Cassie",
+		"price": 100.89,
+		"description": "For small office",
+		"details": "Ergonomic product for small office.The word ergonomic gets tossed around like it's the star ingredient in a wellness-word salad. We ourselves are guilty of blindly buying into products that are stamped with its body-support seal of approval — especially now that we're stuck at home in a make-shift office",
+		"image": "13.png",
+		"category": "mk",
+		"stock_quantity": 30
+	},
+	{
+		"name": "Jax",
+		"price": 500.81,
+		"description": "For small office",
+		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
+		"image": "14.png",
+		"category": "mk",
+		"stock_quantity": 30
+	},
+	{
+		"name": "Liu Kang",
+		"price": 900.89,
+		"description": "For small office",
+		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
+		"image": "15.png",
+		"category": "grey",
+		"stock_quantity": 0
+	},
+	{
+		"name": "Saw man",
+		"price": 900.89,
+		"description": "For small office",
+		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
+		"image": "16.png",
+		"category": "mk",
+		"stock_quantity": 301
+	},
+	{
+		"name": "Noob Saboot",
+		"price": 1000.89,
+		"description": "For small office",
+		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
+		"image": "17.png",
+		"category": "mk",
+		"stock_quantity": 89
+	},
+	{
+		"name": "Lord Rayden",
+		"price": 700.89,
+		"description": "Protector of the earth realms",
+		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
+		"image": "18.png",
+		"category": "mk",
+		"stock_quantity": 10
+	},
+	{
+		"name": "Scorpion X",
+		"price": 8900.89,
+		"description": "For small office",
+		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
+		"image": "19.png",
+		"category": "mk",
+		"stock_quantity": 60
+	},
+	{
+		"name": "Sindel",
+		"price": 1300.89,
+		"description": "For small office",
+		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
+		"image": "20.png",
+		"category": "mk",
+		"stock_quantity": 90
+	},
+	{
+		"name": "Smoke",
+		"price": 5800.89,
+		"description": "For small office",
+		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
+		"image": "21.png",
+		"category": "pale",
+		"stock_quantity": 10
+	},
+	{
+		"name": "Sub-Zero",
+		"price": 1200.89,
+		"description": "For small office",
+		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
+		"image": "22.png",
+		"category": "mk",
+		"stock_quantity": 46
+	},
+	{
+		"name": "AI Robot",
+		"price": 10000.89,
+		"description": "For small office",
+		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
+		"image": "23.png",
+		"category": "pale",
+		"stock_quantity": 45
+	},
+	{
+		"name": "AI Robot-2",
+		"price": 14500.89,
+		"description": "For small office downtown",
+		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
+		"image": "24.png",
+		"category": "pale",
+		"stock_quantity": 56
 	}
 ]
