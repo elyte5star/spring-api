@@ -39,8 +39,8 @@ public class ProductService extends UtilityFunctions {
         CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
                 this.SUCCESS,
                 this.SRC, this.timeNow(),
-                Map.of("products", products, "pageable", result.getPageable(), "sort", result.getSort(),
-                        "totalElements", result.getTotalElements(),
+                Map.of("products", products, "pageable", result.getPageable(),
+                        "totalElements", result.getTotalElements(),"number",result.getNumber(),
                         "totalPages", result.getTotalPages(), "numberOfElements", result.getNumberOfElements(), "size",
                         result.getSize(), "first", result.isFirst(), "last", result.isLast(),
                         "empty", result.isEmpty()));
