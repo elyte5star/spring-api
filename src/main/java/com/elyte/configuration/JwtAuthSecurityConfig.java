@@ -44,6 +44,7 @@ public class JwtAuthSecurityConfig {
             "/users/reset/confirm-token",
             "/reviews/create-review",
             "/auth/token",
+            "/auth/form-login",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/products/**",

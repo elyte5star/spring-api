@@ -97,6 +97,7 @@ public class UserService extends UtilityFunctions {
             newUser.setPassword(new BCryptPasswordEncoder().encode(createUserRequest.getPassword()));
             newUser.setTelephone(createUserRequest.getTelephone());
             newUser.setEmail(createUserRequest.getEmail());
+            newUser.setCreatedBy(createUserRequest.getUsername());
             newUser = userRepository.save(newUser);
             this.addUserLocation(newUser, this.getClientIP());
             eventPublisher.publishEvent(new RegistrationCompleteEvent(newUser, locale, getAppUrl(request)));

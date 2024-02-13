@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,9 +23,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 
+
 @RestController
 @RequestMapping("/auth")
-public class JwtLoginController extends UtilityFunctions{
+public class JwtLoginController extends UtilityFunctions {
 
         @Autowired
         private AuthenticationManager authenticationManager;
@@ -55,6 +57,13 @@ public class JwtLoginController extends UtilityFunctions{
 
                 return new ResponseEntity<>(resp, HttpStatus.OK);
 
+        }
+
+        @PostMapping(path = "/form-login", consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE })
+        public ResponseEntity<CustomResponseStatus> handleNonBrowserSubmissions(HttpServletRequest request,
+                        @Valid LoginRequestData loginRequestData, final Locale locale) throws Exception {
+
+                return createToken(request, loginRequestData, locale);
         }
 
 }
