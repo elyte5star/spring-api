@@ -40,7 +40,7 @@ public class ProductsController {
     @Operation(summary = "Get products by specific price")
     public ResponseEntity<CustomResponseStatus> findProductsByPrice(@RequestParam @Valid double price,
             @RequestParam(value = "page", required = false) int pageNumber,
-            @RequestParam(value = "size", defaultValue = "10") int pageSize,
+            @RequestParam(value = "size", defaultValue = "12") int pageSize,
             Pageable pageable) {
         return productService.findProductsByPrice(price, pageable);
 

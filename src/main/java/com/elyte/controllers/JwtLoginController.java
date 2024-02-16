@@ -54,7 +54,6 @@ public class JwtLoginController extends UtilityFunctions {
                                 this.I200_MSG,
                                 this.SUCCESS,
                                 request.getRequestURL().toString(), this.timeNow(), tokenResponse);
-
                 return new ResponseEntity<>(resp, HttpStatus.OK);
 
         }

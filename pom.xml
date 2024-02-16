@@ -157,6 +157,11 @@
 			<artifactId>junit-jupiter</artifactId>
 			<version>5.10.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk18on</artifactId>
+			<version>1.76</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.mysql</groupId>
