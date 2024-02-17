@@ -166,6 +166,21 @@ public class UserService extends UtilityFunctions {
         throw new DataIntegrityViolationException("A USER WITH THE DETAILS EXIST");
     }
 
+    public ResponseEntity<CustomResponseStatus> enable2F(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new ResourceNotFoundException("User with username :" + username + " not found!");
+        }
+        user.setUsing2FA(true);
+        user = userRepository.save(user);
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.NO_CONTENT.value(),
+                this.I204_MSG,
+                this.SUCCESS,
+                this.SRC, this.timeNow(), user);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+
+    }
+
     public ResponseEntity<CustomResponseStatus> deleteUser(String userid) throws ResourceNotFoundException {
         Optional<User> userInDb = userRepository.findById(userid);
 

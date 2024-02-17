@@ -47,6 +47,12 @@ public class UserController {
         return userService.updateUserInfo(user, userid);
     }
 
+    @PutMapping("/enable/{username}")
+    @Operation(summary = "Enable external login", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> enableExternalLogin(@PathVariable String username) throws ResourceNotFoundException {
+        return userService.enable2F(username);
+    }
+
     @GetMapping("/signup/resendOtp")
     @Operation(summary = "Resend OTP Token")
     public ResponseEntity<CustomResponseStatus> generateNewOtp(final HttpServletRequest request,

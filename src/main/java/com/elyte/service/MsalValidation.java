@@ -21,15 +21,19 @@ import java.security.cert.X509Certificate;
 import java.util.Base64;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class MsalValidation {
 
-    @Value("${msal.tenant.id}")
-    private String tenantId;
+    @Value("${msal.login.authority}")
+    private String authority;
 
     @Value("${msal.client.id}")
     private String clientId;
+
+    private static final Logger log = LoggerFactory.getLogger(MsalValidation.class);
 
     public String getPublicKey(String token) {
         try {
@@ -37,14 +41,14 @@ public class MsalValidation {
             String kid = getTokenKeyId(token);
 
             // Get the public key from Azure AD OpenID configuration endpoint
-            URL endpointUrl = new URL("https://login.microsoftonline.com/" + tenantId + "/discovery/keys?appid=" + clientId);
+            URL endpointUrl = new URL(authority + "/discovery/keys?appid=" + clientId);
             String publicKeyResponse = getAzureADPublicKey(endpointUrl);
 
             // Extract the value of x5c for the matching key ID
             return extractX5CValue(publicKeyResponse, kid);
         } catch (Exception e) {
             // Handle any exceptions here
-            e.printStackTrace();
+           log.error("Error Verifying MSAL :" + e.getLocalizedMessage());
             return null;
         }
     }
@@ -112,7 +116,6 @@ public class MsalValidation {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(pemObject.getContent());
         CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
         X509Certificate certificate = (X509Certificate) certFactory.generateCertificate(inputStream);
-
         return certificate.getPublicKey();
     }
 
@@ -126,7 +129,7 @@ public class MsalValidation {
             // Throw an exception for any invalid token
             throw new RuntimeException("Invalid token: " + e.getMessage());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getLocalizedMessage());
         }
     }
 }
