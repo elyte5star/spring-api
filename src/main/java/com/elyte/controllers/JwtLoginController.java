@@ -69,21 +69,6 @@ public class JwtLoginController extends UtilityFunctions {
 
         }
 
-        private ResponseEntity<CustomResponseStatus> createTokenFromUserService(HttpServletRequest request,
-                        UserPrincipal userDetails) throws Exception {
-                final String token = jwtTokenUtil.generateToken(userDetails);
-                TokenResponse tokenResponse = new TokenResponse(EncryptionUtil.encrypt(token), "bearer",
-                                userDetails.getUsername(), userDetails.getUser().getEmail(),
-                                userDetails.isEnabled(), userDetails.getUser().isAdmin(),
-                                userDetails.getUser().getUserid());
-                CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(),
-                                this.I200_MSG,
-                                this.SUCCESS,
-                                request.getRequestURL().toString(), this.timeNow(), tokenResponse);
-                return new ResponseEntity<>(resp, HttpStatus.OK);
-
-        }
-
         @PostMapping(path = "/form-login", consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE })
         public ResponseEntity<CustomResponseStatus> handleNonBrowserSubmissions(HttpServletRequest request,
                         @Valid LoginRequestData loginRequestData, final Locale locale) throws Exception {
@@ -108,13 +93,27 @@ public class JwtLoginController extends UtilityFunctions {
                                 return createTokenFromUserService(request, userDetails);
 
                         }
-
                 } else if (cloudLogin.getType().equals("GMAIL")) {
 
                         return null;
                 }
 
                 throw new ResourceNotFoundException("Unknown Authentication type: " + cloudLogin.getType());
+        }
+
+        private ResponseEntity<CustomResponseStatus> createTokenFromUserService(HttpServletRequest request,
+                        UserPrincipal userDetails) throws Exception {
+                final String token = jwtTokenUtil.generateToken(userDetails);
+                TokenResponse tokenResponse = new TokenResponse(EncryptionUtil.encrypt(token), "bearer",
+                                userDetails.getUsername(), userDetails.getUser().getEmail(),
+                                userDetails.isEnabled(), userDetails.getUser().isAdmin(),
+                                userDetails.getUser().getUserid());
+                CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(),
+                                this.I200_MSG,
+                                this.SUCCESS,
+                                request.getRequestURL().toString(), this.timeNow(), tokenResponse);
+                return new ResponseEntity<>(resp, HttpStatus.OK);
+
         }
 
 }
