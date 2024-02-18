@@ -40,6 +40,7 @@ public class JwtAuthSecurityConfig {
             "/users/signup/**",
             "/users/enableNewLocation",
             "/users/reset/password",
+            "/users/enable/**",
             "/users/logout",
             "/users/reset/confirm-token",
             "/reviews/create-review",
