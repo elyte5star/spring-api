@@ -1,5 +1,7 @@
 package com.elyte.service;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -32,6 +34,12 @@ public class MsalValidation {
 
     @Value("${msal.client.id}")
     private String clientId;
+
+    @Value("${msal.enable}")
+    private boolean isEnabled;
+
+    @Autowired
+	private Environment env;
 
     private static final Logger log = LoggerFactory.getLogger(MsalValidation.class);
 
@@ -120,6 +128,7 @@ public class MsalValidation {
     }
 
     public Claims decodeAndVerifyToken(String token) {
+        if (!isMsalEnabled()) return null;
         String publicKeyString = "-----BEGIN PUBLIC KEY-----\n"+ getPublicKey(token)+"\n-----END PUBLIC KEY-----";
         PublicKey publicKey = null;
         try {
@@ -131,5 +140,9 @@ public class MsalValidation {
         } catch (Exception e) {
             throw new RuntimeException(e.getLocalizedMessage());
         }
+    }
+
+    private boolean isMsalEnabled() {
+        return Boolean.parseBoolean(env.getProperty("msal.enabled"));
     }
 }
