@@ -1,4 +1,5 @@
 package com.elyte.service;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -35,11 +36,8 @@ public class MsalValidation {
     @Value("${msal.client.id}")
     private String clientId;
 
-    @Value("${msal.enable}")
-    private boolean isEnabled;
-
     @Autowired
-	private Environment env;
+    private Environment env;
 
     private static final Logger log = LoggerFactory.getLogger(MsalValidation.class);
 
@@ -56,7 +54,7 @@ public class MsalValidation {
             return extractX5CValue(publicKeyResponse, kid);
         } catch (Exception e) {
             // Handle any exceptions here
-           log.error("Error Verifying MSAL :" + e.getLocalizedMessage());
+            log.error("Error Verifying MSAL :" + e.getLocalizedMessage());
             return null;
         }
     }
@@ -128,12 +126,13 @@ public class MsalValidation {
     }
 
     public Claims decodeAndVerifyToken(String token) {
-        if (!isMsalEnabled()) return null;
-        String publicKeyString = "-----BEGIN PUBLIC KEY-----\n"+ getPublicKey(token)+"\n-----END PUBLIC KEY-----";
+        if (!isMsalEnabled())
+            return null;
+        String publicKeyString = "-----BEGIN PUBLIC KEY-----\n" + getPublicKey(token) + "\n-----END PUBLIC KEY-----";
         PublicKey publicKey = null;
         try {
             publicKey = getX509PublicKey(publicKeyString);
-            return Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(token).getPayload(); 
+            return Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(token).getPayload();
         } catch (JwtException e) {
             // Throw an exception for any invalid token
             throw new RuntimeException("Invalid token: " + e.getMessage());

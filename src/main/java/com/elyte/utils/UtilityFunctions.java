@@ -106,7 +106,6 @@ public class UtilityFunctions {
     public ObjectMapper mapper;
 
     public UtilityFunctions() {
-
         this.mapper = new ObjectMapper();
 
     }

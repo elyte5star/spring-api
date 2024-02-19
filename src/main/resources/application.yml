@@ -174,7 +174,7 @@ payment:
 
 msal:
   client:
-    id: <CLIENT-ID>
+    id: fa49cfcc-51af-4663-8f9c-dda0443966b9
   login:
-    authority: https://login.microsoftonline.com/<SECRET>
-  enabled: false
+    authority: https://login.microsoftonline.com/c9864735-8d2e-4d26-a323-650ddf08644d
+  enabled: true

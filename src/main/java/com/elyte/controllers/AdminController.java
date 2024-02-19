@@ -113,7 +113,7 @@ public class AdminController extends UtilityFunctions{
     public ResponseEntity<CustomResponseStatus> sendOtp(@RequestParam("username") @RequestBody @Valid String username,
             final Locale locale)
             throws ResourceNotFoundException {
-        return userService.sendOtp(username, locale);
+        return userService.sendRegistrationOtp(username, locale);
 
     }
 

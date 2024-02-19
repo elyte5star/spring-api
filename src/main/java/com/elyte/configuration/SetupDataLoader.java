@@ -79,7 +79,7 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 			user = new User();
 			user.setUsername(name);
 			user.setPassword(new BCryptPasswordEncoder().encode("string"));
-			user.setTelephone("40978057");
+			user.setTelephone("889851919");
 			user.setEmail("elyte5star@gmail.com");
 			user.setAdmin(true);
 			user.setEnabled(true);
