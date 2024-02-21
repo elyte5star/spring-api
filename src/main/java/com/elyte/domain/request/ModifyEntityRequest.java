@@ -17,8 +17,6 @@ public class ModifyEntityRequest  implements Serializable{
     @Serial
     private static final long serialVersionUID = 1234567L;
 
-    private String password="";
-
     private String email="";
 
     private String telephone="";

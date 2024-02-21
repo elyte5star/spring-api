@@ -1,6 +1,7 @@
 package com.elyte.service;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 import com.elyte.domain.PasswordResetToken;
@@ -9,6 +10,7 @@ import com.elyte.domain.enums.EmailType;
 import com.elyte.repository.PasswordResetTokenRepository;
 import com.elyte.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +24,9 @@ import com.elyte.domain.request.EmailAlert;
 public class PassowrdResetService extends UtilityFunctions {
 
     private static final int EXPIRATION = 60 * 24;
+
+    @Autowired
+    private Environment env;
 
     @Autowired
     private UserRepository userRepository;
@@ -48,6 +53,9 @@ public class PassowrdResetService extends UtilityFunctions {
     }
 
     private String getAppUrl(HttpServletRequest request) {
+        if (env.getProperty("client.url") != null) {
+            return env.getProperty("client.url");
+        }
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
 
@@ -55,12 +63,9 @@ public class PassowrdResetService extends UtilityFunctions {
         User user = userRepository.findByEmail(email);
         if (user == null)
             return "NotFound";
-        String token = this.randomString(16);
-        PasswordResetToken myToken = new PasswordResetToken();
-        myToken.setToken(token);
-        myToken.setUser(user);
-        myToken.setExpiryDate(this.calculateExpiryDate(EXPIRATION));
-        passwordTokenRepository.save(myToken);
+        final String token = this.randomString(16);
+        Date expiry = this.calculateExpiryDate(EXPIRATION);
+        saveIssuedToken(user,token,expiry);
         String contextPath = getAppUrl(request);
         String encryptedToken = EncryptionUtil.encrypt(token);
         String url = contextPath + "/users/reset/confirm-token?token=" + encryptedToken;
@@ -70,9 +75,24 @@ public class PassowrdResetService extends UtilityFunctions {
         emailAlert.setRecipientEmail(user.getEmail());
         emailAlert.setRecipientUsername(user.getUsername());
         emailAlert.setSubject("Reset your password");
-        emailAlert.setData(Map.of("username",user.getUsername(),"link",url,"duration",expiryTime));
-        emailAlertService.sendEmailAlert(emailAlert,request.getLocale());
+        emailAlert.setData(Map.of("username", user.getUsername(), "link", url, "duration", expiryTime));
+        emailAlertService.sendEmailAlert(emailAlert, request.getLocale());
         return encryptedToken;
+    }
+
+    public void saveIssuedToken(User user, String token, Date expiry) {
+        PasswordResetToken myToken = passwordTokenRepository.findByUser(user);
+        if (myToken == null) {
+            PasswordResetToken myNewToken = new PasswordResetToken();
+            myNewToken.setToken(token);
+            myNewToken.setUser(user);
+            myNewToken.setExpiryDate(expiry);
+            passwordTokenRepository.save(myNewToken);
+        } else {
+            myToken.setToken(token);
+            myToken.setExpiryDate(expiry);
+            passwordTokenRepository.save(myToken);
+        }
     }
 
 }

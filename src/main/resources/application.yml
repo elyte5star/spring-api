@@ -159,7 +159,7 @@ attachment:
 geo:
   ip:
     lib:
-      enabled: false
+      enabled: true
 ---
 
 
@@ -174,7 +174,10 @@ payment:
 
 msal:
   client:
-    id: fa49cfcc-51af-4663-8f9c-dda0443966b9
+    id: <CLIENT-ID>
   login:
-    authority: https://login.microsoftonline.com/c9864735-8d2e-4d26-a323-650ddf08644d
+    authority: https://login.microsoftonline.com/<SECRET>
   enabled: true
+
+client:
+  url: http://localhost:3000

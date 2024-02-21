@@ -108,7 +108,7 @@ public class AuthenticationEvents extends UtilityFunctions{
 
         else if (events instanceof AuthenticationFailureDisabledEvent) {
 
-            throw new DisabledException("Your account is disabled. Verify your account with OTP");
+            throw new DisabledException("Your account is not active. Verify your account with OTP");
 
         }
 
