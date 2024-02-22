@@ -7,7 +7,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.CascadeType;
 import jakarta.validation.constraints.Digits;
@@ -73,7 +75,12 @@ public class User extends AuditEntity {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
     @OrderBy
+    @JsonIgnore
     private List<UserLocation> locations;
+
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JoinColumn(name = "address_id", referencedColumnName = "address_id")
+    private UserAddress address;
 
     @Column(name = "TELEPHONE", unique = true)
     @Digits(fraction = 0, integer = 10)

@@ -1,5 +1,7 @@
 package com.elyte.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import jakarta.persistence.Entity;
 
 @AllArgsConstructor
@@ -31,12 +34,16 @@ public class UserAddress extends AuditEntity{
 
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id")
+    @JsonIgnore
     private User user;
 
+    @NotBlank(message = "full name is required")
+    @Size(min = 5)
+    private String fullName;
 
     @Column(name = "STREET_ADDRESS", length = 3000)
-    @NotBlank(message = "Street description is required")
-    private String description;
+    @NotBlank(message = "Street Address is required")
+    private String streetAddress;
 
     @Column(name = "CITY")
     @NotBlank(message = "City is required")

@@ -143,7 +143,7 @@ spring:
 ---
 
 api:
-  module-name: 'Interactive Documentation for e-Market'
+  module-name: 'Interactive Documentation for Elyte-Realm'
   version: '1.0.1'
   jwt:
     secret: 7a3c54660456ff1137b652e498624dfa09a0ec12b4fc49d38b85465da15027a1
@@ -159,7 +159,7 @@ attachment:
 geo:
   ip:
     lib:
-      enabled: true
+      enabled: false
 ---
 
 

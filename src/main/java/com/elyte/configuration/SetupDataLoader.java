@@ -73,18 +73,18 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 	}
 
 	@Transactional
-	private final User createUserIfNotFound(final String name) {
-		User user = userRepository.findByUsername(name);
+	private final User createUserIfNotFound(final String username) {
+		User user = userRepository.findByUsername(username);
 		if (user == null) {
 			user = new User();
-			user.setUsername(name);
+			user.setUsername(username);
 			user.setPassword(new BCryptPasswordEncoder().encode("string"));
 			user.setTelephone("889851919");
 			user.setEmail("elyte5star@gmail.com");
 			user.setAdmin(true);
 			user.setEnabled(true);
 			user.setAccountNonLocked(true);
-			user.setCreatedBy(name);
+			user.setCreatedBy(username);
 			user = userRepository.save(user);
 			this.addUserLocation(user,"0:0:0:0:0:0:0:1" );
 			log.info("Admin Account Created " + user.getUserid());
