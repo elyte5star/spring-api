@@ -39,11 +39,16 @@ public class UserAddress extends AuditEntity{
 
     @NotBlank(message = "full name is required")
     @Size(min = 5)
+    @Column(name = "FULL_NAME", length = 3000)
     private String fullName;
 
     @Column(name = "STREET_ADDRESS", length = 3000)
     @NotBlank(message = "Street Address is required")
     private String streetAddress;
+
+    @Column(name = "COUNTRY", length = 3000)
+    @NotBlank(message = "Country is required")
+    private String country;
 
     @Column(name = "CITY")
     @NotBlank(message = "City is required")

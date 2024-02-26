@@ -37,7 +37,7 @@ import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 public class AdminController extends UtilityFunctions{
 
     @Autowired

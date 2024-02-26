@@ -243,5 +243,10 @@
     "name": "client.url",
     "type": "java.lang.String",
     "description": "A description for 'client.url'"
+  },
+  {
+    "name": "api.jwt.cookie.name",
+    "type": "java.lang.String",
+    "description": "A description for 'api.jwt.cookie.name'"
   }
 ]}

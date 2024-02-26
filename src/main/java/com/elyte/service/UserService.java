@@ -172,7 +172,6 @@ public class UserService extends UtilityFunctions {
     }
     List<User> usersList = userRepository.checkIfUserDetailsIstaken(
       userid,
-      userInDb.getUsername(),
       userInDb.getEmail(),
       userInDb.getTelephone()
     );

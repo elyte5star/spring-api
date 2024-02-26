@@ -20,7 +20,7 @@ import com.elyte.domain.response.CustomResponseStatus;
 import org.springframework.data.domain.Pageable;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/products")
 public class ProductsController {
 
     @Autowired

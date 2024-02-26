@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.elyte.security.JwtAuthEntryPoint;
 import com.elyte.security.JwtFilter;
 import com.elyte.security.LoggingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class JwtAuthSecurityConfig {
  
     @Autowired
     private JwtFilter jwtRequestFilter;
+    
+    @Autowired
+    private JwtAuthEntryPoint jwtAuthenticationEntryPoint;
 
     @Autowired
     private LoggingFilter loggingFilter;
@@ -37,18 +42,18 @@ public class JwtAuthSecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/",
             "/index",
-            "/users/signup/**",
-            "/users/enableNewLocation",
-            "/users/reset/password",
-            "/users/logout",
-            "/users/reset/confirm-token",
-            "/reviews/create-review",
-            "/auth/token",
-            "/auth/form-login",
-            "/auth/get-token",
+            "/api/users/signup/**",
+            "/api/users/enableNewLocation",
+            "/api/users/reset/password",
+            "/api/users/logout",
+            "/api/users/reset/confirm-token",
+            "/api/reviews/create-review",
+            "/api/auth/token",
+            "/api/auth/form-login",
+            "/api/auth/get-token",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/products/**",
+            "/api/products/**",
             "/docs/**",
              "/actuator/**",
              "/favicon.ico"
@@ -64,8 +69,8 @@ public class JwtAuthSecurityConfig {
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated())
-                // .exceptionHandling(
-                //         ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .exceptionHandling(
+                         ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         // Add a filter to log the request-response of every request

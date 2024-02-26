@@ -1,26 +1,25 @@
 package com.elyte.security;
 
-//JwtAuthenticationEntryPoint extends Spring’s AuthenticationEntryPoint class and overrides its method commence. 
 
+//JwtAuthenticationEntryPoint extends Spring’s AuthenticationEntryPoint class and overrides its method commence. 
 //It rejects every unauthenticated request and sends error code 401.
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
-
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Map;
 import java.io.IOException;
-import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.utils.UtilityFunctions;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.http.MediaType;
+import java.util.Map;
+import java.util.HashMap;
 
 @Component
 public class JwtAuthEntryPoint extends UtilityFunctions implements AuthenticationEntryPoint, Serializable {
@@ -32,21 +31,19 @@ public class JwtAuthEntryPoint extends UtilityFunctions implements Authenticatio
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException authException) throws IOException {
-		CustomResponseStatus status = new CustomResponseStatus(HttpServletResponse.SC_UNAUTHORIZED,
-				authException.getMessage(), this.FAILURE, authException.getClass().getName(),
-				this.timeNow(), this.ARC_MSG);
+			AuthenticationException authException) throws IOException,ServletException  {
+		log.error("[X] Unauthorized : " + authException.getLocalizedMessage());
 		response.setContentType(MediaType.ALL_VALUE);
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		ObjectMapper mapper = new ObjectMapper();
-		Map<String, String> map = mapper.convertValue(status, new TypeReference<Map<String, String>>() {
-		});
-		for (String key : map.keySet()) {
-			response.addHeader(key, map.get(key));
-		}
-		log.error("[X] Unauthorized error: " + authException.getLocalizedMessage());
-		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
-
+		final Map<String, Object> body = new HashMap<>();
+		body.put("code", HttpServletResponse.SC_UNAUTHORIZED);
+		body.put("result", "Unauthorized");
+		body.put("message", authException.getMessage());
+		body.put("path", request.getServletPath());
+		body.put("timeStamp", this.timeNow());
+		body.put("success", false);
+		final ObjectMapper mapper = new ObjectMapper();
+		mapper.writeValue(response.getOutputStream(), body);
 	}
 
 }

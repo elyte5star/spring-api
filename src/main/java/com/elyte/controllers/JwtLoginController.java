@@ -6,6 +6,7 @@ import com.elyte.domain.User;
 import com.elyte.domain.request.CloudLogin;
 import com.elyte.domain.request.LoginRequestData;
 import com.elyte.domain.response.CustomResponseStatus;
+import com.elyte.domain.response.JwtResponse;
 import com.elyte.domain.response.TokenResponse;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.UserRepository;
@@ -14,7 +15,7 @@ import com.elyte.service.MsalValidation;
 import com.elyte.security.CredentialsService;
 import com.elyte.security.JwtTokenUtil;
 import com.elyte.utils.UtilityFunctions;
-
+import org.springframework.http.HttpHeaders;
 import io.jsonwebtoken.Claims;
 
 import com.elyte.utils.EncryptionUtil;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,7 +39,7 @@ import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class JwtLoginController extends UtilityFunctions {
 
         @Autowired
@@ -103,8 +105,9 @@ public class JwtLoginController extends UtilityFunctions {
 
         private ResponseEntity<CustomResponseStatus> createTokenFromUserService(HttpServletRequest request,
                         UserPrincipal userDetails) throws Exception {
-                final String token = jwtTokenUtil.generateToken(userDetails);
-                TokenResponse tokenResponse = new TokenResponse(EncryptionUtil.encrypt(token), "bearer",
+                final JwtResponse jwtResponse = jwtTokenUtil.generateToken(userDetails);
+                TokenResponse tokenResponse = new TokenResponse(EncryptionUtil.encrypt(jwtResponse.getJwtToken()),
+                                "bearer",
                                 userDetails.getUsername(), userDetails.getUser().getEmail(),
                                 userDetails.isEnabled(), userDetails.getUser().isAdmin(),
                                 userDetails.getUser().getUserid());
@@ -112,8 +115,20 @@ public class JwtLoginController extends UtilityFunctions {
                                 this.I200_MSG,
                                 this.SUCCESS,
                                 request.getRequestURL().toString(), this.timeNow(), tokenResponse);
-                return new ResponseEntity<>(resp, HttpStatus.OK);
+                return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtResponse.getJwtCookie().toString())
+                                .body(resp);// new ResponseEntity<>(resp, HttpStatus.OK);
 
+        }
+
+        @PostMapping("/signout")
+        public ResponseEntity<?> logoutUser(HttpServletRequest request) {
+                ResponseCookie cookie = jwtTokenUtil.getCleanJwtCookie();
+                CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(),
+                                this.I200_MSG,
+                                this.SUCCESS,
+                                request.getRequestURL().toString(), this.timeNow(), "You've been signed out!");
+                return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
+                                .body(resp);
         }
 
 }

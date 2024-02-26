@@ -49,6 +49,7 @@ public class User extends AuditEntity {
 
     @Column(name = "EMAIL", unique = true)
     @Email(message = "invalid email address")
+    @Size(max = 50)
     private String email;
 
     @Column(name = "ACCOUNT_NOT_LOCKED")

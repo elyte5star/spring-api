@@ -27,7 +27,7 @@ import com.elyte.domain.request.PasswordUpdate;
 import com.elyte.domain.request.ValidateOtpRequest;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     @Autowired

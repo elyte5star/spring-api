@@ -12,8 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import com.elyte.utils.EncryptionUtil;
+import org.springframework.web.util.WebUtils;
 
+import com.elyte.domain.response.JwtResponse;
+import com.elyte.utils.EncryptionUtil;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
@@ -23,6 +25,8 @@ import java.util.function.Function;
 import java.util.UUID;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
+import org.springframework.http.ResponseCookie;
+import jakarta.servlet.http.Cookie;
 
 @Component
 public class JwtTokenUtil implements Serializable {
@@ -37,6 +41,9 @@ public class JwtTokenUtil implements Serializable {
     @Value("${api.jwt.secret}")
     private String secret;
 
+    @Value("${api.jwt.cookie.name}")
+    private String jwtCookie;
+
     private SecretKey getSigningKey() {
         byte[] keyBytes = this.secret.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -44,11 +51,14 @@ public class JwtTokenUtil implements Serializable {
 
     // generate token for required data i.e. user details
 
-    public String generateToken(UserPrincipal userDetails) {
+    public JwtResponse generateToken(UserPrincipal userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("email", userDetails.getUser().getEmail());
         claims.put("jti", UUID.randomUUID().toString());
-        return doGenerateToken(claims, userDetails.getUsername(), userDetails.getUser().getUserid());
+        String token = doGenerateToken(claims, userDetails.getUsername(), userDetails.getUser().getUserid());
+        ResponseCookie cookie = ResponseCookie.from(jwtCookie, token).path("/api").maxAge(24 * 60 * 60).httpOnly(true)
+                .build();
+        return new JwtResponse(cookie, token);
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject, String aud) {
@@ -93,6 +103,20 @@ public class JwtTokenUtil implements Serializable {
         return claimsResolver.apply(claims);
     }
 
+    public String getJwtFromCookies(HttpServletRequest request) {
+        Cookie cookie = WebUtils.getCookie(request, jwtCookie);
+        if (cookie != null) {
+            return cookie.getValue();
+        } else {
+            return null;
+        }
+    }
+
+    public ResponseCookie getCleanJwtCookie() {
+        ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/api").build();
+        return cookie;
+    }
+
     // for retrieving any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
@@ -112,6 +136,11 @@ public class JwtTokenUtil implements Serializable {
 
         // If the Authorization header is not valid, return null
         return null;
+    }
+
+    public String parseJwt(HttpServletRequest request) {
+        String jwt = getJwtFromCookies(request);
+        return jwt;
     }
 
 }

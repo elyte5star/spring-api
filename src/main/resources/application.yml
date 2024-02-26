@@ -147,6 +147,8 @@ api:
   version: '1.0.1'
   jwt:
     secret: 7a3c54660456ff1137b652e498624dfa09a0ec12b4fc49d38b85465da15027a1
+    cookie:
+      name: elyte
   cipher:
     secret: 8a3b7aee84b1856e0f786d7e938ce8908a551779c6b6ceecf92e726e97ef98df
     salt: 7409412499eaa142810374d343ae17f988a99809be4bf42fb79b474d7a198c79
