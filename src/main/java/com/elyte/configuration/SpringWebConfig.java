@@ -70,7 +70,7 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins("http://localhost:9000","http://localhost:3000").allowedMethods("*");
+        registry.addMapping("/api/**").allowedOrigins("http://localhost:9000","http://localhost:3000").allowedMethods("*").allowCredentials(true).maxAge(24 * 60 * 60);
     }
 
     @Override
