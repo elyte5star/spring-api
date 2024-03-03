@@ -111,7 +111,7 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
         CustomResponseStatus status = new CustomResponseStatus(HttpStatus.LOCKED.value(), this.E423_MSG,
                 this.FAILURE,
                 e.getClass().getName(),
-                this.timeNow(), "locked");
+                this.timeNow(), Map.of("locked",true));
         log.error("[+] LockedException: {}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.LOCKED);
     }
@@ -143,7 +143,7 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
         CustomResponseStatus status = new CustomResponseStatus(HttpStatus.LOCKED.value(), e.getMessage(),
                 this.FAILURE,
                 e.getClass().getName(),
-                this.timeNow(),"disabled");
+                this.timeNow(),Map.of("disabled",true));
         log.error("[+] DisabledException: {}", e.getMessage());
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.LOCKED);
     }
