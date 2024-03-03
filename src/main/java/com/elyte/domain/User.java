@@ -83,6 +83,11 @@ public class User extends AuditEntity {
     @JoinColumn(name = "address_id", referencedColumnName = "address_id")
     private UserAddress address;
 
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OrderBy
+    @JoinColumn(name = "otp_id")
+    private Otp otp;
+
     @Column(name = "TELEPHONE", unique = true)
     @Digits(fraction = 0, integer = 10)
     @Size(min = 7)

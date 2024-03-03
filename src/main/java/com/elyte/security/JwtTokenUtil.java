@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
-
 import com.elyte.domain.response.JwtResponse;
 import com.elyte.utils.EncryptionUtil;
 import java.io.Serial;
@@ -36,13 +35,14 @@ public class JwtTokenUtil implements Serializable {
     @Serial
     private static final long serialVersionUID = 7383112237L;
 
+
     public static final int JWT_TOKEN_VALIDITY = 60; // 60 minutes
 
     @Value("${api.jwt.secret}")
     private String secret;
 
     @Value("${api.jwt.cookie.name}")
-    private String jwtCookie;
+    private String jwtCookieName;
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = this.secret.getBytes(StandardCharsets.UTF_8);
@@ -56,7 +56,7 @@ public class JwtTokenUtil implements Serializable {
         claims.put("email", userDetails.getUser().getEmail());
         claims.put("jti", UUID.randomUUID().toString());
         String token = doGenerateToken(claims, userDetails.getUsername(), userDetails.getUser().getUserid());
-        ResponseCookie cookie = ResponseCookie.from(jwtCookie, token).path("/api").maxAge(24 * 60 * 60).httpOnly(true)
+        ResponseCookie cookie = ResponseCookie.from(jwtCookieName, token).path("/api").maxAge(24 * 60 * 60).httpOnly(true)
                 .build();
         return new JwtResponse(cookie, token);
     }
@@ -104,7 +104,7 @@ public class JwtTokenUtil implements Serializable {
     }
 
     public String getJwtFromCookies(HttpServletRequest request) {
-        Cookie cookie = WebUtils.getCookie(request, jwtCookie);
+        Cookie cookie = WebUtils.getCookie(request, jwtCookieName);
         if (cookie != null) {
             return cookie.getValue();
         } else {
@@ -113,7 +113,7 @@ public class JwtTokenUtil implements Serializable {
     }
 
     public ResponseCookie getCleanJwtCookie() {
-        ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/api").build();
+        ResponseCookie cookie = ResponseCookie.from(jwtCookieName, null).path("/api").maxAge(0).build();
         return cookie;
     }
 

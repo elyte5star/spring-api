@@ -17,6 +17,7 @@ import com.elyte.security.JwtTokenUtil;
 import com.elyte.utils.UtilityFunctions;
 import org.springframework.http.HttpHeaders;
 import io.jsonwebtoken.Claims;
+import io.swagger.v3.oas.annotations.Operation;
 
 import com.elyte.utils.EncryptionUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,6 +74,7 @@ public class JwtLoginController extends UtilityFunctions {
         }
 
         @PostMapping(path = "/form-login", consumes = { MediaType.APPLICATION_FORM_URLENCODED_VALUE })
+        @Operation(summary = "Form login")
         public ResponseEntity<CustomResponseStatus> handleNonBrowserSubmissions(HttpServletRequest request,
                         @Valid LoginRequestData loginRequestData, final Locale locale) throws Exception {
                 log.debug("credentials Submitted thru a form");
@@ -79,6 +82,7 @@ public class JwtLoginController extends UtilityFunctions {
         }
 
         @PostMapping(path = "/get-token")
+        @Operation(summary = "External login")
         public ResponseEntity<CustomResponseStatus> cloudLogin(HttpServletRequest request,
                         @RequestBody @Valid CloudLogin cloudLogin, final Locale locale) throws Exception {
                 log.debug(" Multifactor  Authentication invoked! ");
@@ -120,7 +124,8 @@ public class JwtLoginController extends UtilityFunctions {
 
         }
 
-        @PostMapping("/signout")
+        @GetMapping("/signout")
+        @Operation(summary = "Signout")
         public ResponseEntity<?> logoutUser(HttpServletRequest request) {
                 ResponseCookie cookie = jwtTokenUtil.getCleanJwtCookie();
                 CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(),

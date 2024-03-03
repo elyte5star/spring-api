@@ -71,6 +71,8 @@ public class UtilityFunctions {
 
     public final String ACCOUNT_CONFIRMATION_TEMPLATE = "html/verify-user";
 
+    public final String CUSTOMER_ENQUIRY_TEMPLATE = "html/user-enquiry";
+
     public final String UNUSUAL_LOCATION_LOGIN_TEMPLATE = "html/unusual-location";
 
     public final String RESET_USER_PASSWORD = "html/reset-password";

@@ -1,5 +1,4 @@
 package com.elyte.configuration;
-
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -17,10 +16,14 @@ public class OpenAiConfig {
         private final String moduleName;
         private final String apiVersion;
         private final String BEARER_AUTH = "bearerAuth";
+        private final String COOKIE_AUTH = "cookieAuth";
         private final String email = "checkuti@gmail.com";
         private final String name = "Utimore Services AS";
         private final String url = "https://github.com/elyte5star";
-       
+
+        @Value("${api.jwt.cookie.name}")
+        private String jwtCookieName;
+
 
         public OpenAiConfig(
                         @Value("${api.module-name}") String moduleName,
@@ -37,18 +40,19 @@ public class OpenAiConfig {
                                 .info(apiInfo());
 
         }
-
         private Map<String, SecurityScheme> schemes() {
                 SecurityScheme bearerScheme = new SecurityScheme().name(BEARER_AUTH).scheme("bearer")
                                 .type(SecurityScheme.Type.HTTP).bearerFormat("JWT");
-                return Map.of(BEARER_AUTH, bearerScheme);
+                SecurityScheme cookieScheme= new SecurityScheme().name(jwtCookieName)
+                .type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.COOKIE);
+                return Map.of(BEARER_AUTH, bearerScheme,COOKIE_AUTH,cookieScheme);
 
         }
 
         private Info apiInfo() {
                 String apiTitle = String.format("%s API.", StringUtils.capitalize(moduleName));
                 return new Info().title(apiTitle).version(apiVersion)
-                                .summary("Interactive Documentation for e-Market")
+                                .summary("Interactive Documentation for Elyte Realm")
                                 .contact(new Contact().name(name).email(email).url(url))
                                 .description("This is a sample spring boot server for a web store.")
                                 .license(new License().name("Proprietary")

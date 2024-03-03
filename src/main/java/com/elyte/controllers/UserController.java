@@ -1,4 +1,5 @@
 package com.elyte.controllers;
+import com.elyte.domain.request.CreateEnquiryRequest;
 import com.elyte.domain.request.CreateUserRequest;
 import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-
 import jakarta.validation.Valid;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
@@ -56,8 +56,8 @@ public class UserController {
     @GetMapping("/signup/resendOtp")
     @Operation(summary = "Resend OTP Token")
     public ResponseEntity<CustomResponseStatus> generateNewOtp(final HttpServletRequest request,
-    @RequestParam("token") final String oldToken) throws ResourceNotFoundException {
-        return userService.renewOTP(oldToken,request);
+    @RequestParam("email") final String email) throws ResourceNotFoundException {
+        return userService.renewOTP(email,request);
     }
 
     @PostMapping("/signup")
@@ -112,6 +112,13 @@ public class UserController {
     public ResponseEntity<CustomResponseStatus> enableNewLocation(Locale locale,
             @RequestParam("token") @Valid final String token) throws ResourceNotFoundException {
         return userService.enableNewLocation(locale, token);
+
+    }
+    @PostMapping(value = "/customer/service")
+    @Operation(summary = "Customer Service")
+    public ResponseEntity<CustomResponseStatus> createEnquiry(Locale locale,
+            @RequestBody  @Valid CreateEnquiryRequest enquiry) throws MessagingException {
+        return userService.createEnquiry(enquiry,locale);
 
     }
 

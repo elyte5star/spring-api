@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -51,6 +52,9 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
     private static final String USERNAME = "mail.server.username";
     private static final String PASSWORD = "mail.server.password";
 
+    @Autowired
+    private Environment env;
+
     private ApplicationContext applicationContext;
 
     public static final String EMAIL_TEMPLATE_ENCODING = "UTF-8";
@@ -70,7 +74,7 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**").allowedOrigins("http://localhost:9000","http://localhost:3000").allowedMethods("*").allowCredentials(true).maxAge(24 * 60 * 60);
+        registry.addMapping("/api/**").allowedOrigins(env.getProperty("client.url")).allowedMethods("*").allowCredentials(true).maxAge(24 * 60 * 60);
     }
 
     @Override

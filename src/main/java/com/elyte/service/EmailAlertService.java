@@ -175,6 +175,9 @@ public class EmailAlertService extends UtilityFunctions {
                 case UNUSUAL_LOCATION_LOGIN:
                     sendSimpleHtmlMail(mailObject,locale,this.UNUSUAL_LOCATION_LOGIN_TEMPLATE);
                     break;
+                 case CUSTOMER_ENQUIRY:
+                    sendSimpleHtmlMail(mailObject,locale,this.CUSTOMER_ENQUIRY_TEMPLATE);
+                    break;
                  case WITH_ATTACHMENT:
                     sendMessageWithAttachment(mailObject,attachmentPath,"",locale);
                     break;

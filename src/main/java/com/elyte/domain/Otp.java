@@ -43,7 +43,7 @@ public class Otp extends AuditEntity{
     @Column(name = "EXPIRY_DATE")
     private Date expiryDate;
 
-    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @OneToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 

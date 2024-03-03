@@ -100,11 +100,11 @@
                                 <td
                                     style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d4dadf;">
                                     <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;" >
-                                        Welcome <span th:text="${username}" ></span> !
+                                        Hello <span th:text="${name}" ></span> !
                                     </h1>
                                     <h1
                                         style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">
-                                        Confirm Your Identity.
+                                        Thanks for your enquiry.
                                     </h1>
                                 </td>
                             </tr>
@@ -117,13 +117,9 @@
                             <tr>
                                 <td
                                     style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-                                    <p>This code will expire in <span th:text="${duration}" ></span> minutes. Copy the code below.</p>
-                                    <p style="color: #1a82e2;width: 38em;">CODE : <code th:text="${otp}"></code></p>
-                                    <p> Or click the link below.</p>
-                                    <p style="margin: 0;width:38em;"><span>LINK : </span><a href="#"
-                                        th:href="${confirmationUrl}" style="color: #1a82e2;"><span th:text="${confirmationUrl}" ></span></a></p>
-                                    <p style="margin: 0;width: auto;">If you didn't create an account with <a href="#"
-                                        th:href="${home}" style="color: #1a82e2;">E-COMMERCE</a>, you can safely
+                                    <p>Your reference number is <span th:text="${id}" style="color: #1a82e2;width: 38em;"></span>. Please contact us with this number.</p>
+                                    <p style="margin: 0;width: auto;">If you didn't send an enquiry to <a href="#"
+                                        th:href="${home}" style="color: #1a82e2;">Elyte-realm</a>, you can safely
                                         delete
                                         this email.</p>
                                 </td>

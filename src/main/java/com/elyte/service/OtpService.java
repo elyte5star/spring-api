@@ -10,7 +10,6 @@ import org.springframework.context.ApplicationListener;
 
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -42,18 +41,18 @@ public class OtpService extends UtilityFunctions implements ApplicationListener<
         otp.setUser(user);
         otp.setExpiryDate(this.calculateExpiryDate(OTP_VALIDITY));
         otp = otpRepository.save(otp);
-        sendNewUserVerificationEmail(user,token,appUrl,locale);
+        sendNewUserVerificationEmail(user, token, appUrl, locale);
         return otp;
     }
-    
-    public Otp generateNewOtp(final String oldOtpString){
-        Otp otp = otpRepository.findByOtpString(oldOtpString);
-        if (otp == null) return null;
+
+    public Otp generateNewOtp(final String email) {
+        Otp otp = otpRepository.findByEmail(email);
+        if (otp == null)
+            return null;
         otp.setOtpString(this.randomString(16));
         otp.setExpiryDate(this.calculateExpiryDate(OTP_VALIDITY));
         return otpRepository.save(otp);
     }
-
 
     public void sendNewUserVerificationEmail(User user, String token, String appUrl, Locale locale) {
         Map<String, Object> data = new HashMap<>();
@@ -76,19 +75,18 @@ public class OtpService extends UtilityFunctions implements ApplicationListener<
     }
 
     public String verifyOtp(String email, String otp) {
-        List<Otp> otps = otpRepository.findByEmail(email);
-        for (Otp otpInDb : otps) {
-            if (otp.equalsIgnoreCase(otpInDb.getOtpString())) {
-                if (otpInDb.getUser().isEnabled()) {
-                    return "enabled";
-                } else if (!isOtpExpired(otpInDb)) {
-                    otpInDb.getUser().setEnabled(true);
-                    deleteOtp(otpInDb);
-                    return "valid";
-                } else {
-                    return "expired";
-                }
+        Otp otpInDb = otpRepository.findByEmail(email);
+        if (otp.equalsIgnoreCase(otpInDb.getOtpString())) {
+            if (otpInDb.getUser().isEnabled()) {
+                return "enabled";
+            } else if (!isOtpExpired(otpInDb)) {
+                otpInDb.getUser().setEnabled(true);
+                deleteOtp(otpInDb);
+                return "valid";
+            } else {
+                return "expired";
             }
+
         }
         log.warn("[+] INVALID OTP ");
         return "invalid";
