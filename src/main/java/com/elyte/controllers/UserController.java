@@ -24,7 +24,7 @@ import jakarta.validation.Valid;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
 import com.elyte.domain.request.PasswordUpdate;
-import com.elyte.domain.request.ValidateOtpRequest;
+
 
 @RestController
 @RequestMapping("/api/users")
@@ -76,9 +76,9 @@ public class UserController {
     }
 
    
-    @PostMapping(value = "/signup/verify-otp")
+    @GetMapping(value = "/signup/verify-otp")
     @Operation(summary = "Verify OTP")
-    public ResponseEntity<CustomResponseStatus> otpValidator(@RequestBody @Valid ValidateOtpRequest otp)
+    public ResponseEntity<CustomResponseStatus> otpValidator(@RequestParam("otp") @Valid String otp)
             throws Exception {
         return userService.validateOtp(otp);
 

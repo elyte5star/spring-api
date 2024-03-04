@@ -12,7 +12,7 @@ public interface OtpRepository extends CrudRepository<Otp,String> {
 
     Otp findByEmail(String email);
 
-    User findByUser(User user);
+    Otp findByUser(User user);
 
     void deleteByExpiryDateLessThan(Date now);
 

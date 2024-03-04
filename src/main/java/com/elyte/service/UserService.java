@@ -11,7 +11,6 @@ import com.elyte.domain.request.CreateUserRequest;
 import com.elyte.domain.request.EmailAlert;
 import com.elyte.domain.request.ModifyEntityRequest;
 import com.elyte.domain.request.PasswordUpdate;
-import com.elyte.domain.request.ValidateOtpRequest;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.exception.InvalidOldPasswordException;
 import com.elyte.exception.ResourceNotFoundException;
@@ -417,9 +416,8 @@ public class UserService extends UtilityFunctions {
         return new ResponseEntity<>(resp, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<CustomResponseStatus> validateOtp(
-            @Valid ValidateOtpRequest otp) {
-        String status = otpService.verifyOtp(otp.getEmail(), otp.getOtpString());
+    public ResponseEntity<CustomResponseStatus> validateOtp(String otp) {
+        String status = otpService.verifyOtp(otp);
         if ("valid".equals(status)) {
             CustomResponseStatus resp = new CustomResponseStatus(
                     HttpStatus.ACCEPTED.value(),

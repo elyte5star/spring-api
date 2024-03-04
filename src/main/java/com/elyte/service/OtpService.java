@@ -74,20 +74,21 @@ public class OtpService extends UtilityFunctions implements ApplicationListener<
         otpRepository.delete(otp);
     }
 
-    public String verifyOtp(String email, String otp) {
-        Otp otpInDb = otpRepository.findByEmail(email);
-        if (otp.equalsIgnoreCase(otpInDb.getOtpString())) {
-            if (otpInDb.getUser().isEnabled()) {
-                return "enabled";
-            } else if (!isOtpExpired(otpInDb)) {
-                otpInDb.getUser().setEnabled(true);
-                deleteOtp(otpInDb);
-                return "valid";
-            } else {
-                return "expired";
-            }
+    public String verifyOtp(String otp) {
+        Otp otpInDb = otpRepository.findByOtpString(otp);
+        log.info(otpInDb.toString());
+        // if (otp.equalsIgnoreCase(otpInDb.getOtpString())) {
+        //     if (otpInDb.getUser().isEnabled()) {
+        //         return "enabled";
+        //     } else if (!isOtpExpired(otpInDb)) {
+        //         otpInDb.getUser().setEnabled(true);
+        //         deleteOtp(otpInDb);
+        //         return "valid";
+        //     } else {
+        //         return "expired";
+        //     }
 
-        }
+        // }
         log.warn("[+] INVALID OTP ");
         return "invalid";
     }
