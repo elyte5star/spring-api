@@ -122,7 +122,7 @@ public class UserService extends UtilityFunctions {
                     this.SUCCESS,
                     this.SRC,
                     this.timeNow(),
-                    Map.of("userid", newUser.getUserid()));
+                    Map.of("userid", newUser.getUserid(),"disabled",true,"email",newUser.getEmail()));
             return new ResponseEntity<>(resp, HttpStatus.CREATED);
         }
 
