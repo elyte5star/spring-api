@@ -34,7 +34,7 @@ public class OtpService extends UtilityFunctions implements ApplicationListener<
     public static final int OTP_VALIDITY = 5; // 5 minutes
 
     public Otp generateOtp(User user, String appUrl, Locale locale) {
-        final String token = this.randomString(16);
+        final String token = this.randomString(36);
         Otp otp = new Otp();
         otp.setEmail(user.getEmail());
         otp.setOtpString(token);
@@ -49,7 +49,7 @@ public class OtpService extends UtilityFunctions implements ApplicationListener<
         Otp otp = otpRepository.findByEmail(email);
         if (otp == null)
             return null;
-        otp.setOtpString(this.randomString(16));
+        otp.setOtpString(this.randomString(36));
         otp.setExpiryDate(this.calculateExpiryDate(OTP_VALIDITY));
         return otpRepository.save(otp);
     }
