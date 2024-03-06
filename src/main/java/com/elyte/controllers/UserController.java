@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.request.ModifyEntityRequest;
+import com.elyte.domain.request.PasswordChange;
 import com.elyte.domain.request.PasswordUpdate;
 
 
@@ -84,10 +85,17 @@ public class UserController {
 
     }
 
-    @PostMapping(value = "/updatePassword")
-    @Operation(summary = "Change user password", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> changeUserpassword(@RequestBody @Valid PasswordUpdate passwordUpdate) {
-        return userService.handlePassWordChange(passwordUpdate);
+    @PostMapping(value = "/password/updatePassword")
+    @Operation(summary = "Update user password", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<CustomResponseStatus> UpdateUserpassword(@RequestBody @Valid PasswordUpdate passwordUpdate) {
+        return userService.handlePassWordUpdate(passwordUpdate);
+
+    }
+
+    @PostMapping(value = "/password/change-password")
+    @Operation(summary = "Change user password")
+    public ResponseEntity<CustomResponseStatus> changeUserpassword(@RequestBody @Valid PasswordChange passwordChange) {
+        return userService.handlePassWordChange(passwordChange);
 
     }
 

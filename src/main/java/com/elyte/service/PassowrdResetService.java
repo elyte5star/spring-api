@@ -75,7 +75,7 @@ public class PassowrdResetService extends UtilityFunctions {
         emailAlert.setRecipientEmail(user.getEmail());
         emailAlert.setRecipientUsername(user.getUsername());
         emailAlert.setSubject("Reset your password");
-        emailAlert.setData(Map.of("username", user.getUsername(), "code", encryptedToken, "duration", expiryTime));
+        emailAlert.setData(Map.of("username", user.getUsername(), "code","url",url, encryptedToken, "duration", expiryTime));
         emailAlertService.sendEmailAlert(emailAlert, request.getLocale());
         return encryptedToken;
     }

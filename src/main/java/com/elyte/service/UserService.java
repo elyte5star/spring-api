@@ -3,6 +3,7 @@ package com.elyte.service;
 import com.elyte.domain.Enquiry;
 import com.elyte.domain.NewLocationToken;
 import com.elyte.domain.Otp;
+import com.elyte.domain.PasswordResetToken;
 import com.elyte.domain.User;
 import com.elyte.domain.UserLocation;
 import com.elyte.domain.enums.EmailType;
@@ -10,12 +11,14 @@ import com.elyte.domain.request.CreateEnquiryRequest;
 import com.elyte.domain.request.CreateUserRequest;
 import com.elyte.domain.request.EmailAlert;
 import com.elyte.domain.request.ModifyEntityRequest;
+import com.elyte.domain.request.PasswordChange;
 import com.elyte.domain.request.PasswordUpdate;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.exception.InvalidOldPasswordException;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.EnquiryRepository;
 import com.elyte.repository.NewLocationTokenRepository;
+import com.elyte.repository.OtpRepository;
 import com.elyte.repository.UserLocationRepository;
 import com.elyte.repository.UserRepository;
 import com.elyte.security.UserPrincipal;
@@ -46,6 +49,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.elyte.repository.PasswordResetTokenRepository;
 
 @Service
 public class UserService extends UtilityFunctions {
@@ -57,6 +61,9 @@ public class UserService extends UtilityFunctions {
 
     @Autowired
     private UserLocationRepository userLocationRepository;
+
+    @Autowired
+    private OtpRepository otpRepository;
 
     @Autowired
     private HttpServletRequest request;
@@ -82,6 +89,9 @@ public class UserService extends UtilityFunctions {
 
     @Autowired
     private PassowrdResetService passowrdResetService;
+
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Autowired
     private NewLocationTokenRepository newLocationTokenRepository;
@@ -122,7 +132,7 @@ public class UserService extends UtilityFunctions {
                     this.SUCCESS,
                     this.SRC,
                     this.timeNow(),
-                    Map.of("userid", newUser.getUserid(),"disabled",true,"email",newUser.getEmail()));
+                    Map.of("userid", newUser.getUserid(), "disabled", true, "email", newUser.getEmail()));
             return new ResponseEntity<>(resp, HttpStatus.CREATED);
         }
 
@@ -208,28 +218,25 @@ public class UserService extends UtilityFunctions {
     public ResponseEntity<CustomResponseStatus> deleteUser(String userid)
             throws ResourceNotFoundException {
         Optional<User> userInDb = userRepository.findById(userid);
-
         if (userInDb.isPresent()) {
-            try {
-                userRepository.deleteById(userid);
-                CustomResponseStatus status = new CustomResponseStatus(
-                        HttpStatus.NO_CONTENT.value(),
-                        this.I200_MSG,
-                        this.SUCCESS,
-                        this.SRC,
-                        this.timeNow(),
-                        null);
-                return new ResponseEntity<>(status, HttpStatus.OK);
-            } catch (Exception e) {
-                CustomResponseStatus status = new CustomResponseStatus(
-                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        this.E500_MSG,
-                        this.FAILURE,
-                        e.getClass().getName(),
-                        this.timeNow(),
-                        null);
-                return new ResponseEntity<>(status, HttpStatus.INTERNAL_SERVER_ERROR);
+            final Otp otp = otpRepository.findByUser(userInDb.get());
+            if (otp != null) {
+                otpRepository.delete(otp);
             }
+            final PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUser(userInDb.get());
+            if (passwordResetToken != null) {
+                passwordResetTokenRepository.delete(passwordResetToken);
+            }
+            userRepository.delete(userInDb.get());
+            CustomResponseStatus status = new CustomResponseStatus(
+                    HttpStatus.NO_CONTENT.value(),
+                    this.I200_MSG,
+                    this.SUCCESS,
+                    this.SRC,
+                    this.timeNow(),
+                    "User with id : " + userid + " deleted!");
+            return new ResponseEntity<>(status, HttpStatus.OK);
+
         }
 
         throw new ResourceNotFoundException(
@@ -299,8 +306,11 @@ public class UserService extends UtilityFunctions {
         user.setPassword(new BCryptPasswordEncoder().encode(password));
         userRepository.save(user);
     }
-
-    public ResponseEntity<CustomResponseStatus> handlePassWordChange(
+    public ResponseEntity<CustomResponseStatus> handlePassWordChange(final PasswordChange passwordChange) {
+       
+        return null;
+    }
+    public ResponseEntity<CustomResponseStatus> handlePassWordUpdate(
             PasswordUpdate passwordUpdate) {
         final User user = this.findByUsername(
                 ((UserPrincipal) SecurityContextHolder
@@ -527,10 +537,10 @@ public class UserService extends UtilityFunctions {
                     user.getUsername());
             return new ResponseEntity<>(resp, HttpStatus.CREATED);
         }
-        throw new ResourceNotFoundException("User with Email: " + email +" not found.");
+        throw new ResourceNotFoundException("User with Email: " + email + " not found.");
     }
 
-    public ResponseEntity<CustomResponseStatus> createEnquiry(CreateEnquiryRequest enquiry,Locale locale) {
+    public ResponseEntity<CustomResponseStatus> createEnquiry(CreateEnquiryRequest enquiry, Locale locale) {
         Enquiry enq = new Enquiry();
         enq.setClientEmail(enquiry.getClientEmail());
         enq.setClientName(enquiry.getClientName());
@@ -543,7 +553,8 @@ public class UserService extends UtilityFunctions {
         emailAlert.setRecipientEmail(enq.getClientEmail());
         emailAlert.setRecipientUsername(enq.getClientName());
         emailAlert.setSubject("Enquiry Confirmation");
-        emailAlert.setData(Map.of("id", enq.getEnquiryId(),"name",enq.getClientName(),"home",env.getProperty("client.url")));
+        emailAlert.setData(
+                Map.of("id", enq.getEnquiryId(), "name", enq.getClientName(), "home", env.getProperty("client.url")));
         emailAlertService.sendEmailAlert(emailAlert, locale);
         CustomResponseStatus resp = new CustomResponseStatus(
                 HttpStatus.CREATED.value(),
