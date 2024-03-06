@@ -108,7 +108,7 @@ public class UserController {
     }
 
     @GetMapping("/enableNewLocation")
-    @Operation(summary = "Confirm password request token")
+    @Operation(summary = "Validate new location token")
     public ResponseEntity<CustomResponseStatus> enableNewLocation(Locale locale,
             @RequestParam("token") @Valid final String token) throws ResourceNotFoundException {
         return userService.enableNewLocation(locale, token);
