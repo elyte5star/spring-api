@@ -100,7 +100,7 @@ public class UserController {
     }
 
     @GetMapping("/reset/password")
-    @Operation(summary = "Reset password request")
+    @Operation(summary = "Request Reset password token")
     public ResponseEntity<CustomResponseStatus> resetPassword(HttpServletRequest request,
             @RequestParam("email") @Valid String userEmail) throws ResourceNotFoundException, MessagingException {
         return userService.createPasswordResetTokenForUser(request, userEmail);

@@ -25,6 +25,7 @@ import com.elyte.security.UserPrincipal;
 import com.elyte.security.events.RegistrationCompleteEvent;
 import com.elyte.utils.CheckIfUserExist;
 import com.elyte.utils.CheckNullEmptyBlank;
+import com.elyte.utils.EncryptionUtil;
 import com.elyte.utils.UtilityFunctions;
 import com.maxmind.geoip2.DatabaseReader;
 import jakarta.mail.MessagingException;
@@ -47,6 +48,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.elyte.repository.PasswordResetTokenRepository;
@@ -259,7 +261,7 @@ public class UserService extends UtilityFunctions {
                 this.SUCCESS,
                 this.SRC,
                 this.timeNow(),
-                result);
+                "Password Reset Token Sent to "+ email);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
@@ -317,9 +319,23 @@ public class UserService extends UtilityFunctions {
                     this.timeNow(),
                     "Token " + result);
             return new ResponseEntity<>(resp, HttpStatus.FORBIDDEN);
-
+        }
+        String decryptedToken =  EncryptionUtil.decrypt(passwordChange.getResetToken());
+        Optional<User> user = Optional.ofNullable(passwordResetTokenRepository.findByToken(decryptedToken).getUser());
+        if(user.isPresent()) {
+            changeUserPassword(user.get(),passwordChange.getPassword());
+            CustomResponseStatus resp = new CustomResponseStatus(
+                    HttpStatus.NO_CONTENT.value(),
+                    this.I204_MSG,
+                    this.SUCCESS,
+                    this.SRC,
+                    this.timeNow(),
+                    "Password changed");
+            return new ResponseEntity<>(resp, HttpStatus.OK);
+        }
+        log.info(user.get().getTelephone());
         
-        return null;
+        throw new UsernameNotFoundException("User Account not found!");
     }
     public ResponseEntity<CustomResponseStatus> handlePassWordUpdate(
             PasswordUpdate passwordUpdate) {

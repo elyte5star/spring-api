@@ -63,7 +63,7 @@ public class PassowrdResetService extends UtilityFunctions {
         User user = userRepository.findByEmail(email);
         if (user == null)
             return "NotFound";
-        final String token = this.randomString(16);
+        final String token = this.randomString(24);
         Date expiry = this.calculateExpiryDate(EXPIRATION);
         saveIssuedToken(user,token,expiry);
         String contextPath = getAppUrl(request);
