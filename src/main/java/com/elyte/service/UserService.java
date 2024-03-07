@@ -283,7 +283,7 @@ public class UserService extends UtilityFunctions {
                     this.FAILURE,
                     this.SRC,
                     this.timeNow(),
-                    null);
+                    "Reset Token Expired");
             return new ResponseEntity<>(resp, HttpStatus.FORBIDDEN);
         } else {
             throw new ResourceNotFoundException(
@@ -307,7 +307,18 @@ public class UserService extends UtilityFunctions {
         userRepository.save(user);
     }
     public ResponseEntity<CustomResponseStatus> handlePassWordChange(final PasswordChange passwordChange) {
-       
+        final String result = passowrdResetService.validatePasswordResetToken(passwordChange.getResetToken());
+        if(result != null) {
+            CustomResponseStatus resp = new CustomResponseStatus(
+                    HttpStatus.FORBIDDEN.value(),
+                    this.E403_SMTP_MSG,
+                    this.FAILURE,
+                    this.SRC,
+                    this.timeNow(),
+                    "Token " + result);
+            return new ResponseEntity<>(resp, HttpStatus.FORBIDDEN);
+
+        
         return null;
     }
     public ResponseEntity<CustomResponseStatus> handlePassWordUpdate(

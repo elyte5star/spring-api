@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class PasswordChange {
-    
     private String password;
-    private String token;
+    private String resetToken;
     
 }

@@ -45,6 +45,7 @@ public class JwtAuthSecurityConfig {
             "/api/users/signup/**",
             "/api/users/customer/service",
             "/api/users/enableNewLocation",
+            "/api/users/password/change-password",
             "/api/users/reset/password",
             "/api/users/logout",
             "/api/users/reset/confirm-token",
