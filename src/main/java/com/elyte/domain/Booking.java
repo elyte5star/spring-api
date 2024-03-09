@@ -34,7 +34,6 @@ public class Booking{
     @Column(name = "CREATED",updatable = false)
     private String created;
 
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "OWNER_ID")
     @OnDelete(action = OnDeleteAction.CASCADE)

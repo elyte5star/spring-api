@@ -345,7 +345,7 @@ public class UserService extends UtilityFunctions {
                         .getAuthentication()
                         .getPrincipal()).getUsername());
         if (!this.checkValidOldPassword(user, passwordUpdate.getOldPassword()))
-            throw new InvalidOldPasswordException();
+            throw new InvalidOldPasswordException("Invalid old password!");
         this.changeUserPassword(user, passwordUpdate.getNewPassword());
         CustomResponseStatus resp = new CustomResponseStatus(
                 HttpStatus.NO_CONTENT.value(),
@@ -353,7 +353,7 @@ public class UserService extends UtilityFunctions {
                 this.SUCCESS,
                 this.SRC,
                 this.timeNow(),
-                null);
+                "Password Updated");
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
