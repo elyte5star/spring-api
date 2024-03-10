@@ -8,10 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import com.elyte.domain.request.EmailAlert;
+import com.elyte.security.events.GeneralUserEvent;
 import com.elyte.utils.UtilityFunctions;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -22,7 +24,7 @@ import java.util.Locale;
 
 
 @Service
-public class EmailAlertService extends UtilityFunctions {
+public class EmailAlertService extends UtilityFunctions implements ApplicationListener<GeneralUserEvent>{
 
     @Autowired
     private JavaMailSender mailSender;
@@ -188,6 +190,12 @@ public class EmailAlertService extends UtilityFunctions {
             log.error("[x] Error while sending mail---{}", e.getLocalizedMessage());
         }
 
+    }
+
+    @Override
+    public void onApplicationEvent(GeneralUserEvent event) {
+        this.sendEmailAlert(event.getMailObject(),event.getLocale());
+        
     }
 
 }

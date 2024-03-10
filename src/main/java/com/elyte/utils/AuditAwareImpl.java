@@ -25,7 +25,7 @@ public class AuditAwareImpl implements AuditorAware<String> {
         try {
             UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
 
-            return Optional.of(user.getUser().getUserid());
+            return Optional.of(user.getUser().getUsername());
 
         } catch (ClassCastException e) {
 

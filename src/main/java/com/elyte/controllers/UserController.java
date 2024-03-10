@@ -43,7 +43,7 @@ public class UserController {
 
     @PutMapping("/{userid}")
     @Operation(summary = "Update a user", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> updateUser(@RequestBody ModifyEntityRequest user,
+    public ResponseEntity<CustomResponseStatus> updateUser(@RequestBody @Valid ModifyEntityRequest user,
             @PathVariable String userid) throws ResourceNotFoundException {
         return userService.updateUserInfo(user, userid);
     }

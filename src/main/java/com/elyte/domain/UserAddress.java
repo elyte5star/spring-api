@@ -50,10 +50,6 @@ public class UserAddress extends AuditEntity{
     @NotBlank(message = "Country is required")
     private String country;
 
-    @Column(name = "CITY")
-    @NotBlank(message = "City is required")
-    private String city;
-    
 
     @Column(name = "STATE")
     @NotBlank(message = "State is required")

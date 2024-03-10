@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -63,5 +64,9 @@ public class Product extends AuditEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "product")
     @OrderBy
     private List<Review> reviews;
+
+    @Column(name = "DISCOUNT")
+    @Digits(integer = 10, fraction = 2)
+    private String productDiscount;
 
 }

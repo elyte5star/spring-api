@@ -1,6 +1,7 @@
 package com.elyte.domain.enums;
 
 public enum  EmailType {
+    GENERAL_INFO,
     RESET_USER_PASSWORD,
     CUSTOMER_ENQUIRY,
     NEW_USER_OTP_VERIFICATION,

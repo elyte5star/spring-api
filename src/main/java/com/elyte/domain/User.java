@@ -42,7 +42,7 @@ public class User extends AuditEntity {
     @Size(min = 5)
     private String username;
 
-    @Column(length = 60,name = "PASSWORD")
+    @Column(name = "PASSWORD")
     @NotBlank(message = "password is required")
     @JsonIgnore
     private String password;
@@ -79,13 +79,14 @@ public class User extends AuditEntity {
     @JsonIgnore
     private List<UserLocation> locations;
 
-    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JoinColumn(name = "address_id", referencedColumnName = "address_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id")
+    @OrderBy
     private UserAddress address;
 
-    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @OrderBy
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "otp_id")
+    @OrderBy
     private Otp otp;
 
     @Column(name = "TELEPHONE", unique = true)
@@ -95,6 +96,6 @@ public class User extends AuditEntity {
 
     @Column(name = "DISCOUNT")
     @Digits(integer = 10, fraction = 2)
-    private String discount;
+    private String userDiscount;
 
 }

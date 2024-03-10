@@ -85,6 +85,7 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 			user.setEnabled(true);
 			user.setAccountNonLocked(true);
 			user.setCreatedBy(username);
+			user.setUserDiscount("0.0");
 			user = userRepository.save(user);
 			this.addUserLocation(user,"0:0:0:0:0:0:0:1" );
 			log.info("Admin Account Created " + user.getUserid());
@@ -133,6 +134,7 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
                 newProduct.setDescription(productRequest.getDescription());
                 newProduct.setStock_quantity(productRequest.getStock_quantity());
 				newProduct.setCreatedBy(username);
+				newProduct.setProductDiscount("0.0");
                 productRepository.save(newProduct);
                 productsPids.add(newProduct.getPid());
 

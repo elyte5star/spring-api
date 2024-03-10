@@ -31,7 +31,7 @@ public class OtpService extends UtilityFunctions implements ApplicationListener<
 
     private static final Logger log = LoggerFactory.getLogger(OtpService.class);
 
-    public static final int OTP_VALIDITY = 5; // 5 minutes
+    public static final int OTP_VALIDITY = 30; // 30 minutes
 
     public Otp generateOtp(User user, String appUrl, Locale locale) {
         final String token = this.randomString(36);

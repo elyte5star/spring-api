@@ -5,8 +5,10 @@ import com.elyte.domain.NewLocationToken;
 import com.elyte.domain.Otp;
 import com.elyte.domain.PasswordResetToken;
 import com.elyte.domain.User;
+import com.elyte.domain.UserAddress;
 import com.elyte.domain.UserLocation;
 import com.elyte.domain.enums.EmailType;
+import com.elyte.domain.request.AddressRequest;
 import com.elyte.domain.request.CreateEnquiryRequest;
 import com.elyte.domain.request.CreateUserRequest;
 import com.elyte.domain.request.EmailAlert;
@@ -19,12 +21,14 @@ import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.EnquiryRepository;
 import com.elyte.repository.NewLocationTokenRepository;
 import com.elyte.repository.OtpRepository;
+import com.elyte.repository.PasswordResetTokenRepository;
+import com.elyte.repository.UserAddressRepository;
 import com.elyte.repository.UserLocationRepository;
 import com.elyte.repository.UserRepository;
 import com.elyte.security.UserPrincipal;
+import com.elyte.security.events.GeneralUserEvent;
 import com.elyte.security.events.RegistrationCompleteEvent;
 import com.elyte.utils.CheckIfUserExist;
-import com.elyte.utils.CheckNullEmptyBlank;
 import com.elyte.utils.EncryptionUtil;
 import com.elyte.utils.UtilityFunctions;
 import com.maxmind.geoip2.DatabaseReader;
@@ -51,7 +55,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.elyte.repository.PasswordResetTokenRepository;
 
 @Service
 public class UserService extends UtilityFunctions {
@@ -74,9 +77,6 @@ public class UserService extends UtilityFunctions {
     private Environment env;
 
     @Autowired
-    private EmailAlertService emailAlertService;
-
-    @Autowired
     private ActiveUsersService activeUsers;
 
     @Autowired
@@ -84,6 +84,9 @@ public class UserService extends UtilityFunctions {
 
     @Autowired
     private EnquiryRepository enquiryRepository;
+
+    @Autowired
+    private UserAddressRepository userAddressRep;
 
     @Autowired
     @Qualifier("GeoIPCountry")
@@ -124,6 +127,7 @@ public class UserService extends UtilityFunctions {
             newUser.setTelephone(createUserRequest.getTelephone());
             newUser.setEmail(createUserRequest.getEmail());
             newUser.setCreatedBy(createUserRequest.getUsername());
+            newUser.setUserDiscount("1.0");
             newUser = userRepository.save(newUser);
             this.addUserLocation(newUser, this.getClientIP());
             eventPublisher.publishEvent(
@@ -134,7 +138,13 @@ public class UserService extends UtilityFunctions {
                     this.SUCCESS,
                     this.SRC,
                     this.timeNow(),
-                    Map.of("userid", newUser.getUserid(), "disabled", true, "email", newUser.getEmail()));
+                    Map.of(
+                            "userid",
+                            newUser.getUserid(),
+                            "disabled",
+                            true,
+                            "email",
+                            newUser.getEmail()));
             return new ResponseEntity<>(resp, HttpStatus.CREATED);
         }
 
@@ -159,23 +169,46 @@ public class UserService extends UtilityFunctions {
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
+    private UserAddress UpdateUserAddress(User userInDb, AddressRequest addressRequest) {
+        UserAddress userAddress = userAddressRep.findByUser(userInDb);
+        if (userAddress == null) {
+            UserAddress newAddress = new UserAddress();
+            newAddress.setFullName(addressRequest.getFullName());
+            newAddress.setStreetAddress(addressRequest.getStreetAddress());
+            newAddress.setCountry(addressRequest.getCountry());
+            newAddress.setState(addressRequest.getState());
+            newAddress.setZip(addressRequest.getZip());
+            newAddress.setUser(userInDb);
+            userAddressRep.save(newAddress);
+            log.info("User with Id :" + userInDb.getUserid() + " address created");
+            return newAddress;
+        } else {
+            userAddress.setFullName(addressRequest.getFullName());
+            userAddress.setStreetAddress(addressRequest.getStreetAddress());
+            userAddress.setCountry(addressRequest.getCountry());
+            userAddress.setState(addressRequest.getState());
+            userAddress.setZip(addressRequest.getZip());
+            userAddress.setUser(userInDb);
+            userAddress = userAddressRep.save(userAddress);
+            log.info("User with Id :" + userInDb.getUserid() + " address updated");
+            return userAddress;
+        }
+    }
+
     public ResponseEntity<CustomResponseStatus> updateUserInfo(
             ModifyEntityRequest user,
             String userid) throws ResourceNotFoundException {
         User userInDb = userRepository.findByUserid(userid);
-
         if (userInDb == null) {
             throw new ResourceNotFoundException(
                     "User with id :" + userid + " not found!");
         }
-
-        if (CheckNullEmptyBlank.check(user.getEmail()) &
-                !(user.getEmail().equals(userInDb.getEmail()))) {
+        UserAddress userAddress = UpdateUserAddress(userInDb, user.getAddress());
+        userInDb.setAddress(userAddress);
+        if (!(user.getEmail().equals(userInDb.getEmail()))) {
             userInDb.setEmail(user.getEmail());
         }
-
-        if (CheckNullEmptyBlank.check(user.getTelephone()) &
-                !(user.getTelephone().equals(userInDb.getTelephone()))) {
+        if (!(user.getTelephone().equals(userInDb.getTelephone()))) {
             userInDb.setTelephone(user.getTelephone());
         }
         List<User> usersList = userRepository.checkIfUserDetailsIstaken(
@@ -186,14 +219,14 @@ public class UserService extends UtilityFunctions {
             userInDb = userRepository.save(userInDb);
             CustomResponseStatus resp = new CustomResponseStatus(
                     HttpStatus.NO_CONTENT.value(),
-                    this.I204_MSG,
+                    "User information updated",
                     this.SUCCESS,
                     this.SRC,
                     this.timeNow(),
-                    userInDb);
+                    Map.of("user",userInDb));
             return new ResponseEntity<>(resp, HttpStatus.OK);
         }
-        throw new DataIntegrityViolationException("A USER WITH THE DETAILS EXIST");
+        throw new DataIntegrityViolationException("A USER WITH THE EMAIL or TEL EXIST");
     }
 
     public ResponseEntity<CustomResponseStatus> enable2F(String username) {
@@ -225,7 +258,8 @@ public class UserService extends UtilityFunctions {
             if (otp != null) {
                 otpRepository.delete(otp);
             }
-            final PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUser(userInDb.get());
+            final PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUser(
+                    userInDb.get());
             if (passwordResetToken != null) {
                 passwordResetTokenRepository.delete(passwordResetToken);
             }
@@ -238,7 +272,6 @@ public class UserService extends UtilityFunctions {
                     this.timeNow(),
                     "User with id : " + userid + " deleted!");
             return new ResponseEntity<>(status, HttpStatus.OK);
-
         }
 
         throw new ResourceNotFoundException(
@@ -261,7 +294,7 @@ public class UserService extends UtilityFunctions {
                 this.SUCCESS,
                 this.SRC,
                 this.timeNow(),
-                "Password Reset Token Sent to "+ email);
+                "Password Reset Token Sent to " + email);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
@@ -308,9 +341,12 @@ public class UserService extends UtilityFunctions {
         user.setPassword(new BCryptPasswordEncoder().encode(password));
         userRepository.save(user);
     }
-    public ResponseEntity<CustomResponseStatus> handlePassWordChange(final PasswordChange passwordChange) {
-        final String result = passowrdResetService.validatePasswordResetToken(passwordChange.getResetToken());
-        if(result != null) {
+
+    public ResponseEntity<CustomResponseStatus> handlePassWordChange(
+            final PasswordChange passwordChange) {
+        final String result = passowrdResetService.validatePasswordResetToken(
+                passwordChange.getResetToken());
+        if (result != null) {
             CustomResponseStatus resp = new CustomResponseStatus(
                     HttpStatus.FORBIDDEN.value(),
                     this.E403_SMTP_MSG,
@@ -320,10 +356,12 @@ public class UserService extends UtilityFunctions {
                     "Token " + result);
             return new ResponseEntity<>(resp, HttpStatus.FORBIDDEN);
         }
-        String decryptedToken =  EncryptionUtil.decrypt(passwordChange.getResetToken());
-        Optional<User> user = Optional.ofNullable(passwordResetTokenRepository.findByToken(decryptedToken).getUser());
-        if(user.isPresent()) {
-            changeUserPassword(user.get(),passwordChange.getPassword());
+        String decryptedToken = EncryptionUtil.decrypt(
+                passwordChange.getResetToken());
+        Optional<User> user = Optional.ofNullable(
+                passwordResetTokenRepository.findByToken(decryptedToken).getUser());
+        if (user.isPresent()) {
+            changeUserPassword(user.get(), passwordChange.getPassword());
             CustomResponseStatus resp = new CustomResponseStatus(
                     HttpStatus.NO_CONTENT.value(),
                     this.I204_MSG,
@@ -334,9 +372,10 @@ public class UserService extends UtilityFunctions {
             return new ResponseEntity<>(resp, HttpStatus.OK);
         }
         log.info(user.get().getTelephone());
-        
+
         throw new UsernameNotFoundException("User Account not found!");
     }
+
     public ResponseEntity<CustomResponseStatus> handlePassWordUpdate(
             PasswordUpdate passwordUpdate) {
         final User user = this.findByUsername(
@@ -564,10 +603,13 @@ public class UserService extends UtilityFunctions {
                     user.getUsername());
             return new ResponseEntity<>(resp, HttpStatus.CREATED);
         }
-        throw new ResourceNotFoundException("User with Email: " + email + " not found.");
+        throw new ResourceNotFoundException(
+                "User with Email: " + email + " not found.");
     }
 
-    public ResponseEntity<CustomResponseStatus> createEnquiry(CreateEnquiryRequest enquiry, Locale locale) {
+    public ResponseEntity<CustomResponseStatus> createEnquiry(
+            CreateEnquiryRequest enquiry,
+            Locale locale) {
         Enquiry enq = new Enquiry();
         enq.setClientEmail(enquiry.getClientEmail());
         enq.setClientName(enquiry.getClientName());
@@ -581,8 +623,14 @@ public class UserService extends UtilityFunctions {
         emailAlert.setRecipientUsername(enq.getClientName());
         emailAlert.setSubject("Enquiry Confirmation");
         emailAlert.setData(
-                Map.of("id", enq.getEnquiryId(), "name", enq.getClientName(), "home", env.getProperty("client.url")));
-        emailAlertService.sendEmailAlert(emailAlert, locale);
+                Map.of(
+                        "id",
+                        enq.getEnquiryId(),
+                        "name",
+                        enq.getClientName(),
+                        "home",
+                        env.getProperty("client.url")));
+        eventPublisher.publishEvent(new GeneralUserEvent(emailAlert, null, locale));
         CustomResponseStatus resp = new CustomResponseStatus(
                 HttpStatus.CREATED.value(),
                 this.I200_MSG,
@@ -591,6 +639,5 @@ public class UserService extends UtilityFunctions {
                 this.timeNow(),
                 enq.getEnquiryId());
         return new ResponseEntity<>(resp, HttpStatus.CREATED);
-
     }
 }

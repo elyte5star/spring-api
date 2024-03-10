@@ -67,6 +67,7 @@ public class ProductService extends UtilityFunctions {
             newProduct.setPrice(product.getPrice());
             newProduct.setDescription(product.getDescription());
             newProduct.setStock_quantity(product.getStock_quantity());
+            newProduct.setProductDiscount("1.0");
             productRepository.save(newProduct);
             HttpHeaders responseHeaders = new HttpHeaders();
             URI newUserUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{pid}")
