@@ -54,8 +54,8 @@ spring:
       client:
         registration:   
           google:   
-            client-id: google-client-id
-            client-secret: google-client-secret
+            client-id: client-id
+            
   servlet:
     multipart:
       max-file-size: '10MB'
