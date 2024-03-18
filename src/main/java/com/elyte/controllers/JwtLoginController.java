@@ -95,7 +95,7 @@ public class JwtLoginController extends UtilityFunctions {
         public ResponseEntity<CustomResponseStatus> cloudLogin(HttpServletRequest request,
                         @RequestBody @Valid CloudLogin cloudLogin, final Locale locale) throws Exception, GeneralSecurityException, IOException {
                 log.debug(" Multifactor  Authentication invoked! ");
-                if (cloudLogin.getType().equals("MSOFT")) {
+                if (cloudLogin.getAuthType().equals("MSOFT")) {
                         final Claims claims = msalValidation.decodeAndVerifyToken(cloudLogin.getToken());
                         String email = (String) claims.get("preferred_username");
                         User user = userRepository.findByEmail(email);
@@ -108,7 +108,7 @@ public class JwtLoginController extends UtilityFunctions {
                                 return createTokenFromUserService(request, userDetails);
 
                         }
-                } else if (cloudLogin.getType().equals("GMAIL")) {
+                } else if (cloudLogin.getAuthType().equals("GMAIL")) {
                         GoogleIdToken token = gmailValidation.verifyToken(cloudLogin.getToken());
                         GoogleIdToken.Payload payload = token.getPayload();
                         String email = payload.getEmail();
@@ -116,7 +116,7 @@ public class JwtLoginController extends UtilityFunctions {
                         return null;
                 }
 
-                throw new ResourceNotFoundException("Unknown Authentication type: " + cloudLogin.getType());
+                throw new ResourceNotFoundException("Unknown Authentication type: " + cloudLogin.getAuthType());
         }
 
         private ResponseEntity<CustomResponseStatus> createTokenFromUserService(HttpServletRequest request,

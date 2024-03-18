@@ -54,7 +54,7 @@ spring:
       client:
         registration:   
           google:   
-            client-id: client-id
+            client-id: 
             
   servlet:
     multipart:

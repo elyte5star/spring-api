@@ -15,6 +15,6 @@ public class CloudLogin {
     private String token;
 
     @NotBlank(message = "type of cloud provider is required")
-    private String type;
+    private String authType;
     
 }
