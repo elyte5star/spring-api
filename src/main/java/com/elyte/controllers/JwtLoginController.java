@@ -11,16 +11,22 @@ import com.elyte.domain.response.TokenResponse;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.UserRepository;
 import com.elyte.security.UserPrincipal;
+import com.elyte.service.GmailValidation;
 import com.elyte.service.MsalValidation;
 import com.elyte.security.CredentialsService;
 import com.elyte.security.JwtTokenUtil;
 import com.elyte.utils.UtilityFunctions;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+
 import org.springframework.http.HttpHeaders;
 import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
 
 import com.elyte.utils.EncryptionUtil;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Locale;
 
 import org.eclipse.jetty.io.QuietException.Exception;
@@ -57,6 +63,9 @@ public class JwtLoginController extends UtilityFunctions {
         private UserRepository userRepository;
 
         @Autowired
+        private GmailValidation gmailValidation;
+
+        @Autowired
         private MsalValidation msalValidation;
 
         private static final Logger log = LoggerFactory.getLogger(JwtLoginController.class);
@@ -84,7 +93,7 @@ public class JwtLoginController extends UtilityFunctions {
         @PostMapping(path = "/get-token")
         @Operation(summary = "External login")
         public ResponseEntity<CustomResponseStatus> cloudLogin(HttpServletRequest request,
-                        @RequestBody @Valid CloudLogin cloudLogin, final Locale locale) throws Exception {
+                        @RequestBody @Valid CloudLogin cloudLogin, final Locale locale) throws Exception, GeneralSecurityException, IOException {
                 log.debug(" Multifactor  Authentication invoked! ");
                 if (cloudLogin.getType().equals("MSOFT")) {
                         final Claims claims = msalValidation.decodeAndVerifyToken(cloudLogin.getToken());
@@ -100,7 +109,10 @@ public class JwtLoginController extends UtilityFunctions {
 
                         }
                 } else if (cloudLogin.getType().equals("GMAIL")) {
-
+                        GoogleIdToken token = gmailValidation.verifyToken(cloudLogin.getToken());
+                        GoogleIdToken.Payload payload = token.getPayload();
+                        String email = payload.getEmail();
+                        log.info(email);
                         return null;
                 }
 

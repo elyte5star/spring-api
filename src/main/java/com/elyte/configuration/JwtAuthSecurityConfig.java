@@ -10,17 +10,23 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import java.util.Arrays;
 import com.elyte.security.JwtAuthEntryPoint;
 import com.elyte.security.JwtFilter;
 import com.elyte.security.LoggingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 
 @Configuration
 @EnableWebSecurity
@@ -32,6 +38,9 @@ public class JwtAuthSecurityConfig {
  
     @Autowired
     private JwtFilter jwtRequestFilter;
+
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String googleClientId;
     
     @Autowired
     private JwtAuthEntryPoint jwtAuthenticationEntryPoint;
@@ -62,8 +71,16 @@ public class JwtAuthSecurityConfig {
              "/favicon.ico"
 
     };
-
     
+    @Bean
+    GoogleIdTokenVerifier googleTokenVerifier(){
+        HttpTransport netHttpTransport = new NetHttpTransport();
+        JsonFactory jsonFactory= new GsonFactory();
+        return new GoogleIdTokenVerifier.Builder(netHttpTransport, jsonFactory)
+        .setAudience(Arrays.asList(googleClientId))
+        .build();
+
+    }
 
     @Bean
     SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {

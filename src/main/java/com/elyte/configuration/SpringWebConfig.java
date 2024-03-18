@@ -31,6 +31,9 @@ import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+
+import com.elyte.validators.EmailConstraint;
+
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import java.util.List;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -85,6 +88,12 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
         argumentResolvers.add(phmar);
 
     }
+    
+    @Bean
+    EmailConstraint emailValidator(){
+        return new EmailConstraint();
+    }
+
 
     @Override
     public void setEnvironment(final Environment environment) {

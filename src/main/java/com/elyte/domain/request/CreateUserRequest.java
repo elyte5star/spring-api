@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+
+import com.elyte.validators.ValidEmail;
+import com.elyte.validators.ValidPassword;
+
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -24,9 +28,11 @@ public class CreateUserRequest implements Serializable {
     private String username;
 
     @NotBlank(message = "password is required")
+    @ValidPassword
     private String password;
 
     @Email(message = "invalid email address")
+    @ValidEmail
     private String email;
 
     @Digits(fraction = 0, integer = 10)

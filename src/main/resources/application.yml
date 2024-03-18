@@ -49,6 +49,13 @@ springdoc:
 ---
 
 spring:
+  security:
+    oauth2:
+      client:
+        registration:   
+          google:   
+            client-id: google-client-id
+            client-secret: google-client-secret
   servlet:
     multipart:
       max-file-size: '10MB'
