@@ -17,7 +17,7 @@ public class GmailValidation {
     private GoogleIdTokenVerifier verifier;
 
     public GoogleIdToken verifyToken(String idTokenString) throws GeneralSecurityException, IOException {
-        GoogleIdToken gIdToken = verifier.verify(idTokenString.substring(7));
+        GoogleIdToken gIdToken = verifier.verify(idTokenString);
         if (!verifier.verify(gIdToken)) {
             throw new BadCredentialsException("Invalid Google Token");
         }
