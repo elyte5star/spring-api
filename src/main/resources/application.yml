@@ -48,14 +48,7 @@ springdoc:
    
 ---
 
-spring:
-  security:
-    oauth2:
-      client:
-        registration:   
-          google:   
-            client-id: 
-            
+spring:         
   servlet:
     multipart:
       max-file-size: '10MB'
@@ -181,12 +174,52 @@ payment:
   STRIPE_SECRET_KEY: <KEY>
   STRIPE_PUBLIC_KEY: <KEY>
 
-msal:
-  client:
-    id: <CLIENT-ID>
-  login:
-    authority: https://login.microsoftonline.com/<SECRET>
-  enabled: true
-
 client:
   url: http://localhost:3000
+
+
+
+security:
+  allow-credentials: true
+  allowed-origins:
+    - http://localhost:3000
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - PATCH
+    - DELETE
+    - OPTIONS
+  allowed-headers:
+    - Authorization
+    - Origin
+    - Content-Type
+    - Accept
+    - Accept-Encoding
+    - Accept-Language
+    - Access-Control-Allow-Origin
+    - Access-Control-Allow-Headers
+    - Access-Control-Request-Method
+    - X-Requested-With
+    - X-Auth-Token
+    - X-Xsrf-Token
+    - Cache-Control
+    - Id-Token
+  allowed-public-apis:
+    - /favicon.ico
+    - /session/login
+    - /public/*
+  exposed-headers:
+    - X-Auth-Token
+    - X-Xsrf-Token
+  msal:
+    client:
+      id: <CLIENT-ID>
+    login:
+      authority: https://login.microsoftonline.com/<SECRET>
+    enabled: true
+
+  google-props:
+    client-ids:
+      - <ID-1>
+  

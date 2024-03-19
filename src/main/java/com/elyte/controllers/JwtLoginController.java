@@ -109,10 +109,8 @@ public class JwtLoginController extends UtilityFunctions {
 
                         }
                 } else if (cloudLogin.getAuthType().equals("GMAIL")) {
-                        GoogleIdToken token = gmailValidation.verifyToken(cloudLogin.getToken());
-                        GoogleIdToken.Payload payload = token.getPayload();
-                        String email = payload.getEmail();
-                        log.info(email);
+                        gmailValidation.verifyToken(cloudLogin.getToken());
+                        
                         return null;
                 }
 

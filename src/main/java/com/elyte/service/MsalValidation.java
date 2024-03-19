@@ -30,10 +30,10 @@ import org.slf4j.LoggerFactory;
 @Service
 public class MsalValidation {
 
-    @Value("${msal.login.authority}")
+    @Value("${security.msal.login.authority}")
     private String authority;
 
-    @Value("${msal.client.id}")
+    @Value("${security.msal.client.id}")
     private String clientId;
 
     @Autowired

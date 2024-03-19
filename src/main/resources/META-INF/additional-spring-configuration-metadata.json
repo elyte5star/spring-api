@@ -248,5 +248,45 @@
     "name": "api.jwt.cookie.name",
     "type": "java.lang.String",
     "description": "A description for 'api.jwt.cookie.name'"
+  },
+  {
+    "name": "security.msal.client.id",
+    "type": "java.lang.String",
+    "description": "A description for 'security.msal.client.id'"
+  },
+  {
+    "name": "security.msal.login.authority",
+    "type": "java.lang.String",
+    "description": "A description for 'security.msal.login.authority'"
+  },
+  {
+    "name": "security.msal.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'security.msal.enabled'"
+  },
+  {
+    "name": "security.google-props.client-ids",
+    "type": "java.lang.String",
+    "description": "A description for 'security.google-props.client-ids'"
+  },
+  {
+    "name": "security.allow-credentials",
+    "type": "java.lang.String",
+    "description": "A description for 'security.allow-credentials'"
+  },
+  {
+    "name": "security.allowed-origins",
+    "type": "java.lang.String",
+    "description": "A description for 'security.allowed-origins'"
+  },
+  {
+    "name": "security.allowed-methods",
+    "type": "java.lang.String",
+    "description": "A description for 'security.allowed-methods'"
+  },
+  {
+    "name": "security.allowed-headers",
+    "type": "java.lang.String",
+    "description": "A description for 'security.allowed-headers'"
   }
 ]}
