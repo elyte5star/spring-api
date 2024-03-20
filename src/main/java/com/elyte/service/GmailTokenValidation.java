@@ -38,13 +38,13 @@ public class GmailTokenValidation {
                 System.out.println("Invalid ID token.");
                throw new BadCredentialsException("Invalid ID token ");
             }
-            String email = payload.getEmail();
-            String userId = payload.getSubject();
-            String name = (String) payload.get("name");
-            String pictureUrl = (String) payload.get("picture");
-            String locale = (String) payload.get("locale");
-            String familyName = (String) payload.get("family_name");
-            String givenName = (String) payload.get("given_name");
+            // String email = payload.getEmail();
+            // String userId = payload.getSubject();
+            // String name = (String) payload.get("name");
+            // String pictureUrl = (String) payload.get("picture");
+            // String locale = (String) payload.get("locale");
+            // String familyName = (String) payload.get("family_name");
+            // String givenName = (String) payload.get("given_name");
             return decodedToken;
         }
         throw new BadCredentialsException("Invalid ID token ");
