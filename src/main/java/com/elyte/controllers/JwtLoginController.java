@@ -109,7 +109,7 @@ public class JwtLoginController extends UtilityFunctions {
 
                         }
                 } else if (cloudLogin.getAuthType().equals("GMAIL")) {
-                        gmailValidation.validateToken(cloudLogin.getToken());
+                        GoogleIdToken token = gmailValidation.validateToken(cloudLogin.getToken());
                         
                         return null;
                 }
