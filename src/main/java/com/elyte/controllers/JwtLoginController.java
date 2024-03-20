@@ -11,7 +11,7 @@ import com.elyte.domain.response.TokenResponse;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.UserRepository;
 import com.elyte.security.UserPrincipal;
-import com.elyte.service.GmailValidation;
+import com.elyte.service.GmailTokenValidation;
 import com.elyte.service.MsalValidation;
 import com.elyte.security.CredentialsService;
 import com.elyte.security.JwtTokenUtil;
@@ -63,7 +63,7 @@ public class JwtLoginController extends UtilityFunctions {
         private UserRepository userRepository;
 
         @Autowired
-        private GmailValidation gmailValidation;
+        private GmailTokenValidation gmailValidation;
 
         @Autowired
         private MsalValidation msalValidation;
@@ -92,7 +92,7 @@ public class JwtLoginController extends UtilityFunctions {
 
         @PostMapping(path = "/get-token")
         @Operation(summary = "External login")
-        public ResponseEntity<CustomResponseStatus> cloudLogin(HttpServletRequest request,
+        public Object cloudLogin(HttpServletRequest request,
                         @RequestBody @Valid CloudLogin cloudLogin, final Locale locale) throws Exception, GeneralSecurityException, IOException {
                 log.debug(" Multifactor  Authentication invoked! ");
                 if (cloudLogin.getAuthType().equals("MSOFT")) {
@@ -109,7 +109,7 @@ public class JwtLoginController extends UtilityFunctions {
 
                         }
                 } else if (cloudLogin.getAuthType().equals("GMAIL")) {
-                        gmailValidation.verifyToken(cloudLogin.getToken());
+                        gmailValidation.validateToken(cloudLogin.getToken());
                         
                         return null;
                 }

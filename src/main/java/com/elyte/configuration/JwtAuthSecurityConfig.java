@@ -10,6 +10,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.elyte.domain.SecProperties;
 import com.elyte.security.JwtAuthEntryPoint;
 import com.elyte.security.JwtFilter;
 import com.elyte.security.LoggingFilter;
@@ -20,6 +25,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 
 @Configuration
@@ -38,44 +44,23 @@ public class JwtAuthSecurityConfig {
     private JwtAuthEntryPoint jwtAuthenticationEntryPoint;
 
     @Autowired
+    private SecProperties secProperties;
+
+    @Autowired
     private LoggingFilter loggingFilter;
-
-    private static final String[] AUTH_WHITELIST = {
-            "/",
-            "/index",
-            "/api/users/signup/**",
-            "/api/users/customer/service",
-            "/api/users/enableNewLocation",
-            "/api/users/password/change-password",
-            "/api/users/reset/password",
-            "/api/users/logout",
-            "/api/users/reset/confirm-token",
-            "/api/reviews/create-review",
-            "/api/auth/token",
-            "/api/auth/signout",
-            "/api/auth/form-login",
-            "/api/auth/get-token",
-            "/v3/api-docs/**",
-            "/swagger-ui/**",
-            "/api/products/**",
-            "/docs/**",
-             "/actuator/**",
-             "/favicon.ico"
-
-    };
 
     
     @Bean
     SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
         log.debug("Bearer SecurityConfig initialized.");
         http.csrf(AbstractHttpConfigurer::disable)
+                .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(configurationSource()))
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .requestMatchers(secProperties.getAllowedPublicApis().stream().toArray(String[]::new)).permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(
                          ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
         // Add a filter to log the request-response of every request
         http.addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class);
         // Add a filter to validate the tokens with every request
@@ -84,7 +69,20 @@ public class JwtAuthSecurityConfig {
 
     }
 
-    
+
+    @Bean
+    CorsConfigurationSource configurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(secProperties.isAllowCredentials());
+        configuration.setAllowedHeaders(secProperties.getAllowedHeaders());
+        configuration.setAllowedMethods(secProperties.getAllowedMethods());
+        configuration.setAllowedOrigins(secProperties.getAllowedOrigins());
+        configuration.setExposedHeaders(secProperties.getExposedHeaders());
+        configuration.setMaxAge(3600L);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", configuration);
+        return source;
+    }
     
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)

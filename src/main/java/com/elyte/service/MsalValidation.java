@@ -1,10 +1,10 @@
 package com.elyte.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import com.elyte.domain.SecProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,11 +30,8 @@ import org.slf4j.LoggerFactory;
 @Service
 public class MsalValidation {
 
-    @Value("${security.msal.login.authority}")
-    private String authority;
-
-    @Value("${security.msal.client.id}")
-    private String clientId;
+    @Autowired
+    private SecProperties secProperties;
 
     @Autowired
     private Environment env;
@@ -47,7 +44,7 @@ public class MsalValidation {
             String kid = getTokenKeyId(token);
 
             // Get the public key from Azure AD OpenID configuration endpoint
-            URL endpointUrl = new URL(authority + "/discovery/keys?appid=" + clientId);
+            URL endpointUrl = new URL(secProperties.getMsalProps().getLoginAuthority() + "/discovery/keys?appid=" + secProperties.getMsalProps().getClientId());
             String publicKeyResponse = getAzureADPublicKey(endpointUrl);
 
             // Extract the value of x5c for the matching key ID
@@ -142,6 +139,6 @@ public class MsalValidation {
     }
 
     private boolean isMsalEnabled() {
-        return Boolean.parseBoolean(env.getProperty("msal.enabled"));
+        return Boolean.parseBoolean(env.getProperty("security.msal-props.enabled"));
     }
 }

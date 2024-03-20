@@ -225,21 +225,6 @@
     "description": "A description for 'server.name'"
   },
   {
-    "name": "msal.client.id",
-    "type": "java.lang.String",
-    "description": "A description for 'msal.client.id'"
-  },
-  {
-    "name": "msal.login.authority",
-    "type": "java.lang.String",
-    "description": "A description for 'msal.login.authority'"
-  },
-  {
-    "name": "msal.enabled",
-    "type": "java.lang.String",
-    "description": "A description for 'msal.enabled'"
-  },
-  {
     "name": "client.url",
     "type": "java.lang.String",
     "description": "A description for 'client.url'"
@@ -248,21 +233,6 @@
     "name": "api.jwt.cookie.name",
     "type": "java.lang.String",
     "description": "A description for 'api.jwt.cookie.name'"
-  },
-  {
-    "name": "security.msal.client.id",
-    "type": "java.lang.String",
-    "description": "A description for 'security.msal.client.id'"
-  },
-  {
-    "name": "security.msal.login.authority",
-    "type": "java.lang.String",
-    "description": "A description for 'security.msal.login.authority'"
-  },
-  {
-    "name": "security.msal.enabled",
-    "type": "java.lang.String",
-    "description": "A description for 'security.msal.enabled'"
   },
   {
     "name": "security.google-props.client-ids",
@@ -288,5 +258,30 @@
     "name": "security.allowed-headers",
     "type": "java.lang.String",
     "description": "A description for 'security.allowed-headers'"
+  },
+  {
+    "name": "security.allowed-public-apis",
+    "type": "java.lang.String",
+    "description": "A description for 'security.allowed-public-apis'"
+  },
+  {
+    "name": "security.exposed-headers",
+    "type": "java.lang.String",
+    "description": "A description for 'security.exposed-headers'"
+  },
+  {
+    "name": "security.msal-props.client-id",
+    "type": "java.lang.String",
+    "description": "A description for 'security.msal-props.client-id'"
+  },
+  {
+    "name": "security.msal-props.login-authority",
+    "type": "java.lang.String",
+    "description": "A description for 'security.msal-props.login-authority'"
+  },
+  {
+    "name": "security.msal-props.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'security.msal-props.enabled'"
   }
 ]}

@@ -174,15 +174,13 @@ payment:
   STRIPE_SECRET_KEY: <KEY>
   STRIPE_PUBLIC_KEY: <KEY>
 
-client:
-  url: http://localhost:3000
-
-
-
 security:
+  google-props: 
+      client-ids: 
+        - ''
   allow-credentials: true
   allowed-origins:
-    - http://localhost:3000
+    -  http://localhost:3000
   allowed-methods:
     - GET
     - POST
@@ -206,20 +204,32 @@ security:
     - Cache-Control
     - Id-Token
   allowed-public-apis:
+    - /
+    - /index
+    - /api/users/signup/**
+    - /api/users/customer/service
+    - /api/users/enableNewLocation
+    - /api/users/password/change-password
+    - /api/users/reset/password
+    - /api/users/logout
+    - /api/users/reset/confirm-token"
+    - /api/reviews/create-review
+    - /api/auth/token
+    - /api/auth/signout
+    - /api/auth/form-login
+    - /api/auth/get-token
+    - /v3/api-docs/**
+    - /swagger-ui/**
+    - /api/products/**
+    - /docs/**
+    - /actuator/**
     - /favicon.ico
-    - /session/login
-    - /public/*
   exposed-headers:
     - X-Auth-Token
     - X-Xsrf-Token
-  msal:
-    client:
-      id: <CLIENT-ID>
-    login:
-      authority: https://login.microsoftonline.com/<SECRET>
+  msal-props:
+    client-id: <CLIENT-ID>
+    login-authority: https://login.microsoftonline.com/<SECRET>
     enabled: true
 
-  google-props:
-    client-ids:
-      - <ID-1>
   
