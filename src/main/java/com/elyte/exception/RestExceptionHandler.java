@@ -88,7 +88,7 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
             mp.put(fieldError.getField(), fieldError.getDefaultMessage());
         });
         CustomResponseStatus status = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(),
-                "Input validation failed",
+                "Input validation failed.",
                 this.FAILURE,
                 e.getClass().getName(), this.timeNow(), Map.of("errors", mp));
         log.error("[+] MethodArgumentNotValidException: {}", e.getMessage());

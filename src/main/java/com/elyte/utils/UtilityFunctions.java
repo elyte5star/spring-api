@@ -85,7 +85,7 @@ public class UtilityFunctions {
 
     public final String E400_MSG = "Malformed request syntax";
 
-    public final String E401_MSG = "Oops! You have entered invalid username/password.";
+    public final String E401_MSG = " Oops! You have entered invalid username/password.";
 
     public final String E402_MSG = "User already exists!";
 

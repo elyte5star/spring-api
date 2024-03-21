@@ -87,6 +87,7 @@ public class User extends AuditEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "otp_id")
     @OrderBy
+    @JsonIgnore
     private Otp otp;
 
     @Column(name = "TELEPHONE", unique = true)

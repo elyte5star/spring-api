@@ -177,7 +177,7 @@ payment:
 security:
   google-props: 
       client-ids: 
-        - '864725361364-enrs63jgolid0jpmiffcsnj1rtadtss1.apps.googleusercontent.com'
+        - ''
   allow-credentials: true
   allowed-origins:
     -  http://localhost:3000

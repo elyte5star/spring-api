@@ -11,7 +11,7 @@ import com.elyte.domain.response.TokenResponse;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.UserRepository;
 import com.elyte.security.UserPrincipal;
-import com.elyte.service.GmailTokenValidation;
+import com.elyte.service.GmailTokenService;
 import com.elyte.service.MsalValidation;
 import com.elyte.security.CredentialsService;
 import com.elyte.security.JwtTokenUtil;
@@ -63,7 +63,7 @@ public class JwtLoginController extends UtilityFunctions {
         private UserRepository userRepository;
 
         @Autowired
-        private GmailTokenValidation gmailValidation;
+        private GmailTokenService gmailTokenService;
 
         @Autowired
         private MsalValidation msalValidation;
@@ -109,9 +109,8 @@ public class JwtLoginController extends UtilityFunctions {
 
                         }
                 } else if (cloudLogin.getAuthType().equals("GMAIL")) {
-                        GoogleIdToken token = gmailValidation.validateToken(cloudLogin.getToken());
-                        
-                        return null;
+                        final UserPrincipal userDetails = gmailTokenService.authenticateUser(cloudLogin.getToken());
+                        return createTokenFromUserService(request,userDetails);
                 }
 
                 throw new ResourceNotFoundException("Unknown Authentication type: " + cloudLogin.getAuthType());

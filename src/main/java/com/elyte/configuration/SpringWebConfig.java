@@ -50,10 +50,7 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
     private static final String USERNAME = "mail.server.username";
     private static final String PASSWORD = "mail.server.password";
 
-
-
     private ApplicationContext applicationContext;
-
 
     public static final String EMAIL_TEMPLATE_ENCODING = "UTF-8";
 
