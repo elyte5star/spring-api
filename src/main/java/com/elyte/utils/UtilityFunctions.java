@@ -81,9 +81,9 @@ public class UtilityFunctions {
 
     public final String EMAIL_TEXT_TEMPLATE_NAME = "text/email-text";
 
-    public final String E205_MSG = "Data integrity violation";
+    public final String E205_MSG = "Data integrity violation.";
 
-    public final String E400_MSG = "Malformed request syntax";
+    public final String E400_MSG = "Malformed request syntax.";
 
     public final String E401_MSG = " Oops! You have entered invalid username/password.";
 
@@ -95,7 +95,7 @@ public class UtilityFunctions {
 
     public final String E401_SMTP_MSG = "Your OTP is invalid.";
 
-    public final String E410_SMTP_MSG = "Your OTP is no longer valid or usable.";
+    public final String E410_SMTP_MSG = "Your OTP is no longer usable.";
 
     public final String I999_MSG = "Sorry! Something went wrong. Please try again.";
 

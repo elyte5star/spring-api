@@ -42,7 +42,7 @@ public class User extends AuditEntity {
     @Size(min = 5)
     private String username;
 
-    @Column(name = "PASSWORD")
+    @Column(name = "PASSWORD",length=60)
     @NotBlank(message = "password is required")
     @JsonIgnore
     private String password;

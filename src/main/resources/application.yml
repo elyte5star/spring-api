@@ -177,7 +177,7 @@ payment:
 security:
   google-props: 
       client-ids: 
-        - ''
+        - 'ID'
   allow-credentials: true
   allowed-origins:
     -  http://localhost:3000

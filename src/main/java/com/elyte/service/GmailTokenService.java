@@ -1,7 +1,6 @@
 package com.elyte.service;
 
 import com.elyte.domain.User;
-import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.UserRepository;
 import com.elyte.security.CredentialsService;
 import com.elyte.security.UserPrincipal;
@@ -33,7 +32,7 @@ public class GmailTokenService {
             GmailTokenService.class);
 
     public void createUser(String idTokenString) {
-        Payload payload = validateToken(idTokenString);
+        Payload payload = decodeAndVerifyToken(idTokenString);
         String email = payload.getEmail();
         String userId = payload.getSubject();
         String name = (String) payload.get("name");
@@ -46,7 +45,7 @@ public class GmailTokenService {
 
     }
 
-    private Payload validateToken(String idTokenString) {
+    private Payload decodeAndVerifyToken(String idTokenString) {
         log.debug("Token received from frontend " + idTokenString);
         GoogleIdToken decodedToken = null;
         try {
@@ -61,7 +60,6 @@ public class GmailTokenService {
             Payload payload = decodedToken.getPayload();
             boolean emailVerified = Boolean.valueOf(payload.getEmailVerified());
             if (!emailVerified) {
-                System.out.println("Invalid ID token.");
                 throw new BadCredentialsException("Account not verified ");
             }
             return payload;
@@ -70,7 +68,7 @@ public class GmailTokenService {
     }
 
     public UserPrincipal authenticateUser(String idTokenString) {
-        Payload payload = validateToken(idTokenString);
+        Payload payload = decodeAndVerifyToken(idTokenString);
         String email = payload.getEmail();
         User user = userRepository.findByEmail(email);
         if (user == null) {

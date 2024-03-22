@@ -9,10 +9,10 @@ import java.io.Serializable;
 
 import com.elyte.validators.ValidEmail;
 import com.elyte.validators.ValidPassword;
-
 import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 
 
@@ -31,11 +31,13 @@ public class CreateUserRequest implements Serializable {
     @ValidPassword
     private String password;
 
-    @Email(message = "invalid email address")
+   
     @ValidEmail
+    @NotNull
+    @Size(min = 1, message = "invalid email address")
     private String email;
 
-    @Digits(fraction = 0, integer = 10)
+    @Digits(fraction = 0, integer = 15)
     private String telephone;
 
 

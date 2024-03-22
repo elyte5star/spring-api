@@ -2,12 +2,16 @@ package com.elyte.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
-
 import com.elyte.domain.SecProperties;
+import com.elyte.domain.User;
+import com.elyte.repository.UserRepository;
+import com.elyte.security.CredentialsService;
+import com.elyte.security.UserPrincipal;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -28,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service
-public class MsalValidation {
+public class MsalTokenService {
 
     @Autowired
     private SecProperties secProperties;
@@ -36,7 +40,13 @@ public class MsalValidation {
     @Autowired
     private Environment env;
 
-    private static final Logger log = LoggerFactory.getLogger(MsalValidation.class);
+    @Autowired
+    private CredentialsService credentialsService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    private static final Logger log = LoggerFactory.getLogger(MsalTokenService.class);
 
     public String getPublicKey(String token) {
         try {
@@ -44,7 +54,8 @@ public class MsalValidation {
             String kid = getTokenKeyId(token);
 
             // Get the public key from Azure AD OpenID configuration endpoint
-            URL endpointUrl = new URL(secProperties.getMsalProps().getLoginAuthority() + "/discovery/keys?appid=" + secProperties.getMsalProps().getClientId());
+            URL endpointUrl = new URL(secProperties.getMsalProps().getLoginAuthority() + "/discovery/keys?appid="
+                    + secProperties.getMsalProps().getClientId());
             String publicKeyResponse = getAzureADPublicKey(endpointUrl);
 
             // Extract the value of x5c for the matching key ID
@@ -122,9 +133,7 @@ public class MsalValidation {
         return certificate.getPublicKey();
     }
 
-    public Claims decodeAndVerifyToken(String token) {
-        if (!isMsalEnabled())
-            return null;
+    private Claims decodeAndVerifyToken(String token) {
         String publicKeyString = "-----BEGIN PUBLIC KEY-----\n" + getPublicKey(token) + "\n-----END PUBLIC KEY-----";
         PublicKey publicKey = null;
         try {
@@ -132,7 +141,7 @@ public class MsalValidation {
             return Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(token).getPayload();
         } catch (JwtException e) {
             // Throw an exception for any invalid token
-            throw new RuntimeException("Invalid token: " + e.getMessage());
+            throw new BadCredentialsException("Invalid token: " + e.getMessage());
         } catch (Exception e) {
             throw new RuntimeException(e.getLocalizedMessage());
         }
@@ -141,4 +150,22 @@ public class MsalValidation {
     private boolean isMsalEnabled() {
         return Boolean.parseBoolean(env.getProperty("security.msal-props.enabled"));
     }
+
+    public UserPrincipal authenticateUser(String token){
+        if (!isMsalEnabled())
+            throw new  AccessDeniedException("MSAL DISABLED BY ADMIN.");
+        Claims claims = decodeAndVerifyToken(token);
+        String email = (String) claims.get("preferred_username");
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new BadCredentialsException(" Invalid credentials.");
+        } else if (!user.isUsing2FA()) {
+            throw new AccessDeniedException(" External login not activated.");
+
+        }
+        final UserPrincipal userDetails = (UserPrincipal) credentialsService.loadUserByUsername(user.getUsername());
+        return userDetails;
+
+    }
+
 }
