@@ -1,7 +1,6 @@
 package com.elyte.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
@@ -36,9 +35,6 @@ public class MsalTokenService {
 
     @Autowired
     private SecProperties secProperties;
-
-    @Autowired
-    private Environment env;
 
     @Autowired
     private CredentialsService credentialsService;
@@ -148,7 +144,7 @@ public class MsalTokenService {
     }
 
     private boolean isMsalEnabled() {
-        return Boolean.parseBoolean(env.getProperty("security.msal-props.enabled"));
+        return secProperties.getMsalProps().isEnabled();
     }
 
     public UserPrincipal authenticateUser(String token){

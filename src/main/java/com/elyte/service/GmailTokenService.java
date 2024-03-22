@@ -1,5 +1,6 @@
 package com.elyte.service;
 
+import com.elyte.domain.SecProperties;
 import com.elyte.domain.User;
 import com.elyte.repository.UserRepository;
 import com.elyte.security.CredentialsService;
@@ -21,6 +22,9 @@ public class GmailTokenService {
 
     @Autowired
     GoogleIdTokenVerifier googleIdTokenVerifier;
+
+    @Autowired
+    private SecProperties secProperties;
 
     @Autowired
     private CredentialsService credentialsService;
@@ -68,6 +72,8 @@ public class GmailTokenService {
     }
 
     public UserPrincipal authenticateUser(String idTokenString) {
+        if (!isGmailEnabled())
+            throw new  AccessDeniedException("GMAIL DISABLED BY ADMIN.");
         Payload payload = decodeAndVerifyToken(idTokenString);
         String email = payload.getEmail();
         User user = userRepository.findByEmail(email);
@@ -79,5 +85,9 @@ public class GmailTokenService {
         }
         final UserPrincipal userDetails = (UserPrincipal) credentialsService.loadUserByUsername(user.getUsername());
         return userDetails;
+    }
+
+    private boolean isGmailEnabled() {
+        return secProperties.getGoogleProps().isEnabled();
     }
 }

@@ -5,5 +5,6 @@ import lombok.Data;
 @Data
 public class GoogleProperties {
     List<String> clientIds;
+    boolean enabled;
     
 }
