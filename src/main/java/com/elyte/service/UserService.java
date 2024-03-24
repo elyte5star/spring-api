@@ -28,7 +28,6 @@ import com.elyte.repository.UserRepository;
 import com.elyte.security.UserPrincipal;
 import com.elyte.security.events.GeneralUserEvent;
 import com.elyte.security.events.RegistrationCompleteEvent;
-import com.elyte.utils.CheckIfUserExist;
 import com.elyte.utils.EncryptionUtil;
 import com.elyte.utils.UtilityFunctions;
 import com.maxmind.geoip2.DatabaseReader;
@@ -115,11 +114,15 @@ public class UserService extends UtilityFunctions {
                 allUsersInDb);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
-
+    private Boolean isExisting(CreateUserRequest entity, UserRepository userRep) {
+        List<User> userExistUser = userRep.findByUsernameOrEmailOrTelephone(entity.getUsername(), entity.getEmail(),
+                entity.getTelephone());
+        return (!userExistUser.isEmpty());
+    }
     public ResponseEntity<CustomResponseStatus> createUser(
             CreateUserRequest createUserRequest,
             Locale locale) throws DataIntegrityViolationException, MessagingException {
-        if (!CheckIfUserExist.isExisting(createUserRequest, userRepository)) {
+        if (!isExisting(createUserRequest, userRepository)) {
             User newUser = new User();
             newUser.setUsername(createUserRequest.getUsername());
             newUser.setPassword(
@@ -171,6 +174,12 @@ public class UserService extends UtilityFunctions {
 
     private UserAddress UpdateUserAddress(User userInDb, AddressRequest addressRequest) {
         UserAddress userAddress = userAddressRep.findByUser(userInDb);
+        EmailAlert emailAlert = new EmailAlert();
+        emailAlert.setEmailType(EmailType.NEW_DEVICE_LOGIN);
+        emailAlert.setRecipientEmail(userInDb.getEmail());
+        emailAlert.setRecipientUsername(userInDb.getUsername());
+        emailAlert.setSubject("User Notification");
+        String text = null;
         if (userAddress == null) {
             UserAddress newAddress = new UserAddress();
             newAddress.setFullName(addressRequest.getFullName());
@@ -180,7 +189,10 @@ public class UserService extends UtilityFunctions {
             newAddress.setZip(addressRequest.getZip());
             newAddress.setUser(userInDb);
             userAddressRep.save(newAddress);
-            log.info("User with Id :" + userInDb.getUserid() + " address created");
+            text = "Hello " + userInDb.getUsername() + "! Your address was added";
+            emailAlert.setData(Map.of("text", text));
+            log.debug("User with Id :" + userInDb.getUserid() + " address created");
+            eventPublisher.publishEvent(new GeneralUserEvent(emailAlert,userInDb, request.getLocale()));
             return newAddress;
         } else {
             userAddress.setFullName(addressRequest.getFullName());
@@ -190,7 +202,10 @@ public class UserService extends UtilityFunctions {
             userAddress.setZip(addressRequest.getZip());
             userAddress.setUser(userInDb);
             userAddress = userAddressRep.save(userAddress);
-            log.info("User with Id :" + userInDb.getUserid() + " address updated");
+            text = "Hello " + userInDb.getUsername() + "! Your address was updated";
+            emailAlert.setData(Map.of("text", text));
+            log.debug("User with Id :" + userInDb.getUserid() + " address updated");
+            eventPublisher.publishEvent(new GeneralUserEvent(emailAlert, userInDb, request.getLocale()));
             return userAddress;
         }
     }
@@ -371,8 +386,6 @@ public class UserService extends UtilityFunctions {
                     "Password changed");
             return new ResponseEntity<>(resp, HttpStatus.OK);
         }
-        log.info(user.get().getTelephone());
-
         throw new UsernameNotFoundException("User Account not found!");
     }
 

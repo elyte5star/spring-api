@@ -171,6 +171,9 @@ public class EmailAlertService extends UtilityFunctions implements ApplicationLi
                 case NEW_DEVICE_LOGIN:
                      sendStringMail(mailObject,locale);
                     break;
+                case GENERAL_INFO:
+                    sendStringMail(mailObject,locale);
+                   break;
                 case NEW_USER_ACCOUNT_CONFIRMATION:
                     sendSimpleHtmlMail(mailObject,locale,this.ACCOUNT_CONFIRMATION_TEMPLATE);
                     break;

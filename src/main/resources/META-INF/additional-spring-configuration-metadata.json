@@ -236,8 +236,13 @@
   },
   {
     "name": "security.google-props.client-ids",
-    "type": "java.lang.String",
+    "type": "java.util.List",
     "description": "A description for 'security.google-props.client-ids'"
+  },
+  {
+    "name": "security.google-props.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'security.google-props.enabled'"
   },
   {
     "name": "security.allow-credentials",
@@ -246,27 +251,27 @@
   },
   {
     "name": "security.allowed-origins",
-    "type": "java.lang.String",
+    "type": "java.util.List",
     "description": "A description for 'security.allowed-origins'"
   },
   {
     "name": "security.allowed-methods",
-    "type": "java.lang.String",
+    "type": "java.util.List",
     "description": "A description for 'security.allowed-methods'"
   },
   {
     "name": "security.allowed-headers",
-    "type": "java.lang.String",
+    "type": "java.util.List",
     "description": "A description for 'security.allowed-headers'"
   },
   {
     "name": "security.allowed-public-apis",
-    "type": "java.lang.String",
+    "type": "java.util.List",
     "description": "A description for 'security.allowed-public-apis'"
   },
   {
     "name": "security.exposed-headers",
-    "type": "java.lang.String",
+    "type": "java.util.List",
     "description": "A description for 'security.exposed-headers'"
   },
   {
@@ -283,10 +288,5 @@
     "name": "security.msal-props.enabled",
     "type": "java.lang.String",
     "description": "A description for 'security.msal-props.enabled'"
-  },
-  {
-    "name": "security.google-props.enabled",
-    "type": "java.lang.String",
-    "description": "A description for 'security.google-props.enabled'"
   }
 ]}

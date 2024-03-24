@@ -138,7 +138,7 @@ spring:
   jpa:
     show-sql: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
         
 ---
 
@@ -178,7 +178,8 @@ security:
   google-props: 
       client-ids: 
         - ''
-      enabled: true
+      enabled: false
+
   allow-credentials: true
   allowed-origins:
     -  http://localhost:3000
@@ -228,6 +229,7 @@ security:
   exposed-headers:
     - X-Auth-Token
     - X-Xsrf-Token
+    
   msal-props:
     client-id: <CLIENT-ID>
     login-authority: https://login.microsoftonline.com/<SECRET>

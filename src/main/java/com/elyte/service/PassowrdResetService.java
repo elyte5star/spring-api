@@ -9,7 +9,10 @@ import com.elyte.domain.User;
 import com.elyte.domain.enums.EmailType;
 import com.elyte.repository.PasswordResetTokenRepository;
 import com.elyte.repository.UserRepository;
+import com.elyte.security.events.GeneralUserEvent;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import jakarta.mail.MessagingException;
@@ -32,7 +35,7 @@ public class PassowrdResetService extends UtilityFunctions {
     private UserRepository userRepository;
 
     @Autowired
-    private EmailAlertService emailAlertService;
+    private ApplicationEventPublisher eventPublisher;
 
     @Autowired
     private PasswordResetTokenRepository passwordTokenRepository;
@@ -76,7 +79,7 @@ public class PassowrdResetService extends UtilityFunctions {
         emailAlert.setRecipientUsername(user.getUsername());
         emailAlert.setSubject("Reset your password");
         emailAlert.setData(Map.of("username", user.getUsername(), "code", encryptedToken,"url",url, "duration", expiryTime));
-        emailAlertService.sendEmailAlert(emailAlert, request.getLocale());
+        eventPublisher.publishEvent(new GeneralUserEvent(emailAlert, user, request.getLocale()));
         return encryptedToken;
     }
 

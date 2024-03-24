@@ -9,6 +9,8 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
+
 import java.net.InetAddress;
 import java.util.Objects;
 import com.elyte.domain.DeviceInfo;
@@ -16,6 +18,7 @@ import com.elyte.domain.User;
 import com.elyte.domain.enums.EmailType;
 import com.elyte.domain.request.EmailAlert;
 import com.elyte.repository.DeviceInfoRepository;
+import com.elyte.security.events.GeneralUserEvent;
 import com.elyte.utils.UtilityFunctions;
 import com.google.common.base.Strings;
 import java.util.List;
@@ -29,10 +32,13 @@ public class DeviceService extends UtilityFunctions {
     private static final String UNKNOWN = "UNKNOWN";
 
     @Autowired
-    private EmailAlertService emailAlertService;
+    private ApplicationEventPublisher eventPublisher;
 
     @Autowired
     private DeviceInfoRepository deviceInfoRepository;
+
+    @Autowired
+    private HttpServletRequest request;
 
     @Autowired
     private Parser parser;
@@ -128,7 +134,7 @@ public class DeviceService extends UtilityFunctions {
         emailAlert.setRecipientUsername(user.getUsername());
         emailAlert.setSubject("New Device Login Notification");
         emailAlert.setData(Map.of("text", text));
-        emailAlertService.sendEmailAlert(emailAlert, locale);
+        eventPublisher.publishEvent(new GeneralUserEvent(emailAlert, user, request.getLocale()));
 
     }
 
