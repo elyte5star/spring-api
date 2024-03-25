@@ -2,9 +2,11 @@ package com.elyte.service;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.elyte.domain.PasswordResetToken;
+import com.elyte.domain.SecProperties;
 import com.elyte.domain.User;
 import com.elyte.domain.enums.EmailType;
 import com.elyte.repository.PasswordResetTokenRepository;
@@ -13,7 +15,6 @@ import com.elyte.security.events.GeneralUserEvent;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,11 +29,13 @@ public class PassowrdResetService extends UtilityFunctions {
 
     private static final int EXPIRATION = 60 * 24;
 
-    @Autowired
-    private Environment env;
 
     @Autowired
     private UserRepository userRepository;
+
+
+    @Autowired
+    private SecProperties secProperties;
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
@@ -56,10 +59,14 @@ public class PassowrdResetService extends UtilityFunctions {
     }
 
     private String getAppUrl(HttpServletRequest request) {
-        if (env.getProperty("client.url") != null) {
-            return env.getProperty("client.url");
-        }
-        return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        final String url = getClientUrl();
+        if (url != null)
+            return url;
+        return ("http://" +
+                request.getServerName() +
+                ":" +
+                request.getServerPort() +
+                request.getContextPath());
     }
 
     public String createPasswordResetTokenForUser(HttpServletRequest request, String email) throws MessagingException {
@@ -96,6 +103,12 @@ public class PassowrdResetService extends UtilityFunctions {
             myToken.setExpiryDate(expiry);
             passwordTokenRepository.save(myToken);
         }
+    }
+
+    private String getClientUrl() {
+        List<String> clientUrls = secProperties.getAllowedOrigins();
+        return clientUrls.isEmpty() ? null : clientUrls.iterator().next();
+
     }
 
 }

@@ -36,7 +36,7 @@ We inform the LoginAttemptService of the IP address from where the unsuccessful 
 */
 
 @Component
-public class AuthenticationEvents extends UtilityFunctions{
+public class AuthenticationEvents extends UtilityFunctions {
     private static final Logger log = LoggerFactory.getLogger(AuthenticationEvents.class);
     @Autowired
     private HttpServletRequest request;
@@ -47,7 +47,6 @@ public class AuthenticationEvents extends UtilityFunctions{
     @Autowired
     private DeviceService deviceService;
 
-   
     @Autowired
     private UserRepository userRepository;
 
@@ -72,7 +71,7 @@ public class AuthenticationEvents extends UtilityFunctions{
         }
         loginNotification(userDetails, request);
         strangeLocationChecker.checkDifferentLocation(userDetails);
-       
+
     }
 
     @EventListener
@@ -115,15 +114,15 @@ public class AuthenticationEvents extends UtilityFunctions{
         // ...Other failure events....
     }
 
-    
-
     private void loginNotification(UserPrincipal userDetails, HttpServletRequest request) {
+        if (!isGeoIpLibEnabled()) {
+            log.warn("GEO IP DISABALED BY ADMIN");
+            return;
+        }
         try {
-            if (isGeoIpLibEnabled()) {
-                deviceService.verifyDevice(userDetails.getUser(), request);
-            }
+            deviceService.verifyDevice(userDetails.getUser(), request);
         } catch (Exception e) {
-            log.error("[x] An error occurred while verifying device or location", e);
+            log.error("[x] An error occurred while verifying device or location " + e.getLocalizedMessage());
             throw new RuntimeException(e);
         }
 

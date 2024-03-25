@@ -21,7 +21,6 @@ import lombok.Setter;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 @Setter
 @Getter
 public class UtilityFunctions {
@@ -132,7 +131,7 @@ public class UtilityFunctions {
         try {
             result = this.mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            log.error("[x] JsonProcessingException Exception "+ e.getLocalizedMessage());
+            log.error("[x] JsonProcessingException Exception " + e.getLocalizedMessage());
 
         }
         return result;
@@ -145,7 +144,7 @@ public class UtilityFunctions {
         return Math.abs(duration.toSeconds());
     }
 
-    public static String generateString() { 
+    public static String generateString() {
         return UUID.randomUUID().toString();
     }
 
@@ -156,18 +155,17 @@ public class UtilityFunctions {
         return new Date(cal.getTime().getTime());
     }
 
-     // For local development test, remove this check b4 production.
-    public boolean checkIfLocalHost(String ip){
+    // For local development test, remove this check b4 production.
+    public boolean checkIfLocalHost(String ip) {
         return Arrays.asList(localHostAddresses).contains(ip);
 
     }
 
-    
-    public String randomString(int len){
+    public String randomString(int len) {
         StringBuilder sb = new StringBuilder(len);
-        for(int i = 0; i < len; i++)
-           sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        for (int i = 0; i < len; i++)
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
         return sb.toString();
-     }
+    }
 
 }

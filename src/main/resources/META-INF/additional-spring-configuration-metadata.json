@@ -225,11 +225,6 @@
     "description": "A description for 'server.name'"
   },
   {
-    "name": "client.url",
-    "type": "java.lang.String",
-    "description": "A description for 'client.url'"
-  },
-  {
     "name": "api.jwt.cookie.name",
     "type": "java.lang.String",
     "description": "A description for 'api.jwt.cookie.name'"
@@ -288,5 +283,10 @@
     "name": "security.msal-props.enabled",
     "type": "java.lang.String",
     "description": "A description for 'security.msal-props.enabled'"
+  },
+  {
+    "name": "email.notification.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'email.notification.enabled'"
   }
 ]}

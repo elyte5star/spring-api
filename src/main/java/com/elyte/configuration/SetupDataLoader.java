@@ -45,15 +45,14 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 	private UserRepository userRepository;
 
 	@Autowired
-    @Qualifier("GeoIPCountry")
-    private DatabaseReader databaseReader;
+	@Qualifier("GeoIPCountry")
+	private DatabaseReader databaseReader;
 
 	@Autowired
-    private UserLocationRepository userLocationRepository;
+	private UserLocationRepository userLocationRepository;
 
 	@Autowired
 	private ProductRepository productRepository;
-
 
 	@Autowired
 	private Environment env;
@@ -87,84 +86,86 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 			user.setCreatedBy(username);
 			user.setUserDiscount("0.0");
 			user = userRepository.save(user);
-			this.addUserLocation(user,"0:0:0:0:0:0:0:1" );
-			log.info("Admin Account Created " + user.getUserid());
-			
+			this.addUserLocation(user, "0:0:0:0:0:0:0:1");
+			log.info("Admin Account Created with ID: " + user.getUserid());
+
 		}
 		return user;
 	}
 
 	public void addUserLocation(User user, String ip) {
-        String country = "LocalHost";
-        if (!isGeoIpLibEnabled())
-            return;
-        try {
-            if (!this.checkIfLocalHost(ip)) {
-                final InetAddress ipAddress = InetAddress.getByName(ip);
-                country = databaseReader.country(ipAddress).getCountry().getName();
-            }
-            UserLocation location = new UserLocation(country, user);
-            location.setEnabled(true);
+		String country = "LocalHost";
+		if (!isGeoIpLibEnabled()) {
+			log.warn("GEO IP DISABALED BY ADMIN");
+			return;
+		}
+		try {
+			if (!this.checkIfLocalHost(ip)) {
+				final InetAddress ipAddress = InetAddress.getByName(ip);
+				country = databaseReader.country(ipAddress).getCountry().getName();
+			}
+			UserLocation location = new UserLocation(country, user);
+			location.setEnabled(true);
 			location.setCreatedBy(user.getUsername());
-            userLocationRepository.save(location);
-        } catch (final Exception e) {
-            log.error("[x] An error occurred while verifying login country", e);
-            throw new RuntimeException(e);
-        }
-
-    }
-	private boolean isGeoIpLibEnabled() {
-        return Boolean.parseBoolean(env.getProperty("geo.ip.lib.enabled"));
-    }
-
-	private final void createProducts(String username){
-		List<CreateProductRequest> productsList = JsonFileToJavaObject();
-		List<String> productsPids = new ArrayList<>();
-
-            for (CreateProductRequest productRequest : productsList) {
-                boolean prodExist = productRepository.existsByName(productRequest.getName());
-                if (prodExist)
-                    continue;
-                Product newProduct = new Product();
-                newProduct.setCategory(productRequest.getCategory());
-                newProduct.setDetails(productRequest.getDetails());
-                newProduct.setImage(productRequest.getImage());
-                newProduct.setName(productRequest.getName());
-                newProduct.setPrice(productRequest.getPrice());
-                newProduct.setDescription(productRequest.getDescription());
-                newProduct.setStock_quantity(productRequest.getStock_quantity());
-				newProduct.setCreatedBy(username);
-				newProduct.setProductDiscount("0.0");
-                productRepository.save(newProduct);
-                productsPids.add(newProduct.getPid());
-
-            }
-
-		log.info(productsPids.size() +" Products created");
+			userLocationRepository.save(location);
+		} catch (final Exception e) {
+			log.error("[x] An error occurred while verifying login country", e);
+			throw new RuntimeException(e);
+		}
 
 	}
 
-	private final  List<CreateProductRequest> JsonFileToJavaObject() {
-		
+	private boolean isGeoIpLibEnabled() {
+		return Boolean.parseBoolean(env.getProperty("geo.ip.lib.enabled"));
+	}
+
+	private final void createProducts(String username) {
+		List<CreateProductRequest> productsList = JsonFileToJavaObject();
+		List<String> productsPids = new ArrayList<>();
+
+		for (CreateProductRequest productRequest : productsList) {
+			boolean prodExist = productRepository.existsByName(productRequest.getName());
+			if (prodExist)
+				continue;
+			Product newProduct = new Product();
+			newProduct.setCategory(productRequest.getCategory());
+			newProduct.setDetails(productRequest.getDetails());
+			newProduct.setImage(productRequest.getImage());
+			newProduct.setName(productRequest.getName());
+			newProduct.setPrice(productRequest.getPrice());
+			newProduct.setDescription(productRequest.getDescription());
+			newProduct.setStock_quantity(productRequest.getStock_quantity());
+			newProduct.setCreatedBy(username);
+			newProduct.setProductDiscount("0.0");
+			productRepository.save(newProduct);
+			productsPids.add(newProduct.getPid());
+
+		}
+
+		log.info(productsPids.size() + " Products created");
+
+	}
+
+	private final List<CreateProductRequest> JsonFileToJavaObject() {
+
 		List<CreateProductRequest> products = new ArrayList<>();
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			InputStream inputStream = resourceFile.getInputStream();
-			products = mapper.readValue(inputStream,new TypeReference<List<CreateProductRequest>>() {});	
+			products = mapper.readValue(inputStream, new TypeReference<List<CreateProductRequest>>() {
+			});
 		} catch (JsonParseException e) {
 			log.error("JsonParseException ", e);
 		} catch (JsonMappingException e) {
 			log.error("JsonMappingException ", e);
 		} catch (IOException e) {
 			log.error("IOException ", e);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Exception ", e);
 		}
 
 		return products;
 
 	}
-
-	
 
 }

@@ -4,6 +4,7 @@ import com.elyte.domain.Enquiry;
 import com.elyte.domain.NewLocationToken;
 import com.elyte.domain.Otp;
 import com.elyte.domain.PasswordResetToken;
+import com.elyte.domain.SecProperties;
 import com.elyte.domain.User;
 import com.elyte.domain.UserAddress;
 import com.elyte.domain.UserLocation;
@@ -76,6 +77,9 @@ public class UserService extends UtilityFunctions {
     private Environment env;
 
     @Autowired
+    private SecProperties secProperties;
+
+    @Autowired
     private ActiveUsersService activeUsers;
 
     @Autowired
@@ -114,11 +118,13 @@ public class UserService extends UtilityFunctions {
                 allUsersInDb);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
+
     private Boolean isExisting(CreateUserRequest entity, UserRepository userRep) {
         List<User> userExistUser = userRep.findByUsernameOrEmailOrTelephone(entity.getUsername(), entity.getEmail(),
                 entity.getTelephone());
         return (!userExistUser.isEmpty());
     }
+
     public ResponseEntity<CustomResponseStatus> createUser(
             CreateUserRequest createUserRequest,
             Locale locale) throws DataIntegrityViolationException, MessagingException {
@@ -192,7 +198,7 @@ public class UserService extends UtilityFunctions {
             text = "Hello " + userInDb.getUsername() + "! Your address was added";
             emailAlert.setData(Map.of("text", text));
             log.debug("User with Id :" + userInDb.getUserid() + " address created");
-            eventPublisher.publishEvent(new GeneralUserEvent(emailAlert,userInDb, request.getLocale()));
+            eventPublisher.publishEvent(new GeneralUserEvent(emailAlert, userInDb, request.getLocale()));
             return newAddress;
         } else {
             userAddress.setFullName(addressRequest.getFullName());
@@ -202,35 +208,30 @@ public class UserService extends UtilityFunctions {
             userAddress.setZip(addressRequest.getZip());
             userAddress.setUser(userInDb);
             userAddress = userAddressRep.save(userAddress);
-            text = "Hello " + userInDb.getUsername() + "! Your address was updated";
-            emailAlert.setData(Map.of("text", text));
             log.debug("User with Id :" + userInDb.getUserid() + " address updated");
-            eventPublisher.publishEvent(new GeneralUserEvent(emailAlert, userInDb, request.getLocale()));
             return userAddress;
         }
     }
 
     public ResponseEntity<CustomResponseStatus> updateUserInfo(
-            ModifyEntityRequest user,
+            ModifyEntityRequest modifyUser,
             String userid) throws ResourceNotFoundException {
         User userInDb = userRepository.findByUserid(userid);
         if (userInDb == null) {
             throw new ResourceNotFoundException(
                     "User with id :" + userid + " not found!");
         }
-        UserAddress userAddress = UpdateUserAddress(userInDb, user.getAddress());
+        UserAddress userAddress = UpdateUserAddress(userInDb, modifyUser.getAddress());
         userInDb.setAddress(userAddress);
-        if (!(user.getEmail().equals(userInDb.getEmail()))) {
-            userInDb.setEmail(user.getEmail());
-        }
-        if (!(user.getTelephone().equals(userInDb.getTelephone()))) {
-            userInDb.setTelephone(user.getTelephone());
-        }
         List<User> usersList = userRepository.checkIfUserDetailsIstaken(
                 userid,
-                userInDb.getEmail(),
-                userInDb.getTelephone());
+                modifyUser.getEmail(),
+                modifyUser.getTelephone());
         if (usersList.isEmpty()) {
+            if (!(modifyUser.getEmail().equals(userInDb.getEmail())))
+                userInDb.setEmail(modifyUser.getEmail());
+            if (!(modifyUser.getTelephone().equals(userInDb.getTelephone())))
+                userInDb.setTelephone(modifyUser.getTelephone());
             userInDb = userRepository.save(userInDb);
             CustomResponseStatus resp = new CustomResponseStatus(
                     HttpStatus.NO_CONTENT.value(),
@@ -238,7 +239,7 @@ public class UserService extends UtilityFunctions {
                     this.SUCCESS,
                     this.SRC,
                     this.timeNow(),
-                    Map.of("user",userInDb));
+                    Map.of("user", userInDb));
             return new ResponseEntity<>(resp, HttpStatus.OK);
         }
         throw new DataIntegrityViolationException("A USER WITH THE EMAIL or TEL EXIST");
@@ -342,9 +343,9 @@ public class UserService extends UtilityFunctions {
     }
 
     private String getAppUrl(HttpServletRequest request) {
-        if (env.getProperty("client.url") != null) {
-            return env.getProperty("client.url");
-        }
+        final String url = getClientUrl();
+        if (url != null)
+            return url;
         return ("http://" +
                 request.getServerName() +
                 ":" +
@@ -352,9 +353,19 @@ public class UserService extends UtilityFunctions {
                 request.getContextPath());
     }
 
-    private void changeUserPassword(final User user, final String password) {
+    private void changeUserPassword(User user, final String password) {
         user.setPassword(new BCryptPasswordEncoder().encode(password));
-        userRepository.save(user);
+        user = userRepository.save(user);
+        String text = "Hello " + user.getUsername() + ", you password has been changed!"
+                + "\n\nRegards,\nTeam ELYTE.\n\n\nThis is system generated mail. Please do not reply to this.";
+        EmailAlert emailAlert = new EmailAlert();
+        emailAlert.setEmailType(EmailType.GENERAL_INFO);
+        emailAlert.setRecipientEmail(user.getEmail());
+        emailAlert.setRecipientUsername(user.getUsername());
+        emailAlert.setSubject("Password Change Notification");
+        emailAlert.setData(Map.of("text", text));
+        eventPublisher.publishEvent(new GeneralUserEvent(emailAlert, user, request.getLocale()));
+
     }
 
     public ResponseEntity<CustomResponseStatus> handlePassWordChange(
@@ -423,6 +434,7 @@ public class UserService extends UtilityFunctions {
     public NewLocationToken isNewLocationLogin(String username, String ip) {
         String country = "LocalHost";
         if (!isGeoIpLibEnabled()) {
+            log.warn("GEO IP DISABALED BY ADMIN");
             return null;
         }
         try {
@@ -497,11 +509,11 @@ public class UserService extends UtilityFunctions {
         Otp otp = otpService.generateOtp(user, getAppUrl(request), locale);
         CustomResponseStatus resp = new CustomResponseStatus(
                 HttpStatus.CREATED.value(),
-                this.I200_MSG,
+                "Otp sent to email",
                 this.SUCCESS,
                 this.SRC,
                 this.timeNow(),
-                Map.of("userid", user.getUserid(), "otp", otp.getOtpString()));
+                Map.of("userid", user.getUserid(), "expiry", otp.getExpiryDate()));
         return new ResponseEntity<>(resp, HttpStatus.CREATED);
     }
 
@@ -515,6 +527,7 @@ public class UserService extends UtilityFunctions {
                     this.SRC,
                     this.timeNow(),
                     "Account verified!");
+
             return new ResponseEntity<>(resp, HttpStatus.ACCEPTED);
         } else if ("expired".equals(status)) {
             CustomResponseStatus resp = new CustomResponseStatus(
@@ -523,7 +536,7 @@ public class UserService extends UtilityFunctions {
                     this.FAILURE,
                     this.SRC,
                     this.timeNow(),
-                    null);
+                    "Expired OTP");
             return new ResponseEntity<>(resp, HttpStatus.FORBIDDEN);
         } else if ("invalid".equals(status)) {
             CustomResponseStatus resp = new CustomResponseStatus(
@@ -532,7 +545,7 @@ public class UserService extends UtilityFunctions {
                     this.FAILURE,
                     this.SRC,
                     this.timeNow(),
-                    null);
+                    "Invalid OTP");
             return new ResponseEntity<>(resp, HttpStatus.UNAUTHORIZED);
         } else {
             CustomResponseStatus resp = new CustomResponseStatus(
@@ -574,9 +587,11 @@ public class UserService extends UtilityFunctions {
     }
 
     public void addUserLocation(User user, String ip) {
-        String country = "LocalHost";
-        if (!isGeoIpLibEnabled())
+        if (!isGeoIpLibEnabled()) {
+            log.warn("GEO IP DISABALED BY ADMIN");
             return;
+        }
+        String country = "LocalHost";
         try {
             if (!this.checkIfLocalHost(ip)) {
                 final InetAddress ipAddress = InetAddress.getByName(ip);
@@ -642,7 +657,7 @@ public class UserService extends UtilityFunctions {
                         "name",
                         enq.getClientName(),
                         "home",
-                        env.getProperty("client.url")));
+                        getAppUrl(request)));
         eventPublisher.publishEvent(new GeneralUserEvent(emailAlert, null, locale));
         CustomResponseStatus resp = new CustomResponseStatus(
                 HttpStatus.CREATED.value(),
@@ -652,5 +667,11 @@ public class UserService extends UtilityFunctions {
                 this.timeNow(),
                 enq.getEnquiryId());
         return new ResponseEntity<>(resp, HttpStatus.CREATED);
+    }
+
+    private String getClientUrl() {
+        List<String> clientUrls = secProperties.getAllowedOrigins();
+        return clientUrls.isEmpty() ? null : clientUrls.iterator().next();
+
     }
 }

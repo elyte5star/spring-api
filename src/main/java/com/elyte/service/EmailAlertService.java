@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -22,15 +23,17 @@ import java.io.File;
 import java.util.Date;
 import java.util.Locale;
 
-
 @Service
-public class EmailAlertService extends UtilityFunctions implements ApplicationListener<GeneralUserEvent>{
+public class EmailAlertService extends UtilityFunctions implements ApplicationListener<GeneralUserEvent> {
 
     @Autowired
     private JavaMailSender mailSender;
 
     @Value("${attachment.invoice}")
     private String attachmentPath;
+
+    @Autowired
+    private Environment env;
 
     @Autowired
     private TemplateEngine textTemplateEngine;
@@ -72,10 +75,6 @@ public class EmailAlertService extends UtilityFunctions implements ApplicationLi
      * Send String mail
      */
     public void sendStringMail(EmailAlert mailObject, final Locale locale) {
-
-        if (this.mailSender == null)
-            return;
-
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(NOREPLY_ADDRESS);
@@ -93,9 +92,6 @@ public class EmailAlertService extends UtilityFunctions implements ApplicationLi
 
     private void sendMessageWithAttachment(EmailAlert mailObject, String pathToAttachment,
             final String attachmentContentType, final Locale locale) {
-        if (this.mailSender == null)
-            return;
-
         try {
 
             // Prepare the evaluation context
@@ -129,21 +125,17 @@ public class EmailAlertService extends UtilityFunctions implements ApplicationLi
     /*
      * Send HTML mail (simple)
      */
-    private void sendSimpleHtmlMail(EmailAlert mailObject, final Locale locale,String template)
+    private void sendSimpleHtmlMail(EmailAlert mailObject, final Locale locale, String template)
             throws MessagingException {
-        if (this.mailSender == null)
-            return;
         // Prepare the evaluation context
         final Context thymeleafContext = new Context(locale);
         thymeleafContext.setVariables(mailObject.getData());
         // Create the HTML body using Thymeleaf
         final String htmlBody = this.htmlTemplateEngine.process(template, thymeleafContext);
-
         sendHtmlMessage(mailObject.getSubject(), mailObject.getRecipientEmail(), htmlBody);
     }
 
     private void sendHtmlMessage(String subject, String recipient, String htmlBody) throws MessagingException {
-
         try {
 
             final MimeMessage message = this.mailSender.createMimeMessage();
@@ -160,31 +152,35 @@ public class EmailAlertService extends UtilityFunctions implements ApplicationLi
     }
 
     public void sendEmailAlert(EmailAlert mailObject, final Locale locale) {
+        if (!isEmailNotificationEnabled()) {
+            log.warn("EMAIL NOTIFICATIONS DISBALED BY ADMIN");
+            return;
+        }
         try {
             switch (mailObject.getEmailType()) {
                 case RESET_USER_PASSWORD:
-                    sendSimpleHtmlMail(mailObject,locale,this.RESET_USER_PASSWORD);
+                    sendSimpleHtmlMail(mailObject, locale, this.RESET_USER_PASSWORD);
                     break;
                 case NEW_USER_OTP_VERIFICATION:
-                    sendSimpleHtmlMail(mailObject,locale,this.VERIFY_USER_EMAIL_TEMPLATE);
+                    sendSimpleHtmlMail(mailObject, locale, this.VERIFY_USER_EMAIL_TEMPLATE);
                     break;
                 case NEW_DEVICE_LOGIN:
-                     sendStringMail(mailObject,locale);
+                    sendStringMail(mailObject, locale);
                     break;
                 case GENERAL_INFO:
-                    sendStringMail(mailObject,locale);
-                   break;
+                    sendStringMail(mailObject, locale);
+                    break;
                 case NEW_USER_ACCOUNT_CONFIRMATION:
-                    sendSimpleHtmlMail(mailObject,locale,this.ACCOUNT_CONFIRMATION_TEMPLATE);
+                    sendSimpleHtmlMail(mailObject, locale, this.ACCOUNT_CONFIRMATION_TEMPLATE);
                     break;
                 case UNUSUAL_LOCATION_LOGIN:
-                    sendSimpleHtmlMail(mailObject,locale,this.UNUSUAL_LOCATION_LOGIN_TEMPLATE);
+                    sendSimpleHtmlMail(mailObject, locale, this.UNUSUAL_LOCATION_LOGIN_TEMPLATE);
                     break;
-                 case CUSTOMER_ENQUIRY:
-                    sendSimpleHtmlMail(mailObject,locale,this.CUSTOMER_ENQUIRY_TEMPLATE);
+                case CUSTOMER_ENQUIRY:
+                    sendSimpleHtmlMail(mailObject, locale, this.CUSTOMER_ENQUIRY_TEMPLATE);
                     break;
-                 case WITH_ATTACHMENT:
-                    sendMessageWithAttachment(mailObject,attachmentPath,"",locale);
+                case WITH_ATTACHMENT:
+                    sendMessageWithAttachment(mailObject, attachmentPath, "", locale);
                     break;
                 default:
                     throw new MessagingException("UNKNOWN EMAIL ALERT TYPE!");
@@ -197,8 +193,13 @@ public class EmailAlertService extends UtilityFunctions implements ApplicationLi
 
     @Override
     public void onApplicationEvent(GeneralUserEvent event) {
-        this.sendEmailAlert(event.getMailObject(),event.getLocale());
-        
+        this.sendEmailAlert(event.getMailObject(), event.getLocale());
+
     }
 
+    private boolean isEmailNotificationEnabled() {
+        return Boolean.parseBoolean(env.getProperty("email.notification.enabled"));
+    }
+
+    
 }

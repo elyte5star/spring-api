@@ -127,7 +127,8 @@ public class DeviceService extends UtilityFunctions {
 
     private void unKnownDeviceLoginNotification(User user, String deviceDetails, String location, String ip,
             String email, Locale locale) {
-        String text = "Location: " + location + ", Device details: " + deviceDetails + ", Ip Address: " + ip;
+        String text = "Location: " + location + ", Device details: " + deviceDetails + ", Ip Address: " + ip
+        + "\n\nRegards,\nTeam ELYTE.\n\n\nThis is system generated mail. Please do not reply to this.";
         EmailAlert emailAlert = new EmailAlert();
         emailAlert.setEmailType(EmailType.NEW_DEVICE_LOGIN);
         emailAlert.setRecipientEmail(user.getEmail());

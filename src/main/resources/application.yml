@@ -164,16 +164,23 @@ geo:
       enabled: false
 ---
 
+email:
+  notification:
+    enabled: false
 
+
+--- 
 #6 o'clock of every day
 purge:
   cron:
     expression: '0 0 6 * * *'
+---
 
 payment:
   STRIPE_SECRET_KEY: <KEY>
   STRIPE_PUBLIC_KEY: <KEY>
 
+---
 security:
   google-props: 
       client-ids: 

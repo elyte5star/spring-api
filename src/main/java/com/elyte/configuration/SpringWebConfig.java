@@ -69,10 +69,9 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
 
     // @Override
     // public void addCorsMappings(CorsRegistry registry) {
-    //     registry.addMapping("/api/**").allowedOrigins().allowedMethods("*").allowCredentials(true).maxAge(24 * 60 * 60);
+    // registry.addMapping("/api/**").allowedOrigins().allowedMethods("*").allowCredentials(true).maxAge(24
+    // * 60 * 60);
     // }
-
-    
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
@@ -106,6 +105,7 @@ public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAwar
     @Bean
     JavaMailSender mailSender() throws IOException {
 
+        
         final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
         // Basic mail sender configuration, based on emailconfig.properties

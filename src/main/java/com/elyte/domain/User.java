@@ -91,7 +91,7 @@ public class User extends AuditEntity {
     private Otp otp;
 
     @Column(name = "TELEPHONE", unique = true)
-    @Digits(fraction = 0, integer = 10)
+    @Digits(fraction = 0, integer = 14)
     @Size(min = 7)
     private String telephone;
 
