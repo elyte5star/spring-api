@@ -80,7 +80,7 @@ spring:
           enabled: true
     auto-config:
       info-headers:
-        source-application:  Utimore e-Market
+        source-application:  Utimore e-REALM
         department: Utimore-services/booking
       queues:
         queue-one:
