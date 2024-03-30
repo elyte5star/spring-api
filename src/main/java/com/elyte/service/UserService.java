@@ -181,7 +181,7 @@ public class UserService extends UtilityFunctions {
     private UserAddress UpdateUserAddress(User userInDb, AddressRequest addressRequest) {
         UserAddress userAddress = userAddressRep.findByUser(userInDb);
         EmailAlert emailAlert = new EmailAlert();
-        emailAlert.setEmailType(EmailType.NEW_DEVICE_LOGIN);
+        emailAlert.setEmailType(EmailType.GENERAL_INFO);
         emailAlert.setRecipientEmail(userInDb.getEmail());
         emailAlert.setRecipientUsername(userInDb.getUsername());
         emailAlert.setSubject("User Notification");

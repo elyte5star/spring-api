@@ -101,7 +101,7 @@ public class AuthenticationEvents extends UtilityFunctions {
 
         } else if (events instanceof AuthenticationFailureLockedEvent) {
 
-            throw new LockedException("Your account has been locked due to 10 failed attempts."
+            throw new LockedException("Your account has been locked due to " + LoginAttemptService.MAX_ATTEMPT + " failed attempts."
                     + " It will be unlocked after 24 hours.");
         }
 

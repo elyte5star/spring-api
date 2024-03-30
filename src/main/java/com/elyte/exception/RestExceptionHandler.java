@@ -108,7 +108,7 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
 
     @ExceptionHandler(LockedException.class)
     public ResponseEntity<?> handleLockedException(Exception e) {
-        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.LOCKED.value(), this.E423_MSG,
+        CustomResponseStatus status = new CustomResponseStatus(HttpStatus.LOCKED.value(), e.getMessage(),
                 this.FAILURE,
                 e.getClass().getName(),
                 this.timeNow(), Map.of("locked",true));
