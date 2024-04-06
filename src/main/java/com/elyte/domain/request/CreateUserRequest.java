@@ -30,7 +30,6 @@ public class CreateUserRequest implements Serializable {
     @NotBlank(message = "password is required")
     @ValidPassword
     private String password;
-
    
     @ValidEmail
     @NotNull
