@@ -23,6 +23,7 @@ public class ActiveUsersService extends UtilityFunctions{
         loggedUsersCache = CacheBuilder.newBuilder().expireAfterWrite(JwtTokenUtil.JWT_TOKEN_VALIDITY, TimeUnit.MINUTES)
                 .build(new CacheLoader<String, String>() {
                     @Override
+                    @SuppressWarnings("null")
                     public String load(final String username) {
                         return "";
                     }

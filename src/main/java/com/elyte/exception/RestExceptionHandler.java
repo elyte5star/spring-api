@@ -64,6 +64,7 @@ public class RestExceptionHandler extends UtilityFunctions implements ErrorContr
                     return new ResponseEntity<>(status1, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
+        @SuppressWarnings("null")
         CustomResponseStatus status = new CustomResponseStatus(code, this.I999_MSG,
                 this.SUCCESS, request.getRequestURL().toString(), this.timeNow(), null);
         return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.OK);

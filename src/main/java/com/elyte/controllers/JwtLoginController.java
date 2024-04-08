@@ -107,8 +107,9 @@ public class JwtLoginController extends UtilityFunctions {
                                 this.I200_MSG,
                                 this.SUCCESS,
                                 request.getRequestURL().toString(), this.timeNow(), tokenResponse);
-                return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtResponse.getJwtCookie().toString())
-                                .body(resp);// new ResponseEntity<>(resp, HttpStatus.OK);
+                return new ResponseEntity<>(resp, HttpStatus.OK);
+                // return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtResponse.getJwtCookie().toString())
+                //                 .body(resp);// 
 
         }
 

@@ -17,9 +17,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import com.elyte.domain.Product;
 import com.elyte.domain.User;
+import com.elyte.domain.UserAddress;
 import com.elyte.domain.UserLocation;
 import com.elyte.domain.request.CreateProductRequest;
 import com.elyte.repository.ProductRepository;
+import com.elyte.repository.UserAddressRepository;
 import com.elyte.repository.UserLocationRepository;
 import com.elyte.repository.UserRepository;
 import com.elyte.utils.UtilityFunctions;
@@ -55,6 +57,10 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 	private ProductRepository productRepository;
 
 	@Autowired
+    private UserAddressRepository userAddressRep;
+
+
+	@Autowired
 	private Environment env;
 
 	@Override
@@ -65,8 +71,10 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 		}
 		// Create Adminuser
 		User adminUser = createUserIfNotFound("elyte");
-
+		
 		createProducts(adminUser.getUsername());
+
+		addUserAdress(adminUser);
 
 		alreadySetup = true;
 	}
@@ -93,7 +101,7 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 		return user;
 	}
 
-	public void addUserLocation(User user, String ip) {
+	private final void addUserLocation(User user, String ip) {
 		String country = "LocalHost";
 		if (!isGeoIpLibEnabled()) {
 			log.warn("GEO IP DISABALED BY ADMIN");
@@ -115,10 +123,23 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 
 	}
 
+	@Transactional
+	private final void addUserAdress(User user){
+		UserAddress newAddress = new UserAddress();
+		newAddress.setFullName("Ogaga Uti");
+		newAddress.setStreetAddress("Hundvåg Island, 4085, Norway");
+		newAddress.setCountry("Norway");
+		newAddress.setState("Stavanger");
+		newAddress.setZip("4085");
+		newAddress.setUser(user);
+		userAddressRep.save(newAddress);
+		log.info("User with Id :" + user.getUserid() + " address created");
+	}
+
 	private boolean isGeoIpLibEnabled() {
 		return Boolean.parseBoolean(env.getProperty("geo.ip.lib.enabled"));
 	}
-
+	@Transactional
 	private final void createProducts(String username) {
 		List<CreateProductRequest> productsList = JsonFileToJavaObject();
 		List<String> productsPids = new ArrayList<>();
