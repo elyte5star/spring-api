@@ -132,7 +132,9 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 		newAddress.setState("Stavanger");
 		newAddress.setZip("4085");
 		newAddress.setUser(user);
-		userAddressRep.save(newAddress);
+		newAddress = userAddressRep.save(newAddress);
+		user.setAddress(newAddress);
+		userRepository.save(user);
 		log.info("User with Id :" + user.getUserid() + " address created");
 	}
 
