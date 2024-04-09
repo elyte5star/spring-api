@@ -54,7 +54,7 @@ public class RabbitMqHandler extends UtilityFunctions{
         return job;
     }
 
-    public CustomResponseStatus  jobWithOneTask(Job job, String routingkey) throws Exception {
+    public CustomResponseStatus jobWithOneTask(Job job, String routingkey) throws Exception {
         Task task = new Task();
         Status jobStatus = new Status(State.RECEIVED, false, false);
         task.setCreated(this.timeNow());
@@ -77,8 +77,8 @@ public class RabbitMqHandler extends UtilityFunctions{
             taskRepository.saveAll(tasks);
             queueItems.forEach((queueItem) -> rabbitTemplate.convertAndSend(exchange, routingkey, queueItem));
             currentStatus.setSuccess(true);
-            currentStatus.setMessage(this.I200_MSG);
-            currentStatus.setResult("Job with id : " + job.getJid() + " was created!");
+            currentStatus.setMessage(this.I200_MSG +" Job with id : " + job.getJid() + " was created!");
+            currentStatus.setResult(job.getJid());
             return currentStatus;
 
         } catch (Exception e) {
@@ -136,7 +136,7 @@ public class RabbitMqHandler extends UtilityFunctions{
         if (user.isPresent()) {
             List<Job> jobs = jobRepository.findByUserUserid(userid);
             for (Job job : jobs) {
-                jobResponses.add(this.getJobResponse(job.getJid()));
+                jobResponses.add(getJobResponse(job.getJid()));
             }
             return jobResponses;
         }

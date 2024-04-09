@@ -12,9 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class CardDetails implements Serializable{
-
-    private static final long serialVersionUID = 1234567L;
-    
+    private static final long serialVersionUID = 1234567L;  
     private String cardType;
     private String cardNumber;
     private String expiryDate;

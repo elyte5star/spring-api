@@ -19,5 +19,5 @@ public class Payment implements Serializable{
 
     private BillingAddress billing_address=null;
 
-    private  BillingAddress shippingAddress;
+   
 }

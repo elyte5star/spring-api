@@ -124,6 +124,8 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 	}
 
 	private final void addUserAdress(User user){
+		UserAddress userAddress = userAddressRep.findByUser(user);
+		if (userAddress == null) {
 		UserAddress newAddress = new UserAddress();
 		newAddress.setFullName("Ogaga Uti");
 		newAddress.setCreatedBy(user.getUsername());
@@ -136,6 +138,8 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 		user.setAddress(newAddress);
 		userRepository.save(user);
 		log.info("User with Id :" + user.getUserid() + " address created");
+		}
+
 	}
 
 	private boolean isGeoIpLibEnabled() {
@@ -184,7 +188,7 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 		} catch (IOException e) {
 			log.error("IOException ", e);
 		} catch (Exception e) {
-			log.error("Exception ", e);
+			log.error("Exception ", e.getLocalizedMessage());
 		}
 
 		return products;

@@ -3,6 +3,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import com.elyte.domain.Payment.BillingAddress;
 import com.elyte.domain.Payment.Payment;
 
 //import com.elyte.domain.Payment.Payment;
@@ -31,5 +32,8 @@ public class CreateBooking implements Serializable{
 
     @NotNull(message = "Please provide payment details.")
     private Payment paymentDetails;
+
+    @NotNull(message = "Please provide shipping details.")
+    private BillingAddress shippingAddress;
     
 }

@@ -23,7 +23,9 @@ import com.elyte.domain.Payment.BillingAddress;
 import com.elyte.domain.Payment.CardDetails;
 import com.elyte.domain.enums.JobType;
 import com.elyte.domain.request.BookingJob;
+import com.elyte.domain.request.Cart;
 import com.elyte.domain.request.CreateBooking;
+import com.elyte.domain.response.BookingResponse;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.response.JobAndTasksResult;
 import com.elyte.domain.response.JobResponse;
@@ -34,6 +36,7 @@ import com.elyte.repository.BookingRepository;
 import com.elyte.repository.UserRepository;
 import com.elyte.utils.UtilityFunctions;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
@@ -71,13 +74,21 @@ public class BookingService extends UtilityFunctions{
         Stripe.apiKey = secretKey;
     }
 
-    public ResponseEntity<CustomResponseStatus> bookingsByUserid(String userid) throws ResourceNotFoundException {
+    public ResponseEntity<CustomResponseStatus> bookingsByUserid(String userid) throws ResourceNotFoundException, JsonMappingException, JsonProcessingException {
         Optional<User> user = userRepository.findById(userid);
         if (user.isPresent()) {
             List<Booking> bookings = bookingRepository.findByUserUserid(userid);
+            List<BookingResponse> bookingsList = new ArrayList<>();
+            if (bookings != null && !bookings.isEmpty()) { 
+                for(Booking booking: bookings){
+                    Cart cart = this.mapper.readValue(booking.getCart(), Cart.class);
+                    BillingAddress shippAddress = this.mapper.readValue(booking.getShippingDetails(), BillingAddress.class);
+                    bookingsList.add(new BookingResponse(booking.getOid(),booking.getUser().getUserid(),booking.getTotalPrice(),booking.getCreated(),cart,shippAddress));
+                } 
+            }
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
                     this.SUCCESS,
-                    this.SRC, this.timeNow(), bookings);
+                    this.SRC, this.timeNow(), bookingsList);
             return new ResponseEntity<>(resp, HttpStatus.OK);
 
         }
@@ -95,7 +106,7 @@ public class BookingService extends UtilityFunctions{
                 throw new Exception("Payment not Successful!");
             Job job = rabbitMqHandler.createJob(JobType.BOOKING);
             BookingJob bookingJob = new BookingJob(createBooking.getUserid(), createBooking.getTotalPrice(),
-                    createBooking.getCart(), createBooking.getPaymentDetails().getShippingAddress());
+                    createBooking.getCart(), createBooking.getShippingAddress());
             job.setJobRequest(this.convertObjectToJson(bookingJob));
             job.setUser(user.get());
             CustomResponseStatus  result = rabbitMqHandler.jobWithOneTask(job, bookingRoutingkey);

@@ -4,6 +4,7 @@ import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.service.BookingService;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +40,7 @@ public class BookingController {
 
     @GetMapping("/{userid}/bookings")
     @Operation(summary = "Get user bookings of by userid", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<CustomResponseStatus> getAllBookingsByUserId(@PathVariable  @Valid String userid) throws ResourceNotFoundException {
+    public ResponseEntity<CustomResponseStatus> getAllBookingsByUserId(@PathVariable  @Valid String userid) throws ResourceNotFoundException, JsonMappingException, JsonProcessingException {
         return bookingService.bookingsByUserid(userid);
 
     }
