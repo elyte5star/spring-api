@@ -3,9 +3,7 @@ package com.elyte.queue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -16,6 +14,7 @@ import com.elyte.domain.Task;
 import com.elyte.domain.User;
 import com.elyte.domain.enums.State;
 import com.elyte.domain.enums.Status;
+import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.response.JobAndTasksResult;
 import com.elyte.domain.response.JobResponse;
 import com.elyte.domain.enums.JobType;
@@ -55,7 +54,7 @@ public class RabbitMqHandler extends UtilityFunctions{
         return job;
     }
 
-    public Map<String, Object> jobWithOneTask(Job job, String routingkey) throws Exception {
+    public CustomResponseStatus  jobWithOneTask(Job job, String routingkey) throws Exception {
         Task task = new Task();
         Status jobStatus = new Status(State.RECEIVED, false, false);
         task.setCreated(this.timeNow());
@@ -65,20 +64,26 @@ public class RabbitMqHandler extends UtilityFunctions{
 
     }
 
-    public Map<String, Object> addJobAndTasksToDbAndQueue(Job job, List<Task> tasks, List<QueueItem> queueItems,
+    public CustomResponseStatus addJobAndTasksToDbAndQueue(Job job, List<Task> tasks, List<QueueItem> queueItems,
             String routingkey)
             throws Exception {
+            CustomResponseStatus currentStatus = new CustomResponseStatus();
+            currentStatus.setTimeStamp(this.timeNow());
+            currentStatus.setPath(this.SRC);
         try {
 
             job.setNumberOfTasks(tasks.size());
             job = jobRepository.save(job);
             taskRepository.saveAll(tasks);
             queueItems.forEach((queueItem) -> rabbitTemplate.convertAndSend(exchange, routingkey, queueItem));
-            return Map.of("success", true, "message", "Job with id : " + job.getJid() + " was created!");
+            currentStatus.setSuccess(true);
+            currentStatus.setMessage(this.I200_MSG);
+            currentStatus.setResult("Job with id : " + job.getJid() + " was created!");
+            return currentStatus;
 
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return Map.of("success", false, "message", e.getMessage());
+            log.error(e.getLocalizedMessage(), e);
+            return currentStatus;
 
         }
 

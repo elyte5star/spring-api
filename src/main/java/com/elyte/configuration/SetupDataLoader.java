@@ -123,10 +123,10 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 
 	}
 
-	@Transactional
 	private final void addUserAdress(User user){
 		UserAddress newAddress = new UserAddress();
 		newAddress.setFullName("Ogaga Uti");
+		newAddress.setCreatedBy(user.getUsername());
 		newAddress.setStreetAddress("Hundvåg Island, 4085, Norway");
 		newAddress.setCountry("Norway");
 		newAddress.setState("Stavanger");

@@ -98,18 +98,14 @@ public class BookingService extends UtilityFunctions{
                     createBooking.getCart(), createBooking.getPaymentDetails().getShippingAddress());
             job.setJobRequest(this.convertObjectToJson(bookingJob));
             job.setUser(user.get());
-            Map<String, Object> result = rabbitMqHandler.jobWithOneTask(job, bookingRoutingkey);
-            if (Boolean.TRUE.equals(result.get("success"))) {
-                CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.CREATED.value(),
-                        this.I200_MSG,
-                        this.SUCCESS,
-                        this.SRC, this.timeNow(), result.get("message"));
-                return new ResponseEntity<>(resp, HttpStatus.CREATED);
+            CustomResponseStatus  result = rabbitMqHandler.jobWithOneTask(job, bookingRoutingkey);
+            if (result.isSuccess()){
+                result.setCode(HttpStatus.CREATED.value());
+                return new ResponseEntity<>(result, HttpStatus.CREATED);
             }
-            CustomResponseStatus status = new CustomResponseStatus(HttpStatus.BAD_REQUEST.value(),
-                    (String) result.get("message"), this.FAILURE, this.SRC,
-                    this.timeNow(), null);
-            return new ResponseEntity<>(status, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            result.setCode(HttpStatus.BAD_REQUEST.value());
+            result.setMessage(this.I203_MSG);
+            return new ResponseEntity<>(result, new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
         throw new ResourceNotFoundException("[+] REQUEST FROM UNKNOWN USER WITH ID :" + createBooking.getUserid());
     }
