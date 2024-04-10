@@ -201,5 +201,4 @@ public class EmailAlertService extends UtilityFunctions implements ApplicationLi
         return Boolean.parseBoolean(env.getProperty("email.notification.enabled"));
     }
 
-    
 }

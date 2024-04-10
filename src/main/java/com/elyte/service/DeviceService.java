@@ -10,7 +10,6 @@ import com.maxmind.geoip2.model.CityResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
-
 import java.net.InetAddress;
 import java.util.Objects;
 import com.elyte.domain.DeviceInfo;
@@ -117,7 +116,6 @@ public class DeviceService extends UtilityFunctions {
         for (DeviceInfo existingDevice : existingDevices) {
             if (existingDevice.getDeviceDetails().equals(deviceDetails)
                     && existingDevice.getLocation().equals(location)) {
-
                 return existingDevice;
             }
 
@@ -128,7 +126,7 @@ public class DeviceService extends UtilityFunctions {
     private void unKnownDeviceLoginNotification(User user, String deviceDetails, String location, String ip,
             String email, Locale locale) {
         String text = "Location: " + location + ", Device details: " + deviceDetails + ", Ip Address: " + ip
-        + "\n\nRegards,\nTeam ELYTE.\n\n\nThis is system generated mail. Please do not reply to this.";
+                + "\n\nRegards,\nTeam ELYTE.\n\n\nThis is system generated mail. Please do not reply to this.";
         EmailAlert emailAlert = new EmailAlert();
         emailAlert.setEmailType(EmailType.NEW_DEVICE_LOGIN);
         emailAlert.setRecipientEmail(user.getEmail());

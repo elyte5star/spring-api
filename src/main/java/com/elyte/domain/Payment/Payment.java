@@ -17,7 +17,7 @@ public class Payment implements Serializable{
 
     private CardDetails cardDetails;
 
-    private BillingAddress billing_address=null;
+    private BillingAddress billingAddress;
 
    
 }

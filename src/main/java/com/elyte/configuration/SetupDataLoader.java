@@ -130,7 +130,7 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 		newAddress.setFullName("Ogaga Uti");
 		newAddress.setCreatedBy(user.getUsername());
 		newAddress.setStreetAddress("Hundvåg Island, 4085, Norway");
-		newAddress.setCountry("Norway");
+		newAddress.setCountry("NO");
 		newAddress.setState("Stavanger");
 		newAddress.setZip("4085");
 		newAddress.setUser(user);

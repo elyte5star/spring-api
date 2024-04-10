@@ -12,9 +12,8 @@ import com.elyte.utils.CheckNullEmptyBlank;
 import com.elyte.security.JwtTokenUtil;
 import org.springframework.stereotype.Service;
 
-
 @Service
-public class ActiveUsersService extends UtilityFunctions{
+public class ActiveUsersService extends UtilityFunctions {
 
     private LoadingCache<String, String> loggedUsersCache;
 
@@ -47,8 +46,8 @@ public class ActiveUsersService extends UtilityFunctions{
     }
 
     public boolean isUserActive(String username) {
-            String date = loggedUsersCache.getIfPresent(username);
-            return (CheckNullEmptyBlank.check(date));
+        String date = loggedUsersCache.getIfPresent(username);
+        return (CheckNullEmptyBlank.check(date));
     }
 
     public ConcurrentMap<String, String> getActiveUsers() {

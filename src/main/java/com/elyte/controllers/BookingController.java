@@ -45,8 +45,8 @@ public class BookingController {
 
     }
 
-    @GetMapping("/result/{jid}")
-    @Operation(summary = "Get  booking result by jid", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping("/job/{jid}")
+    @Operation(summary = "Get booking job result by jid", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<CustomResponseStatus> getBookingResultByJib(@PathVariable  @Valid String jid) throws ResourceNotFoundException, JsonParseException, JsonMappingException, IOException {
         return bookingService.bookingResultByJid(jid);
 

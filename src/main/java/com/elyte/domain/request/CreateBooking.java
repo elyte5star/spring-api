@@ -33,7 +33,6 @@ public class CreateBooking implements Serializable{
     @NotNull(message = "Please provide payment details.")
     private Payment paymentDetails;
 
-    @NotNull(message = "Please provide shipping details.")
-    private BillingAddress shippingAddress;
+    private BillingAddress shippingAddress = null;
     
 }

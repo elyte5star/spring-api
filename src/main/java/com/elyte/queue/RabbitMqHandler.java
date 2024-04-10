@@ -27,7 +27,7 @@ import com.elyte.utils.UtilityFunctions;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RabbitMqHandler extends UtilityFunctions{
+public class RabbitMqHandler extends UtilityFunctions {
 
     @Autowired
     private JobRepository jobRepository;
@@ -67,9 +67,9 @@ public class RabbitMqHandler extends UtilityFunctions{
     public CustomResponseStatus addJobAndTasksToDbAndQueue(Job job, List<Task> tasks, List<QueueItem> queueItems,
             String routingkey)
             throws Exception {
-            CustomResponseStatus currentStatus = new CustomResponseStatus();
-            currentStatus.setTimeStamp(this.timeNow());
-            currentStatus.setPath(this.SRC);
+        CustomResponseStatus currentStatus = new CustomResponseStatus();
+        currentStatus.setTimeStamp(this.timeNow());
+        currentStatus.setPath(this.SRC);
         try {
 
             job.setNumberOfTasks(tasks.size());
@@ -77,7 +77,7 @@ public class RabbitMqHandler extends UtilityFunctions{
             taskRepository.saveAll(tasks);
             queueItems.forEach((queueItem) -> rabbitTemplate.convertAndSend(exchange, routingkey, queueItem));
             currentStatus.setSuccess(true);
-            currentStatus.setMessage(this.I200_MSG +" Job with id : " + job.getJid() + " was created!");
+            currentStatus.setMessage(this.I200_MSG + " Job with id : " + job.getJid() + " was created!");
             currentStatus.setResult(job.getJid());
             return currentStatus;
 
@@ -160,7 +160,7 @@ public class RabbitMqHandler extends UtilityFunctions{
             endedAt.add(task.getEndedAt());
             successful.add(task.getTaskStatus().isSuccessful());
         }
-       
+
         Collections.sort(endedAt);
         Status currentStatus = new Status(State.FINISHED, true, true);
         if (states.contains(State.TIMEOUT)) {
@@ -180,7 +180,7 @@ public class RabbitMqHandler extends UtilityFunctions{
 
         job.setJobStatus(currentStatus);
         job = jobRepository.save(job);
-        
+
         return new JobAndTasksResult(job, tasks, endedAt.get(endedAt.size() - 1));
 
     }

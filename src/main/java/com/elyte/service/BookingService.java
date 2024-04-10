@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 @Service
-public class BookingService extends UtilityFunctions{
+public class BookingService extends UtilityFunctions {
 
     @Autowired
     private BookingRepository bookingRepository;
@@ -74,17 +74,20 @@ public class BookingService extends UtilityFunctions{
         Stripe.apiKey = secretKey;
     }
 
-    public ResponseEntity<CustomResponseStatus> bookingsByUserid(String userid) throws ResourceNotFoundException, JsonMappingException, JsonProcessingException {
+    public ResponseEntity<CustomResponseStatus> bookingsByUserid(String userid)
+            throws ResourceNotFoundException, JsonMappingException, JsonProcessingException {
         Optional<User> user = userRepository.findById(userid);
         if (user.isPresent()) {
             List<Booking> bookings = bookingRepository.findByUserUserid(userid);
             List<BookingResponse> bookingsList = new ArrayList<>();
-            if (bookings != null && !bookings.isEmpty()) { 
-                for(Booking booking: bookings){
+            if (bookings != null && !bookings.isEmpty()) {
+                for (Booking booking : bookings) {
                     Cart cart = this.mapper.readValue(booking.getCart(), Cart.class);
-                    BillingAddress shippAddress = this.mapper.readValue(booking.getShippingDetails(), BillingAddress.class);
-                    bookingsList.add(new BookingResponse(booking.getOid(),booking.getUser().getUserid(),booking.getTotalPrice(),booking.getCreated(),cart,shippAddress));
-                } 
+                    BillingAddress shippAddress = this.mapper.readValue(booking.getShippingDetails(),
+                            BillingAddress.class);
+                    bookingsList.add(new BookingResponse(booking.getOid(), booking.getUser().getUserid(),
+                            booking.getTotalPrice(), booking.getCreated(), cart, shippAddress));
+                }
             }
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
                     this.SUCCESS,
@@ -101,7 +104,7 @@ public class BookingService extends UtilityFunctions{
         if (user.isPresent()) {
             // confirm payment before creating job
             boolean paymentConfirmation = handlePayment(createBooking.getPaymentDetails().getCardDetails(),
-                    createBooking.getPaymentDetails().getBilling_address(), createBooking.getTotalPrice());
+                    createBooking.getPaymentDetails().getBillingAddress(), createBooking.getTotalPrice());
             if (!paymentConfirmation)
                 throw new Exception("Payment not Successful!");
             Job job = rabbitMqHandler.createJob(JobType.BOOKING);
@@ -109,8 +112,8 @@ public class BookingService extends UtilityFunctions{
                     createBooking.getCart(), createBooking.getShippingAddress());
             job.setJobRequest(this.convertObjectToJson(bookingJob));
             job.setUser(user.get());
-            CustomResponseStatus  result = rabbitMqHandler.jobWithOneTask(job, bookingRoutingkey);
-            if (result.isSuccess()){
+            CustomResponseStatus result = rabbitMqHandler.jobWithOneTask(job, bookingRoutingkey);
+            if (result.isSuccess()) {
                 result.setCode(HttpStatus.CREATED.value());
                 return new ResponseEntity<>(result, HttpStatus.CREATED);
             }
@@ -145,30 +148,37 @@ public class BookingService extends UtilityFunctions{
 
     }
 
-    public ResponseEntity<CustomResponseStatus> bookingResultByJid(@Valid String jid) throws JsonParseException, JsonMappingException, IOException {
+    public ResponseEntity<CustomResponseStatus> bookingResultByJid(@Valid String jid)
+            throws JsonParseException, JsonMappingException, IOException {
         Job job = rabbitMqHandler.getJob(jid);
         if (job.getJobType() != JobType.BOOKING)
             throw new ResourceNotFoundException("Wrong job type");
         JobAndTasksResult results = rabbitMqHandler.checkJobAndTasks(job);
         boolean resultIsAvailable = rabbitMqHandler.resultAvailable(results.getJob());
+        CustomResponseStatus resp = new CustomResponseStatus();
+        resp.setPath(this.SRC);
+        resp.setTimeStamp(this.timeNow());
         if (resultIsAvailable) {
             JobResponse jobResponse = rabbitMqHandler.createJobResponse(job, results.getLastTaskEndedAt());
             List<WorkResult> bookingResult = createBookingResult(results.getTasks());
-            CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
-                    this.SUCCESS,
-                    this.SRC, this.timeNow(),
-                    Map.of("job-result", jobResponse, "tasks", bookingResult));
+            resp.setCode(HttpStatus.OK.value());
+            resp.setMessage(this.I200_MSG);
+            resp.setResult(Map.of("job-result", jobResponse, "tasks", bookingResult));
             return new ResponseEntity<>(resp, HttpStatus.OK);
 
         }
-        throw new ResourceNotFoundException("Result from job is not available.");
+        resp.setCode(HttpStatus.NOT_FOUND.value());
+        resp.setMessage("Result from job is not available.");
+        return new ResponseEntity<>(resp, HttpStatus.NOT_FOUND);
+       
     }
 
-    public List<WorkResult> createBookingResult(List<Task> tasks) throws JsonParseException, JsonMappingException, IOException {
+    public List<WorkResult> createBookingResult(List<Task> tasks)
+            throws JsonParseException, JsonMappingException, IOException {
         List<WorkResult> taskResults = new ArrayList<WorkResult>();
         for (Task task : tasks) {
             String result = this.mapper.readValue(task.getResult(), String.class);
-            taskResults.add(new WorkResult(task.getTid(),task.getTaskStatus().isSuccessful(),result));
+            taskResults.add(new WorkResult(task.getTid(), task.getTaskStatus().isSuccessful(), result));
         }
         return taskResults;
     }
