@@ -59,7 +59,7 @@ public class Product extends AuditEntity {
 
     @Column(name = "STOCK_QUANTITY")
     @NotNull(message = "quantity is required")
-    private Integer stock_quantity;
+    private Integer stockQuantity;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "product")
     @OrderBy

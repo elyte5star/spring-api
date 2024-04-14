@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,11 +29,11 @@ public class CreateBooking implements Serializable{
     private BigDecimal totalPrice;
 
     @NotNull(message = "cart cant be empty")
-    private Cart cart;
+    private  List<ItemInCart> cart;
 
     @NotNull(message = "Please provide payment details.")
     private Payment paymentDetails;
 
-    private BillingAddress shippingAddress = null;
+    private BillingAddress shippingAddress;
     
 }

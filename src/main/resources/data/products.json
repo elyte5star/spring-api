@@ -6,7 +6,7 @@
 		"details": "Ergonomic product for small office.The word ergonomic gets tossed around like it's the star ingredient in a wellness-word salad. We ourselves are guilty of blindly buying into products that are stamped with its body-support seal of approval — especially now that we're stuck at home in a make-shift office",
 		"image": "1.png",
 		"category": "black",
-		"stock_quantity": 30
+		"stockQuantity": 30
 	},
 	{
 		"name": "Angry Bird-i",
@@ -15,7 +15,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "2.png",
 		"category": "yellow",
-		"stock_quantity": 30
+		"stockQuantity": 30
 	},
 	{
 		"name": "Angry Bird-w",
@@ -24,7 +24,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "3.png",
 		"category": "grey",
-		"stock_quantity": 0
+		"stockQuantity": 0
 	},
 	{
 		"name": "Angry Bird",
@@ -33,7 +33,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "4.png",
 		"category": "red",
-		"stock_quantity": 30
+		"stockQuantity": 30
 	},
 	{
 		"name": "Clash of clans-v",
@@ -42,7 +42,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "5.png",
 		"category": "pink",
-		"stock_quantity": 30
+		"stockQuantity": 30
 	},
 	{
 		"name": "Clash of clans-a",
@@ -51,7 +51,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "6.png",
 		"category": "coal",
-		"stock_quantity": 10
+		"stockQuantity": 10
 	},
 	{
 		"name": "Clash of clans-q",
@@ -60,7 +60,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "7.png",
 		"category": "rock",
-		"stock_quantity": 60
+		"stockQuantity": 60
 	},
 	{
 		"name": "Clash of clans-r",
@@ -69,7 +69,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "8.png",
 		"category": "mat",
-		"stock_quantity": 90
+		"stockQuantity": 90
 	},
 	{
 		"name": "Super Mario",
@@ -78,7 +78,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "9.png",
 		"category": "pale",
-		"stock_quantity": 10
+		"stockQuantity": 10
 	},
 	{
 		"name": "Clash of clans-o",
@@ -87,7 +87,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "10.png",
 		"category": "pale",
-		"stock_quantity": 3
+		"stockQuantity": 3
 	},
 	{
 		"name": "Clash of clans-n",
@@ -96,7 +96,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "11.png",
 		"category": "pale",
-		"stock_quantity": 45
+		"stockQuantity": 45
 	},
 	{
 		"name": "Clash of clans -m",
@@ -105,7 +105,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "12.png",
 		"category": "pale",
-		"stock_quantity": 3
+		"stockQuantity": 3
 	},
 	{
 		"name": "Cassie",
@@ -114,7 +114,7 @@
 		"details": "Ergonomic product for small office.The word ergonomic gets tossed around like it's the star ingredient in a wellness-word salad. We ourselves are guilty of blindly buying into products that are stamped with its body-support seal of approval — especially now that we're stuck at home in a make-shift office",
 		"image": "13.png",
 		"category": "mk",
-		"stock_quantity": 30
+		"stockQuantity": 30
 	},
 	{
 		"name": "Jax",
@@ -123,7 +123,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "14.png",
 		"category": "mk",
-		"stock_quantity": 30
+		"stockQuantity": 30
 	},
 	{
 		"name": "Liu Kang",
@@ -132,7 +132,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "15.png",
 		"category": "grey",
-		"stock_quantity": 0
+		"stockQuantity": 0
 	},
 	{
 		"name": "Saw man",
@@ -141,7 +141,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "16.png",
 		"category": "mk",
-		"stock_quantity": 301
+		"stockQuantity": 301
 	},
 	{
 		"name": "Noob Saboot",
@@ -150,7 +150,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "17.png",
 		"category": "mk",
-		"stock_quantity": 89
+		"stockQuantity": 89
 	},
 	{
 		"name": "Lord Rayden",
@@ -159,7 +159,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "18.png",
 		"category": "mk",
-		"stock_quantity": 10
+		"stockQuantity": 10
 	},
 	{
 		"name": "Scorpion X",
@@ -168,7 +168,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "19.png",
 		"category": "mk",
-		"stock_quantity": 60
+		"stockQuantity": 60
 	},
 	{
 		"name": "Sindel",
@@ -177,7 +177,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "20.png",
 		"category": "mk",
-		"stock_quantity": 90
+		"stockQuantity": 90
 	},
 	{
 		"name": "Smoke",
@@ -186,7 +186,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "21.png",
 		"category": "pale",
-		"stock_quantity": 10
+		"stockQuantity": 10
 	},
 	{
 		"name": "Sub-Zero",
@@ -195,7 +195,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "22.png",
 		"category": "mk",
-		"stock_quantity": 46
+		"stockQuantity": 46
 	},
 	{
 		"name": "AI Robot",
@@ -204,7 +204,7 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "23.png",
 		"category": "pale",
-		"stock_quantity": 45
+		"stockQuantity": 45
 	},
 	{
 		"name": "AI Robot-2",
@@ -213,6 +213,6 @@
 		"details": "Ergonomic product for small office.Ahead, a shopping guide we hope will make your at-home office feel less makeshift and more professionally aligned — broken down by what each ergonomic item is supporting, backed by people who actually felt supported by it",
 		"image": "24.png",
 		"category": "pale",
-		"stock_quantity": 56
+		"stockQuantity": 56
 	}
 ]

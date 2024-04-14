@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import com.elyte.domain.Job;
 import com.elyte.domain.Task;
 import com.elyte.domain.User;
@@ -198,4 +201,31 @@ public class RabbitMqHandler extends UtilityFunctions {
                 this.diff(job.getCreated(), endedAt), job.getJid(), job.getJobStatus());
     }
 
+    public ResponseEntity<CustomResponseStatus> deleteJob(String jid){
+        Optional<Job> job = jobRepository.findById(jid);
+        if (job.isPresent()){
+            jobRepository.delete(job.get());
+            CustomResponseStatus status = new CustomResponseStatus(
+                    HttpStatus.NO_CONTENT.value(),
+                    this.I200_MSG,
+                    this.SUCCESS,
+                    this.SRC,
+                    this.timeNow(),
+                    "Job with id : " + jid + " deleted!");
+                    return new ResponseEntity<>(status, HttpStatus.OK);
+
+
+        }
+        throw new ResourceNotFoundException(
+                "Job with id :" + jid + " not found!");
+    }
+
+    public ResponseEntity<CustomResponseStatus> getJobs() {
+        Iterable<Job> jobs = jobRepository.findAll();
+        CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
+                this.SUCCESS,
+                this.SRC, this.timeNow(), jobs);
+                return new ResponseEntity<>(resp, HttpStatus.OK);
+    }
+    
 }

@@ -179,6 +179,14 @@ public class AdminController extends UtilityFunctions{
 
     }
 
+    @DeleteMapping("/jobs/{jid}")
+    @Operation(summary = "Delete a job by jid", security = @SecurityRequirement(name = "bearerAuth"))
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<CustomResponseStatus> deleteJob(@PathVariable @Valid String jid)
+            throws ResourceNotFoundException {
+                return rabbitMqHandler.deleteJob(jid);
+    }
+
     @GetMapping("/jobs/find-one/{jid}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Get a job by jid", security = @SecurityRequirement(name = "bearerAuth"))

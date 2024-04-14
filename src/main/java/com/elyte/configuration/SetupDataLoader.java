@@ -161,7 +161,7 @@ public class SetupDataLoader extends UtilityFunctions implements ApplicationList
 			newProduct.setName(productRequest.getName());
 			newProduct.setPrice(productRequest.getPrice());
 			newProduct.setDescription(productRequest.getDescription());
-			newProduct.setStock_quantity(productRequest.getStock_quantity());
+			newProduct.setStockQuantity(productRequest.getStockQuantity());
 			newProduct.setCreatedBy(username);
 			newProduct.setProductDiscount("0.0");
 			productRepository.save(newProduct);

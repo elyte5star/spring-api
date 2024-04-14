@@ -1,5 +1,6 @@
 package com.elyte.service;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -23,12 +24,12 @@ import com.elyte.domain.Payment.BillingAddress;
 import com.elyte.domain.Payment.CardDetails;
 import com.elyte.domain.enums.JobType;
 import com.elyte.domain.request.BookingJob;
-import com.elyte.domain.request.Cart;
+
 import com.elyte.domain.request.CreateBooking;
+import com.elyte.domain.request.ItemInCart;
 import com.elyte.domain.response.BookingResponse;
 import com.elyte.domain.response.CustomResponseStatus;
 import com.elyte.domain.response.JobAndTasksResult;
-import com.elyte.domain.response.JobResponse;
 import com.elyte.domain.response.WorkResult;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.queue.RabbitMqHandler;
@@ -37,6 +38,7 @@ import com.elyte.repository.UserRepository;
 import com.elyte.utils.UtilityFunctions;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
@@ -46,6 +48,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class BookingService extends UtilityFunctions {
@@ -68,6 +71,8 @@ public class BookingService extends UtilityFunctions {
     @Autowired
     private UserRepository userRepository;
 
+    private static final Logger log = LoggerFactory.getLogger(BookingService.class);
+
     @PostConstruct
     public void init() {
 
@@ -82,7 +87,7 @@ public class BookingService extends UtilityFunctions {
             List<BookingResponse> bookingsList = new ArrayList<>();
             if (bookings != null && !bookings.isEmpty()) {
                 for (Booking booking : bookings) {
-                    Cart cart = this.mapper.readValue(booking.getCart(), Cart.class);
+                    List<ItemInCart> cart = this.mapper.readValue(booking.getCart(), new TypeReference<List<ItemInCart>>() {});
                     BillingAddress shippAddress = this.mapper.readValue(booking.getShippingDetails(),
                             BillingAddress.class);
                     bookingsList.add(new BookingResponse(booking.getOid(), booking.getUser().getUserid(),
@@ -115,6 +120,7 @@ public class BookingService extends UtilityFunctions {
             CustomResponseStatus result = rabbitMqHandler.jobWithOneTask(job, bookingRoutingkey);
             if (result.isSuccess()) {
                 result.setCode(HttpStatus.CREATED.value());
+                log.debug("Booking Job created");
                 return new ResponseEntity<>(result, HttpStatus.CREATED);
             }
             result.setCode(HttpStatus.BAD_REQUEST.value());
@@ -159,11 +165,10 @@ public class BookingService extends UtilityFunctions {
         resp.setPath(this.SRC);
         resp.setTimeStamp(this.timeNow());
         if (resultIsAvailable) {
-            JobResponse jobResponse = rabbitMqHandler.createJobResponse(job, results.getLastTaskEndedAt());
             List<WorkResult> bookingResult = createBookingResult(results.getTasks());
             resp.setCode(HttpStatus.OK.value());
             resp.setMessage(this.I200_MSG);
-            resp.setResult(Map.of("job-result", jobResponse, "tasks", bookingResult));
+            resp.setResult(bookingResult.iterator().next());
             return new ResponseEntity<>(resp, HttpStatus.OK);
 
         }

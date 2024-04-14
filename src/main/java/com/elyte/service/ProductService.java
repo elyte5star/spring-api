@@ -33,7 +33,7 @@ public class ProductService extends UtilityFunctions {
         List<ProductResponse> products = new ArrayList<>();
         for (Product product : result.getContent()) {
             products.add(new ProductResponse(product.getPid(), product.getName(),
-                    product.getDescription(), product.getCategory(), product.getPrice(), product.getStock_quantity(),
+                    product.getDescription(), product.getCategory(), product.getPrice(), product.getStockQuantity(),
                     product.getReviews(), product.getImage(), product.getDetails()));
         }
         CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
@@ -66,7 +66,7 @@ public class ProductService extends UtilityFunctions {
             newProduct.setName(product.getName());
             newProduct.setPrice(product.getPrice());
             newProduct.setDescription(product.getDescription());
-            newProduct.setStock_quantity(product.getStock_quantity());
+            newProduct.setStockQuantity(product.getStockQuantity());
             newProduct.setProductDiscount("1.0");
             productRepository.save(newProduct);
             HttpHeaders responseHeaders = new HttpHeaders();
@@ -90,7 +90,7 @@ public class ProductService extends UtilityFunctions {
         }
         Product product = prod.get();
         ProductResponse productResponse = new ProductResponse(product.getPid(), product.getName(),
-                product.getDescription(), product.getCategory(), product.getPrice(), product.getStock_quantity(),
+                product.getDescription(), product.getCategory(), product.getPrice(), product.getStockQuantity(),
                 product.getReviews(), product.getImage(), product.getDetails());
         CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,
                 this.SUCCESS,
@@ -137,7 +137,7 @@ public class ProductService extends UtilityFunctions {
                 newProduct.setName(productRequest.getName());
                 newProduct.setPrice(productRequest.getPrice());
                 newProduct.setDescription(productRequest.getDescription());
-                newProduct.setStock_quantity(productRequest.getStock_quantity());
+                newProduct.setStockQuantity(productRequest.getStockQuantity());
                 productRepository.save(newProduct);
                 productsPids.add(newProduct.getPid());
 

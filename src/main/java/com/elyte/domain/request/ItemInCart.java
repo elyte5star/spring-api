@@ -1,24 +1,24 @@
 package com.elyte.domain.request;
+
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.io.Serial;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-
-import java.io.Serial;
 import java.io.Serializable;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
-
-
-
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class CreateProductRequest implements Serializable{
+public class ItemInCart implements Serializable{
 
     @Serial
     private static final long serialVersionUID = 1234567L;
+
+    @NotBlank(message = "pid is required")
+    private String pid;
 
     @NotBlank(message = "name is required")
     private String name;
@@ -38,10 +38,15 @@ public class CreateProductRequest implements Serializable{
     @NotNull(message = "price is required")
     private Double price;
 
-    @NotNull(message = "quantity is required")
+    @NotNull(message = "stock quantity is required")
     private Integer stockQuantity;
 
-   
+    @Digits(integer = 10, fraction = 2)
+    private String productDiscount=null;
 
+    @NotNull(message = "quantity is required")
+    private int quantity;
+
+    private Double calculatedPrice;
     
 }

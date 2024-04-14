@@ -15,7 +15,7 @@ public class ProductResponse {
     private String description;
     private String category;
     private Double price;
-    private Integer stock_quantity;
+    private Integer stockQuantity;
     private List<Review> reviews;
     private String image;
     private String details;

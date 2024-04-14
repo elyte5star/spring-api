@@ -4,6 +4,7 @@ import com.elyte.domain.Payment.BillingAddress;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,7 +15,7 @@ public class BookingJob {
     
     private BigDecimal totalPrice;
 
-    private Cart cart;
+    private List<ItemInCart> cart;
 
     private BillingAddress shippingAddress;
     
