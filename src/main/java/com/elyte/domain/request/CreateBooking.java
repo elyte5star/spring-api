@@ -2,9 +2,8 @@ package com.elyte.domain.request;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-
-import com.elyte.domain.Payment.BillingAddress;
 import com.elyte.domain.Payment.Payment;
+import com.elyte.domain.Payment.ShippingDetails;
 
 //import com.elyte.domain.Payment.Payment;
 
@@ -34,6 +33,6 @@ public class CreateBooking implements Serializable{
     @NotNull(message = "Please provide payment details.")
     private Payment paymentDetails;
 
-    private BillingAddress shippingAddress;
+    private ShippingDetails shippingAddress;
     
 }

@@ -169,6 +169,7 @@ public class BookingService extends UtilityFunctions {
             resp.setCode(HttpStatus.OK.value());
             resp.setMessage(this.I200_MSG);
             resp.setResult(bookingResult.iterator().next());
+            resp.setSuccess(this.SUCCESS);
             return new ResponseEntity<>(resp, HttpStatus.OK);
 
         }

@@ -1,6 +1,8 @@
 package com.elyte.domain.request;
 import java.math.BigDecimal;
-import com.elyte.domain.Payment.BillingAddress;
+
+import com.elyte.domain.Payment.ShippingDetails;
+
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -17,6 +19,6 @@ public class BookingJob {
 
     private List<ItemInCart> cart;
 
-    private BillingAddress shippingAddress;
+    private ShippingDetails shippingAddress;
     
 }
