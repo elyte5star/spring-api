@@ -11,11 +11,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ShippingDetails implements Serializable{
+
     private static final long serialVersionUID = 1234567L;
+
     private String fullName;
     private String streetAddress;
     private String country;
     private String state;
+    private String email;
     private String zip;
 
 }
