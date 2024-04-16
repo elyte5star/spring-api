@@ -22,6 +22,7 @@ import com.elyte.domain.Task;
 import com.elyte.domain.User;
 import com.elyte.domain.Payment.BillingAddress;
 import com.elyte.domain.Payment.CardDetails;
+import com.elyte.domain.Payment.ShippingDetails;
 import com.elyte.domain.enums.JobType;
 import com.elyte.domain.request.BookingJob;
 
@@ -88,8 +89,8 @@ public class BookingService extends UtilityFunctions {
             if (bookings != null && !bookings.isEmpty()) {
                 for (Booking booking : bookings) {
                     List<ItemInCart> cart = this.mapper.readValue(booking.getCart(), new TypeReference<List<ItemInCart>>() {});
-                    BillingAddress shippAddress = this.mapper.readValue(booking.getShippingDetails(),
-                            BillingAddress.class);
+                    ShippingDetails shippAddress = this.mapper.readValue(booking.getShippingDetails(),
+                    ShippingDetails.class);
                     bookingsList.add(new BookingResponse(booking.getOid(), booking.getUser().getUserid(),
                             booking.getTotalPrice(), booking.getCreated(), cart, shippAddress));
                 }

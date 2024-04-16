@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import com.elyte.domain.Job;
 import com.elyte.domain.Task;
 import com.elyte.domain.User;
@@ -213,8 +212,6 @@ public class RabbitMqHandler extends UtilityFunctions {
                     this.timeNow(),
                     "Job with id : " + jid + " deleted!");
                     return new ResponseEntity<>(status, HttpStatus.OK);
-
-
         }
         throw new ResourceNotFoundException(
                 "Job with id :" + jid + " not found!");
