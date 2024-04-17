@@ -30,7 +30,7 @@ public class UtilityFunctions {
 
     private String[] localHostAddresses = { "0:0:0:0:0:0:0:1", "127.0.1.1", "127.0.0.1" };
 
-    public static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+    public DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
     public DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

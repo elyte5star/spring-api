@@ -17,6 +17,7 @@ import com.elyte.domain.request.ModifyEntityRequest;
 import com.elyte.domain.request.PasswordChange;
 import com.elyte.domain.request.PasswordUpdate;
 import com.elyte.domain.response.CustomResponseStatus;
+import com.elyte.domain.response.UserResponse;
 import com.elyte.exception.InvalidOldPasswordException;
 import com.elyte.exception.ResourceNotFoundException;
 import com.elyte.repository.EnquiryRepository;
@@ -163,18 +164,19 @@ public class UserService extends UtilityFunctions {
 
     public ResponseEntity<CustomResponseStatus> userById(String userid)
             throws ResourceNotFoundException {
-        User user = userRepository.findByUserid(userid);
-        if (user == null) {
-            throw new ResourceNotFoundException(
+        User userInDb = userRepository.findByUserid(userid);
+        if (userInDb == null) {
+            throw new UsernameNotFoundException(
                     "User with id :" + userid + " not found!");
         }
+        UserResponse userResponse = new UserResponse(userInDb.getCreatedAt().format(this.dtf), userInDb.getUserid(),userInDb.getLastModifiedAt().format(this.dtf) ,userInDb.getUsername(), userInDb.getEmail(), userInDb.isAdmin(), userInDb.isEnabled(),userInDb.isAccountNonLocked(), userInDb.isUsing2FA(),userInDb.getTelephone());
         CustomResponseStatus resp = new CustomResponseStatus(
                 HttpStatus.OK.value(),
                 this.I200_MSG,
                 this.SUCCESS,
                 this.SRC,
                 this.timeNow(),
-                user);
+                userResponse);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
