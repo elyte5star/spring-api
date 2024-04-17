@@ -89,10 +89,10 @@ public class BookingService extends UtilityFunctions {
             if (bookings != null && !bookings.isEmpty()) {
                 for (Booking booking : bookings) {
                     List<ItemInCart> cart = this.mapper.readValue(booking.getCart(), new TypeReference<List<ItemInCart>>() {});
-                    ShippingDetails shippAddress = this.mapper.readValue(booking.getShippingDetails(),
+                    ShippingDetails shippingDetails = this.mapper.readValue(booking.getShippingDetails(),
                     ShippingDetails.class);
                     bookingsList.add(new BookingResponse(booking.getOid(), booking.getUser().getUserid(),
-                            booking.getTotalPrice(), booking.getCreated(), cart, shippAddress));
+                            booking.getTotalPrice(), booking.getCreated(), cart, shippingDetails));
                 }
             }
             CustomResponseStatus resp = new CustomResponseStatus(HttpStatus.OK.value(), this.I200_MSG,

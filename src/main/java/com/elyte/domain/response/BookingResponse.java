@@ -21,6 +21,6 @@ public class BookingResponse {
     private BigDecimal totalPrice;
     private String created; 
     private List<ItemInCart> cart;
-    private ShippingDetails shippingAddress;
+    private ShippingDetails shippingDetails;
     
 }
