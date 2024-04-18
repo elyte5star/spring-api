@@ -165,19 +165,29 @@ public class UserService extends UtilityFunctions {
     public ResponseEntity<CustomResponseStatus> userById(String userid)
             throws ResourceNotFoundException {
         User userInDb = userRepository.findByUserid(userid);
-        if (userInDb == null) {
-            throw new UsernameNotFoundException(
-                    "User with id :" + userid + " not found!");
+        if (userInDb != null) {
+            AddressRequest userInDbAddress = null;
+            UserAddress userAddress = userAddressRep.findByUser(userInDb);
+            if (userAddress != null) {
+                userInDbAddress = new AddressRequest(userInDb.getAddress().getFullName(),
+                        userInDb.getAddress().getStreetAddress(), userInDb.getAddress().getCountry(),
+                        userInDb.getAddress().getState(), userInDb.getAddress().getZip());
+            }
+            UserResponse userResponse = new UserResponse(userInDb.getCreatedAt().format(this.dtf), userInDb.getUserid(),
+                    userInDb.getLastModifiedAt().format(this.dtf), userInDb.getUsername(), userInDb.getEmail(),
+                    userInDb.isAdmin(), userInDb.isEnabled(), userInDb.isAccountNonLocked(), userInDb.isUsing2FA(),
+                    userInDb.getTelephone(), userInDbAddress);
+            CustomResponseStatus resp = new CustomResponseStatus(
+                    HttpStatus.OK.value(),
+                    this.I200_MSG,
+                    this.SUCCESS,
+                    this.SRC,
+                    this.timeNow(),
+                    userResponse);
+            return new ResponseEntity<>(resp, HttpStatus.OK);
         }
-        UserResponse userResponse = new UserResponse(userInDb.getCreatedAt().format(this.dtf), userInDb.getUserid(),userInDb.getLastModifiedAt().format(this.dtf) ,userInDb.getUsername(), userInDb.getEmail(), userInDb.isAdmin(), userInDb.isEnabled(),userInDb.isAccountNonLocked(), userInDb.isUsing2FA(),userInDb.getTelephone());
-        CustomResponseStatus resp = new CustomResponseStatus(
-                HttpStatus.OK.value(),
-                this.I200_MSG,
-                this.SUCCESS,
-                this.SRC,
-                this.timeNow(),
-                userResponse);
-        return new ResponseEntity<>(resp, HttpStatus.OK);
+        throw new UsernameNotFoundException(
+                "User with id :" + userid + " not found!");
     }
 
     private UserAddress UpdateUserAddress(User userInDb, AddressRequest addressRequest) {

@@ -1,4 +1,6 @@
 package com.elyte.domain.response;
+import com.elyte.domain.request.AddressRequest;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor; 
@@ -30,5 +32,7 @@ public class UserResponse {
     private boolean isUsing2FA;
 
     private String telephone;
+
+    private AddressRequest address;
 
 }
