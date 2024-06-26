@@ -53,7 +53,6 @@ public class JwtTokenUtil implements Serializable {
 
     public JwtResponse generateToken(UserPrincipal userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("email", userDetails.getUser().getEmail());
         claims.put("jti", UUID.randomUUID().toString());
         String token = doGenerateToken(claims, userDetails.getUsername(), userDetails.getUser().getUserid());
         ResponseCookie cookie = ResponseCookie.from(jwtCookieName, token).path("/api").maxAge(24 * 60 * 60).httpOnly(true)

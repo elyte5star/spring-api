@@ -237,11 +237,11 @@ public class UserService extends UtilityFunctions {
         userInDb.setAddress(userAddress);
         List<User> usersList = userRepository.checkIfUserDetailsIstaken(
                 userid,
-                modifyUser.getEmail(),
+                modifyUser.getUsername(),
                 modifyUser.getTelephone());
         if (usersList.isEmpty()) {
-            if (!(modifyUser.getEmail().equals(userInDb.getEmail())))
-                userInDb.setEmail(modifyUser.getEmail());
+            if (!(modifyUser.getUsername().equals(userInDb.getUsername())))
+                userInDb.setUsername(modifyUser.getUsername());
             if (!(modifyUser.getTelephone().equals(userInDb.getTelephone())))
                 userInDb.setTelephone(modifyUser.getTelephone());
             userInDb = userRepository.save(userInDb);
