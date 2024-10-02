@@ -1,6 +1,7 @@
 package com.elyte.domain.Payment;
 
 import java.io.Serializable;
+import java.util.Date;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -20,5 +21,6 @@ public class ShippingDetails implements Serializable{
     private String state;
     private String email;
     private String zip;
+    private Date shipDate;
 
 }
